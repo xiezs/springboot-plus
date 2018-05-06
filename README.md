@@ -39,7 +39,7 @@
 * admin-core  ，核心包，包含了缓存，数据权限，公用的JS和HTML页面。
 * admin-console, 系统管理功能，包含了用户，组织机构，角色，权限，数据权限，代码生成等管理功能
 
-com.ibeetl.admin.CosonleApplication 是系统启动类，在admin-console包下,在运行这个之前，还需要初始化数据库，位于doc/starter-mysql.sql,目前只提供mysql和oracle脚本。理论上支持所有数据库
+com.ibeetl.admin.CosonleApplication 是系统启动类，在admin-console包下,在运行这个之前，还需要初始化数据库，位于doc/starter-mysql.sql,目前只提供mysql, oracle, postgresql脚本。理论上支持所有数据库
 
 还需要修改SpringBoot配置文件application.properties,修改你的数据库地址和访问用户
 
