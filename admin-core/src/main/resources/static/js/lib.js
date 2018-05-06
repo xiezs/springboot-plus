@@ -182,7 +182,7 @@ var Lib = {
 			laydate = layui.laydate;
 			laydate.render({
 				elem : $(this)[0],
-				range : 'To'
+				range : '至'
 			});
 		});
 
@@ -190,7 +190,7 @@ var Lib = {
             laydate = layui.laydate;
             laydate.render({
                 elem : $(this)[0],
-                range : 'To',
+                range : '至',
                 type: 'datetime'
             });
         });
