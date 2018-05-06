@@ -17,7 +17,7 @@ public class Tool {
 
 	public static Date[] parseDataRange(String str) {
 		//查询范围
-		String[] arrays = str.split("");
+		String[] arrays = str.split("至");
 		Date min = parseDate(arrays[0]);
 		Date max = parseDate(arrays[1]);
 	
