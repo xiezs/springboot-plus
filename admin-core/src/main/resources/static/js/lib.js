@@ -182,9 +182,19 @@ var Lib = {
 			laydate = layui.laydate;
 			laydate.render({
 				elem : $(this)[0],
-				range : '至'
+				range : 'To'
 			});
-		})
+		});
+
+		$(form).find(".datetime-range-pick").find("input").each(function() {
+            laydate = layui.laydate;
+            laydate.render({
+                elem : $(this)[0],
+                range : 'To',
+                type: 'datetime'
+            });
+        });
+
 		
 		$(form).find(".input-date").each(function() {
             laydate = layui.laydate;
