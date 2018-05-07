@@ -184,7 +184,17 @@ var Lib = {
 				elem : $(this)[0],
 				range : '至'
 			});
-		})
+		});
+
+		$(form).find(".datetime-range-pick").find("input").each(function() {
+            laydate = layui.laydate;
+            laydate.render({
+                elem : $(this)[0],
+                range : '至',
+                type: 'datetime'
+            });
+        });
+
 		
 		$(form).find(".input-date").each(function() {
             laydate = layui.laydate;
