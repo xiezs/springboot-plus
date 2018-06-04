@@ -29,7 +29,31 @@ queryByCondtion
     @}
    
   
+queryUserByCondtion
+===
 
+	 select 
+    @pageTag(){
+    u.*,o.name org_name
+    @}
+    from core_user u left join core_org o on u.org_id=o.id where 1=1 and u.del_flag = 0 
+    and  u.org_id =#orgId#
+    @if(!isEmpty(code)){
+        and  u.code like #"%"+code+"%"#
+    @}
+    @if(!isEmpty(name)){
+        and  u.name like #"%"+name+"%"#
+    @}
+    @if(!isEmpty(state)){
+        and  u.state = #state#
+    @}
+    @if(!isEmpty(jobType0)){
+        and  u.job_type0= #jobType0#
+    @}
+    @if(!isEmpty(jobType1)){
+        and  u.job_type1= #jobType1#
+    @}
+   
 
 
 

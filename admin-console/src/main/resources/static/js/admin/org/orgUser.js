@@ -55,7 +55,7 @@ layui.define([ 'form', 'laydate', 'table' ], function(exports) {
 					sort : true
 				},
 				 {
-					field : 'jobTypeText',
+					field : 'jobType1Text',
 					title : '职位',
 					width : 80,
 					sort : true

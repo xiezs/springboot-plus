@@ -40,7 +40,7 @@ public class AuditConsoleController {
    /*页面*/
     
     @GetMapping(MODEL + "/index.do")
-    @Function("audit")
+    @Function("trace")
     public ModelAndView index() {
 		ModelAndView view = new ModelAndView("/admin/audit/index.html");
 		view.addObject("search", AuditQuery.class.getName());
@@ -52,7 +52,7 @@ public class AuditConsoleController {
 
     @PostMapping(MODEL + "/view.json")
     @ResponseBody
-    @Function("audit.query")
+    @Function("trace")
     public JsonResult<CoreAudit> view(Long id) {
     		CoreAudit audit = auditConsoleService.queryById(id);
         return JsonResult.success(audit);
@@ -61,7 +61,7 @@ public class AuditConsoleController {
     
 
     @RequestMapping(MODEL + "/list.json")
-    @Function("audit.query")
+    @Function("trace")
     @ResponseBody
     public JsonResult<PageQuery<CoreAudit>> list(AuditQuery condtion) {
        
@@ -72,7 +72,7 @@ public class AuditConsoleController {
     
     
     @PostMapping(MODEL + "/list/condition.json")
-    @Function("audit.query")
+    @Function("trace")
     @ResponseBody
     public JsonResult<List<Map<String, Object>>> listCondtion() {
     		List<Map<String, Object>> list = AnnotationUtil.getInstance().getAnnotations(Query.class, AuditQuery.class);

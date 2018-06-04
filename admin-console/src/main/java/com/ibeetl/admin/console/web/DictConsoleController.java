@@ -34,12 +34,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.ibeetl.admin.console.service.DictConsoleService;
 import com.ibeetl.admin.console.web.dto.DictExcelImportData;
 import com.ibeetl.admin.console.web.query.CoreDictQuery;
-import com.ibeetl.admin.console.web.query.UserQuery;
 import com.ibeetl.admin.core.annotation.Function;
 import com.ibeetl.admin.core.entity.CoreDict;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.file.FileItem;
 import com.ibeetl.admin.core.file.FileService;
+import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.ConvertUtil;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.ValidateConfig;
@@ -58,6 +58,9 @@ public class DictConsoleController{
     @Autowired private DictConsoleService dictService;
     @Autowired
     FileService fileService;
+    
+    @Autowired
+    CorePlatformService platformService = null;
     /* 页面 */
 
     @GetMapping(MODEL + "/index.do")
@@ -103,6 +106,7 @@ public class DictConsoleController{
     {
         dict.setCreateTime(new Date());
         dictService.save(dict);
+        platformService.clearDictCache();
         return new JsonResult().success();
     }
 
@@ -112,6 +116,7 @@ public class DictConsoleController{
     public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class)  CoreDict dict) {
         boolean success = dictService.update(dict);
         if (success) {
+        	platformService.clearDictCache();
             return new JsonResult().success();
         } else {
             return JsonResult.failMessage("保存失败");
@@ -135,13 +140,14 @@ public class DictConsoleController{
     public JsonResult delete(String ids) {
     	List<Long> dels = ConvertUtil.str2longs(ids);
         dictService.batchDelCoreDict(dels);
+        platformService.clearDictCache();
         return new JsonResult().success();
     }
     
     @PostMapping(MODEL + "/excel/export.json")
     @Function("dict.export")
     @ResponseBody
-    public JsonResult<String> export(HttpServletResponse response,UserQuery condtion) {
+    public JsonResult<String> export(HttpServletResponse response,CoreDictQuery condtion) {
         String excelTemplate ="excelTemplates/admin/dict/dict_collection_template.xls";
         PageQuery<CoreUser> page = condtion.getPageQuery();
         //取出全部符合条件的

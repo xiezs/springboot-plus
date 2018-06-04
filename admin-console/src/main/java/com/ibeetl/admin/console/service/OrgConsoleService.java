@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibeetl.admin.console.dao.OrgConsoleDao;
 import com.ibeetl.admin.core.entity.CoreOrg;
+import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.tree.OrgItem;
 import com.ibeetl.admin.core.service.BaseService;
 import com.ibeetl.admin.core.service.CorePlatformService;
@@ -33,7 +34,7 @@ public class OrgConsoleService extends BaseService<CoreOrg> {
      * 根据条件查询
      * @param query
      */
-    public void queryByCondtion(PageQuery query) {
+    public void queryByCondtion(PageQuery<CoreOrg> query) {
         orgDao.queryByCondtion(query);
         List<CoreOrg> list = query.getList();
         queryListAfter(list);
@@ -45,7 +46,11 @@ public class OrgConsoleService extends BaseService<CoreOrg> {
         	String name = item!=null?item.getName():"";
         	org.set("parentOrgText", name);
         }
-        
+    }
+    
+    public void queryUserByCondition(PageQuery<CoreUser> query) {
+    	orgDao.queryUserByCondtion(query);
+    	queryListAfter(query.getList());
     }
 
 

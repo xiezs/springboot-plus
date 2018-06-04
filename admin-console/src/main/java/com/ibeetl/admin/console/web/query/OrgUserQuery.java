@@ -17,10 +17,10 @@ public class OrgUserQuery extends PageParam {
 	@Query(name="状态",display=true,type=Query.TYPE_DICT,dict=CoreDictType.USER_STATE)
 	private String state;
 	
-	@Query(name="职务",display=true,type=Query.TYPE_DICT,dict="job_type",group="jobType")
+	@Query(name="职务",display=true,type=Query.TYPE_DICT,dict="job_type",group="job_type")
     private String jobType0;
     
-    @Query(name="职务明细",display=true,type=Query.TYPE_DICT,dict="",group="jobType")
+    @Query(name="职务明细",display=true,type=Query.TYPE_DICT,dict="",group="job_type")
     private String jobType1;
 	
 	private Long orgId;
@@ -49,6 +49,18 @@ public class OrgUserQuery extends PageParam {
 	}
 	public void setState(String state) {
 		this.state = state;
+	}
+	public String getJobType0() {
+		return jobType0;
+	}
+	public void setJobType0(String jobType0) {
+		this.jobType0 = jobType0;
+	}
+	public String getJobType1() {
+		return jobType1;
+	}
+	public void setJobType1(String jobType1) {
+		this.jobType1 = jobType1;
 	}
 	
 	
