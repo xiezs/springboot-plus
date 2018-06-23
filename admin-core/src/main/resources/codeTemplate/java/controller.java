@@ -65,7 +65,7 @@ public class ${entity.name}Controller{
     /* 页面 */
 
     \@GetMapping(MODEL + "/index.do")
-    \@Function("${entity.code}.query")
+    \@Function("${basicfunctionCode}.query")
     \@ResponseBody
     public ModelAndView index() {
         ModelAndView view = new ModelAndView("/${target.urlBase}/${entity.code}/index.html") ;
@@ -74,7 +74,7 @@ public class ${entity.name}Controller{
     }
 
     \@GetMapping(MODEL + "/edit.do")
-    \@Function("${entity.code}.edit")
+    \@Function("${basicfunctionCode}.edit")
     \@ResponseBody
     public ModelAndView edit(${entity.idAttribute.javaType} ${entity.idAttribute.name}) {
         ModelAndView view = new ModelAndView("/${target.urlBase}/${entity.code}/edit.html");
@@ -84,7 +84,7 @@ public class ${entity.name}Controller{
     }
 
     \@GetMapping(MODEL + "/add.do")
-    \@Function("${entity.code}.add")
+    \@Function("${basicfunctionCode}.add")
     \@ResponseBody
     public ModelAndView add() {
         ModelAndView view = new ModelAndView("/${target.urlBase}/${entity.code}/add.html");
@@ -94,7 +94,7 @@ public class ${entity.name}Controller{
     /* ajax json */
 
     \@PostMapping(MODEL + "/list.json")
-    \@Function("${entity.code}.query")
+    \@Function("${basicfunctionCode}.query")
     \@ResponseBody
     public JsonResult<PageQuery> list(${entity.name}Query condtion)
     {
@@ -104,7 +104,7 @@ public class ${entity.name}Controller{
     }
 
     \@PostMapping(MODEL + "/add.json")
-    \@Function("${entity.code}.add")
+    \@Function("${basicfunctionCode}.add")
     \@ResponseBody
     public JsonResult add(\@Validated(ValidateConfig.ADD.class)${entity.name} ${entity.code})
     {
@@ -113,7 +113,7 @@ public class ${entity.name}Controller{
     }
 
     \@PostMapping(MODEL + "/update.json")
-    \@Function("${entity.code}.update")
+    \@Function("${basicfunctionCode}.update")
     \@ResponseBody
     public JsonResult<String> update(\@Validated(ValidateConfig.UPDATE.class)  ${entity.name} ${entity.code}) {
         boolean success = ${service}.update(${entity.code});
@@ -127,7 +127,7 @@ public class ${entity.name}Controller{
 
    
     \@GetMapping(MODEL + "/view.json")
-    \@Function("${entity.code}.query")
+    \@Function("${basicfunctionCode}.query")
     \@ResponseBody
     public JsonResult<${entity.name}>queryInfo(${entity.idAttribute.javaType} ${entity.idAttribute.name}) {
         ${entity.name} ${entity.code} = ${service}.queryById( ${entity.idAttribute.name});
@@ -135,7 +135,7 @@ public class ${entity.name}Controller{
     }
 
     \@PostMapping(MODEL + "/delete.json")
-    \@Function("${entity.code}.delete")
+    \@Function("${basicfunctionCode}.delete")
     \@ResponseBody
     public JsonResult delete(String ids) {
         if (ids.endsWith(",")) {
@@ -149,7 +149,7 @@ public class ${entity.name}Controller{
     @if(entity.includeExcel){
     
     \@PostMapping(MODEL + "/excel/export.json")
-    \@Function("${entity.code}.export")
+    \@Function("${basicfunctionCode}.export")
     \@ResponseBody
     public JsonResult<String> export(HttpServletResponse response,${entity.name}Query condtion) {
         /**
@@ -184,7 +184,7 @@ public class ${entity.name}Controller{
     }
     
     \@PostMapping(MODEL + "/excel/import.do")
-    \@Function("${entity.code}.import")
+    \@Function("${basicfunctionCode}.import")
     \@ResponseBody
     public JsonResult importExcel(\@RequestParam("file") MultipartFile file) throws Exception {
         if (file.isEmpty()) {

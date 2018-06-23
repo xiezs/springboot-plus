@@ -14,11 +14,13 @@ import com.ibeetl.admin.core.gen.model.Entity;
 public class JavaCodeGen  implements AutoGen{
 	String basePackage;
 	Entity entity;
+	String basicFunctionCode = null;
 	static String CR = System.getProperty("line.separator");
 	
-	public JavaCodeGen(String basePackage,Entity entity) {
+	public JavaCodeGen(String basePackage,Entity entity,String basicFunctionCode) {
 		this.basePackage =basePackage;
 		this.entity = entity;
+		this.basicFunctionCode =basicFunctionCode;
 	}
 	@Override
 	public void make(Target target, Entity entity) {
@@ -159,6 +161,7 @@ class JavaControllerGen  implements AutoGen{
 		template.binding("target", target);
 		template.binding("package", gen.basePackage+".web");
 		template.binding("basePackage", gen.basePackage);
+		template.binding("basicfunctionCode",gen.basicFunctionCode);
 		String content = template.render();
 		target.flush(this, content);
 	}

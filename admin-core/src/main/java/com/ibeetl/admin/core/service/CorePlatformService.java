@@ -117,7 +117,9 @@ public class CorePlatformService {
 
 
     public CoreUser getCurrentUser() {
-        return (CoreUser) httpRequestLocal.getSessionValue(ACCESS_CURRENT_USER);
+    	checkSession();
+        CoreUser user =  (CoreUser) httpRequestLocal.getSessionValue(ACCESS_CURRENT_USER);
+        return user;
 
     }
     
@@ -132,12 +134,14 @@ public class CorePlatformService {
 
 
     public Long getCurrentOrgId() {
+    	checkSession();
         CoreOrg org = (CoreOrg) httpRequestLocal.getSessionValue(ACCESS_CURRENT_ORG);
         return org.getId();
 
     }
     
     public CoreOrg getCurrentOrg() {
+    	checkSession();
         CoreOrg org = (CoreOrg) httpRequestLocal.getSessionValue(ACCESS_CURRENT_ORG);
         return org;
 
@@ -147,6 +151,13 @@ public class CorePlatformService {
         List<CoreOrg> orgs = (List<CoreOrg>) httpRequestLocal.getSessionValue(ACCESS_USER_ORGS);
         return orgs;
 
+    }
+    
+    protected void checkSession() {
+    	  CoreOrg org = (CoreOrg) httpRequestLocal.getSessionValue(ACCESS_CURRENT_ORG);
+          if(org==null) {
+          	throw new PlatformException("会话过期，重新登录");
+          }
     }
 
     public void setLoginUser(CoreUser user, CoreOrg currentOrg, List<CoreOrg> orgs) {

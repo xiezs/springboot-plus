@@ -76,7 +76,7 @@ public class DataAccessFunction implements Function {
 		List<CoreRoleFunction> roleFuns = platFormService.getRoleFunction(user.getId(),currentOrgId,functionCode);
 		if(roleFuns.isEmpty()){
 			//如果没有配置数据权限，是1=1,因此为角色指定功能的时候，需要设定数据权限，否则查询到所有数据
-			return "1=1 /*empty data access */ ";
+			return "1=1 /* empty data access */ ";
 		}
 		
 		
@@ -105,7 +105,7 @@ public class DataAccessFunction implements Function {
 			}
 			case AllOrg:{
 				//sql 不包含组织机构过滤信息
-				continue ;
+				sb.append(" 1=1 /* AllOrg */ ");
 			}
 			case OnlyUser:{
 				List<Long> ids = ret.getUserIds();

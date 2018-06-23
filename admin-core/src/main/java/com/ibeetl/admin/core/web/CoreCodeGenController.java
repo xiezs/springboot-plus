@@ -202,8 +202,9 @@ public class CoreCodeGenController {
 
 		HtmlGen htmlGen = new HtmlGen();
 		htmlGen.make(target, entity);
-
-		JavaCodeGen javaGen = new JavaCodeGen(basePackage, entity);
+		String  preffix =  urlBase.replace('/', '.');
+		String basicFunctionCode = preffix+"."+entity.getCode();
+		JavaCodeGen javaGen = new JavaCodeGen(basePackage, entity,basicFunctionCode);
 		javaGen.make(target, entity);
 
 		MdGen mdGen = new MdGen();
@@ -280,7 +281,10 @@ public class CoreCodeGenController {
 		String basePackage = data.getBasePackage();
 		WebTarget webTarget = new WebTarget(entity, basePackage);
 		webTarget.setUrlBase(urlBase);
-		JavaCodeGen javaGen = new JavaCodeGen(basePackage,entity);
+		
+		String  preffix =  urlBase.replace('/', '.');
+		String basicFunctionCode = preffix+"."+entity.getCode();
+		JavaCodeGen javaGen = new JavaCodeGen(basePackage,entity,basicFunctionCode);
 		javaGen.make(webTarget, entity);
 		Map<String, String> content = new HashMap<String, String>();
 		for (Entry<Object, String> entry : webTarget.map.entrySet()) {
@@ -352,13 +356,14 @@ public class CoreCodeGenController {
 	@GetMapping(MODEL + "/{table}/test.json")
 	@ResponseBody
 	public void test(@PathVariable String table) {
-
+		String urlBase = "cms";
 		Entity entity = new Entity();
 		entity.setCode("blog");
 		entity.setName("CmsBlog");
 		entity.setDisplayName("博客");
 		entity.setTableName("CMS_BLOG");
 		entity.setSystem("console");
+		
 
 		Attribute idAttr = new Attribute();
 		idAttr.setColName("id");
@@ -423,8 +428,9 @@ public class CoreCodeGenController {
 
 		HtmlGen htmlGen = new HtmlGen();
 		htmlGen.make(target, entity);
-
-		JavaCodeGen javaGen = new JavaCodeGen(basePackage, entity);
+		String  preffix =  urlBase.replace('/', '.');
+		String basicFunctionCode = preffix+"."+entity.getCode();
+		JavaCodeGen javaGen = new JavaCodeGen(basePackage, entity,basicFunctionCode);
 		javaGen.make(target, entity);
 
 		MdGen mdGen = new MdGen();
