@@ -53,6 +53,14 @@ public class CoreCodeGenController {
 		return view;
 
 	}
+	
+	@PostMapping(MODEL + "/refresh.json")
+    @ResponseBody
+    public JsonResult<Boolean> refresh() {
+		codeGenService.refresh();
+		return JsonResult.success();
+	}
+
 
 	@GetMapping(MODEL + "/tableDetail.do")
 	public ModelAndView tableDetail(String table) {

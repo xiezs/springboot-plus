@@ -37,6 +37,10 @@ public class CoreCodeGenService {
 	
 	Log log = LogFactory.getLog(CoreCodeGenService.class);
 	
+	public void refresh() {
+		sqlManager.refresh();
+	}
+	
 	public List<Entity> getAllEntityInfo(){
 		MetadataManager meta = sqlManager.getMetaDataManager();
 		Set<String> set = meta.allTable();

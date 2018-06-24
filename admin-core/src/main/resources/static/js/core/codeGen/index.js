@@ -1,7 +1,8 @@
-layui.define([ 'form', 'laydate', 'table' ], function(exports) {
+layui.define([ 'form', 'laydate', 'table','codeApi' ], function(exports) {
 	var form = layui.form;
 	var laydate = layui.laydate;
 	var table = layui.table;
+	var codeApi = layui.codeApi;
 	var codeTable = null;
 	var view ={
 		
@@ -10,7 +11,7 @@ layui.define([ 'form', 'laydate', 'table' ], function(exports) {
 			this.initToolBar();
 		},
 		initTable:function(){
-			blogTable = table.render({
+			codeTable = table.render({
 				elem : '#codeTable',
 				height : Lib.getTableHeight(1),
 				method : 'post',
@@ -52,7 +53,10 @@ layui.define([ 'form', 'laydate', 'table' ], function(exports) {
 						
 					},
 					refresh:function(){
-						codeTable.reload();
+						codeApi.refresh(function(){
+							codeTable.reload();
+						})
+						
 					}
 					
 					

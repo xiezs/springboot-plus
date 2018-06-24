@@ -1,6 +1,11 @@
 /*访问后台的代码*/
 layui.define([], function(exports) {
 	var api={
+			refresh:function(callback){
+				Common.post("/core/codeGen/refresh.json", {}, function(path){
+					callback();
+				});
+			},
 			gen:function(callback){
 				Common.post("/core/codeGen/getPath.json", {}, function(path){
 					Common.openPrompt("代码保存路径?",path,function(newPath){
