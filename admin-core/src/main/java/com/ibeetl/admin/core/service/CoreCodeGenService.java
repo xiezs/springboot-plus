@@ -171,13 +171,13 @@ public class CoreCodeGenService {
 		
 		
 		CoreFunction  delFunction = new CoreFunction();
-		String delFunctionCode = functionCode+".add";
+		String delFunctionCode = functionCode+".delete";
 		delFunction.setName("删除"+data.getDisplayName());
 		delFunction.setCode(delFunctionCode);
 		delFunction.setCreateTime(new Date());
 		delFunction.setParentId(parentId);
 		delFunction.setType("FN0");
-		sqlManager.insert(addFunction,true);
+		sqlManager.insert(delFunction,true);
 		
 		//刷新缓存
 		platformService.clearFunctionCache();
@@ -197,7 +197,7 @@ public class CoreCodeGenService {
 		Long parentId = menu.getId();
 		CoreMenu newMenu = new CoreMenu();
 		newMenu.setCode(data.getName()+".Manager");
-		newMenu.setName(data.getName()+"管理");
+		newMenu.setName(data.getDisplayName()+"管理");
 		newMenu.setParentMenuId(parentId);
 		newMenu.setFunctionId(functionId);
 		newMenu.setType("MENU_M");
