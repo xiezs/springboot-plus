@@ -102,6 +102,7 @@ layui.use(['layer','fsTab',"element","form"], function(){
 	//菜单绑定
 
 	$(".fsSwitchMenu").on("click",function(){
+		
 		if($(this).find("i.icon-category").length>0){
 			$(this).find("i").removeClass("icon-category").addClass("icon-viewgallery");
 		}else{

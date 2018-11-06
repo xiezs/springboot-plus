@@ -15,6 +15,8 @@ layui.define(['element'], function(exports){
 		}
 	};
 	
+	
+	
 	FsTab.prototype.render = function(options){
 		var thisTab = this;
     $.extend(true, thisTab.config, options);
@@ -22,9 +24,11 @@ layui.define(['element'], function(exports){
     thisTab.bindDeleteFilter();
     
     thisTab.bindTabFilter();
-    
+ 
+
     //绑定左边菜单点击。
     element.on('nav('+thisTab.config.leftMenuFilter+')', function(elem){
+    	elem = $(elem).parent();
 	  	var layId = $(elem).attr("lay-id");
 	  	if($.isEmpty(layId)){
 	  		layId = $.uuid();
@@ -55,6 +59,7 @@ layui.define(['element'], function(exports){
    * 新增
    */
 	FsTab.prototype.add = function(title,dataUrl,layId) {
+		
 		element.tabAdd(this.config.tabFilter, {
 		  title: title
 		  ,content: '<iframe src="'+dataUrl+'"></iframe>' //支持传入html
