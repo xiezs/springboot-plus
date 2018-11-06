@@ -5,7 +5,7 @@
 
 基本技术栈来源于我为电子工业出版社编写的的[<<Spring Boot 2 精髓 >>](http://ibeetl.com/sb2/#more) (这本书每一章也有各种例子，但Springboot-plus 更偏向于应用而不是教学)
 
-当前版本:1.1.3
+当前版本:1.1.5
 
 技术交流群：219324263(满) 636321496
 
@@ -52,7 +52,7 @@ spring.datasource.password=123456
 
 运行CosonleApplication，然后访问http://127.0.0.1:8080/  输入admin/123456 则可以直接登录进入管理系统
 
-如果成功启动后运行报错：变量userId未定义，位于第6行，那是因为你没有启用[parameters](http://www.mamicode.com/info-detail-2162647.html)，启用后，需要重新build整个工程
+如果成功启动后运行报错：变量userId未定义，位于第6行，那是因为你没有启用[parameters](http://www.mamicode.com/info-detail-2162647.html)，启用后，需要clean&build整个工程
 
 
 
