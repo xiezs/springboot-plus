@@ -59,7 +59,7 @@ CREATE TABLE `core_audit` (
   `IP` varchar(45) DEFAULT NULL,
   `CREATE_TIME` datetime(6) DEFAULT NULL,
   `SUCCESS` tinyint(4) DEFAULT NULL,
-  `MESSAGE` text,
+  `MESSAGE` varchar(250),
   `ORG_ID` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
@@ -176,10 +176,10 @@ DROP TABLE IF EXISTS `core_function`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `core_function` (
   `ID` int(20) NOT NULL AUTO_INCREMENT,
-  `CODE` text,
+  `CODE` varchar(250),
   `NAME` varchar(16) DEFAULT NULL,
   `CREATE_TIME` datetime(6) DEFAULT NULL,
-  `ACCESS_URL` text,
+  `ACCESS_URL` varchar(250),
   `PARENT_ID` int(65) DEFAULT NULL,
   `TYPE` varchar(4) DEFAULT NULL,
   PRIMARY KEY (`ID`)
