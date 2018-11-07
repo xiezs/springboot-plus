@@ -40,10 +40,23 @@ layui.define(['element'], function(exports){
 	  			thisTab.add(title,dom.attr("dataUrl"),layId);
 	  		}
 	  	}
+	  	
+	  	
+	  
 	  	thisTab.tabChange(layId);
 	  	$('body').removeClass('site-mobile');
     });
     
+    
+    element.on('tabDelete('+this.config.tabFilter+')', function(data){
+    	debugger;
+		var li =$(this).parent();
+		var layId = $(li).attr("lay-id");
+		//删除tab上标记
+		var dl = $("#fsLeftMenu").find("[lay-id='"+layId+"']");
+		$(dl).attr("lay-id","");
+			
+    });
     
 	};
 	

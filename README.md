@@ -1,11 +1,12 @@
 # springboot-plus
 一个基于SpringBoot 2 的管理后台系统,包含了用户管理，组织机构管理，角色管理，功能点管理，菜单管理，权限分配，数据权限分配，代码生成等功能
+相比其他开源的后台系统，SpringBoot-Plus 具有一定的复杂度
 
-系统基于Spring Boot2技术，前端采用了Layui2。数据库以MySQL为实例，理论上是跨数据库平台.
+系统基于Spring Boot2.1技术，前端采用了Layui2.4。数据库以MySQL/Oracle/Postgres/SQLServer为实例，理论上是跨数据库平台.
 
-基本技术栈来源于我为电子工业出版社编写的的[<<Spring Boot 2 精髓 >>](http://ibeetl.com/sb2/#more) (这本书每一章也有各种例子，但Springboot-plus 更偏向于应用而不是教学)
+基本技术栈来源于我为电子工业出版社编写的的[<<Spring Boot 2 精髓 >>](https://item.jd.com/12214143.html) (这本书每一章也有各种例子，但Springboot-plus 更偏向于应用而不是教学)
 
-当前版本:1.1.5
+当前版本:1.2.0
 
 技术交流群：219324263(满) 636321496
 
@@ -66,7 +67,26 @@ spring.datasource.password=123456
 
 SpringBoot-plus 是一个适合大系统拆分成小系统的架构，或者是一个微服务系统，因此，如果你需要创建自己的业务系统，比如，一个CMS子系统，建议你不要在SpringBoot-Plus 添加代码，应该是新建立一个maven工程，依赖admin-core，或者依赖admin-console（如果你有后台管理需求，通常都有，但不是必须的）
 
-创建子系统，可以进入代码生成>子系统生成， 输入maven项目路径，还有包名，就可以直接生成一个可运行的基于SpringBoot-Plus 的子系统,所有代码可以在这些完成
+创建子系统，可以进入代码生成>子系统生成， 输入maven项目路径，还有包名，就可以直接生成一个可运行的基于SpringBoot-Plus 的子系统,所有代码可以在个项目里些完成，直接运行MainApplication，
+
+~~~java
+@SpringBootApplication
+@EnableCaching
+@ComponentScan(basePackages= {"com.corp.xxx","com.ibeetl.admin"})
+public class MainApplication  extends SpringBootServletInitializer implements WebApplicationInitializer {
+	
+    public static void main(String[] args) {
+    	
+    	SpringApplication.run(MainApplication.class, args);
+    }
+
+
+}	
+~~~
+
+子系统包含了admin-core和admin-console, 因此你可以直接在子系统里使用core和console提供的所有功能，通过子系统的console功能的代码生成来完成进一步开发
+
+子系统可以单独运行和维护，也可以集成到nginx后构成一个庞大的企业应用系统
 
 ### 1.2.1 配置子系统
 
