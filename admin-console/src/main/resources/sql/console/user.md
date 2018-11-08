@@ -41,11 +41,11 @@ queryByCondtion
 
 batchDelUserByIds
 ===
-    update core_user u set u.del_flag = 1 where u.id in( #join(ids)#)
+    update core_user set del_flag = 1 where id in( #join(ids)#)
     
 batchUpdateUserState
 ===
-    update core_user u set u.state = #state# where u.id in( #join(ids)#)
+    update core_user set state = #state# where id in( #join(ids)#)
     
 queryUserRole
 ===
