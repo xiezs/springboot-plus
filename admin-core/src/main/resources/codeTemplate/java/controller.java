@@ -112,8 +112,8 @@ public class ${entity.name}Controller{
         return new JsonResult().success();
     }
 
-    \@PostMapping(MODEL + "/update.json")
-    \@Function("${basicfunctionCode}.update")
+    \@PostMapping(MODEL + "/edit.json")
+    \@Function("${basicfunctionCode}.edit")
     \@ResponseBody
     public JsonResult<String> update(\@Validated(ValidateConfig.UPDATE.class)  ${entity.name} ${entity.code}) {
         boolean success = ${service}.update(${entity.code});
