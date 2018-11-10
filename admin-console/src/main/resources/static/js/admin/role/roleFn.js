@@ -16,7 +16,8 @@ layui.define([ 'form', 'laydate', 'table','roleApi'], function(exports) {
 			var that = this;
 			$.post(Common.ctxPath + "/admin/function/tree.json", {}, function(response) {
 				var zNodes = response.data;
-				var setting  = {"check":{"radioType":true,"enable":true}};
+				// select parent node does not affect the children node
+				var setting  = {"check":{"chkStyle":"checkbox","enable":true, "chkboxType": { "Y": "p", "N": "p" }}};
 				zTreeObj = $.fn.zTree.init($("#functionTree"), setting, zNodes);
 				//功能树加载完毕后在初始化其他控件
 				that.initFirstRole();
