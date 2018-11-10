@@ -168,7 +168,7 @@ public class RoleConsoleController {
      * @return
      */
     @PostMapping(MODEL + "/update.json")
-    @Function("role.update")
+    @Function("role.edit")
     @ResponseBody
 
     public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class) CoreRole role) {
@@ -265,7 +265,7 @@ public class RoleConsoleController {
     // }
 
     @PostMapping(MODEL + "/function/ids.json")
-    @Function("role.function.list")
+    @Function("role.function.query")
     @ResponseBody
     public JsonResult<List<Long>> getFunctionIdByRole(Long roleId) {
         List<Long> list = functionConsoleService.getFunctionByRole(roleId);
@@ -273,7 +273,7 @@ public class RoleConsoleController {
     }
 
     @GetMapping(MODEL + "/function/queryFunction.json")
-    @Function("role.function.list")
+    @Function("role.function.query")
     @ResponseBody
     public JsonResult<List<RoleDataAccessFunction>> getQueryFunctionByRole(Long roleId) {
         List<RoleDataAccessFunction> list = functionConsoleService.getQueryFunctionByRole(roleId);
@@ -281,7 +281,7 @@ public class RoleConsoleController {
     }
 
     @PostMapping(MODEL + "/function/update.json")
-    @Function("role.function.update")
+    @Function("role.function.edit")
     @ResponseBody
     public JsonResult updateFunction(Long roleId, String ids) {
         List<Long> all = ConvertUtil.str2longs(ids);
