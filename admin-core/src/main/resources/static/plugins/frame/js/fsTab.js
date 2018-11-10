@@ -49,7 +49,6 @@ layui.define(['element'], function(exports){
     
     
     element.on('tabDelete('+this.config.tabFilter+')', function(data){
-    	debugger;
 		var li =$(this).parent();
 		var layId = $(li).attr("lay-id");
 		//删除tab上标记
