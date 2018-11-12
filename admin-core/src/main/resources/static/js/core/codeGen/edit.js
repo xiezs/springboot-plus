@@ -62,6 +62,9 @@ layui.define([ 'form', 'laydate', 'table','codeApi'], function(exports) {
 				            						'<div class="layui-form-item">'+
 									            		'<input type="checkbox" class="verify" title="数字"value="number" />'+
 									            		'<input type="checkbox" class="verify" title="日期" value="date"/>'+
+                                  						'<input type="checkbox" class="verify" title="日期范围" value="dateRange"/>'+
+                                  						'<input type="checkbox" class="verify" title="日期时间" value="datetime"/>'+
+                                  						'<input type="checkbox" class="verify" title="日期时间范围" value="datetimeRange"/>'+
 									            		'<input type="checkbox" class="verify" title="网址" value="url"/>'+
 									            	'</div>'+
 									            	'<div class="layui-form-item">'+

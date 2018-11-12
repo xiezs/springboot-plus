@@ -13,6 +13,9 @@ public class Attribute {
 	//数据字典
 	private String dictType;
 	private String comment;
+	// 是否范围
+	private boolean isDateRange;
+	private boolean isDateTimeRange;
 	//校验对象
 	private List<Verify> verifyList = new ArrayList<>();
 	
@@ -77,5 +80,30 @@ public class Attribute {
 	public void setVerifyList(List<Verify> verifyList) {
 		this.verifyList = verifyList;
 	}
-	
+
+	public boolean isDateRange() {
+		for(Verify verify: verifyList) {
+			if(verify.getName().equals("dateRange")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setDateRange(boolean dateRange) {
+		isDateRange = dateRange;
+	}
+
+	public boolean isDateTimeRange() {
+		for(Verify verify: verifyList) {
+			if(verify.getName().equals("datetimeRange")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void setDateTimeRange(boolean dateTimeRange) {
+		isDateTimeRange = dateTimeRange;
+	}
 }
