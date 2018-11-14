@@ -2,7 +2,7 @@
 layui.define([], function(exports) {
     var api={
             update${upperFirst(entity.code)}:function(form,callback){
-                Lib.submitForm("/${target.urlBase}/${entity.code}/update.json",form,{},callback)
+                Lib.submitForm("/${target.urlBase}/${entity.code}/edit.json",form,{},callback)
             },
             add${upperFirst(entity.code)}:function(form,callback){
                 Lib.submitForm("/${target.urlBase}/${entity.code}/add.json",form,{},callback)
