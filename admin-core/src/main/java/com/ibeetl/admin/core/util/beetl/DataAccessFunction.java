@@ -106,6 +106,7 @@ public class DataAccessFunction implements Function {
 			case AllOrg:{
 				//sql 不包含组织机构过滤信息
 				sb.append(" 1=1 /* AllOrg */ ");
+				break;
 			}
 			case OnlyUser:{
 				List<Long> ids = ret.getUserIds();
