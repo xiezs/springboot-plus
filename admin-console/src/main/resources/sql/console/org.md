@@ -1,6 +1,6 @@
 batchDelByIds
 ===
-	update core_org set u.del_flag = 1 where u.id in( #join(ids)#);
+	update core_org set u.del_flag = 1 where u.id in( #join(ids)#)
 
 queryByCondtion
 ===
