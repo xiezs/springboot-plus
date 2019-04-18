@@ -333,6 +333,7 @@ public class CoreCodeGenController {
 		String basePackage = data.getBasePackage();
 		Entity entity = codeGenService.getEntityInfo(info.getTableName());
 		entity.setCode(info.getCode());
+		entity.setName(info.getName());
 		entity.setDisplayName(info.getDisplayName());
 		entity.setSystem(info.getSystem());
 		entity.setAttachment(data.entity.isAttachment());
