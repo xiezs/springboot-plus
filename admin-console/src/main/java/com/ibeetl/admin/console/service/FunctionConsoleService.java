@@ -16,12 +16,10 @@ import com.ibeetl.admin.core.dao.CoreMenuDao;
 import com.ibeetl.admin.core.dao.CoreRoleMenuDao;
 import com.ibeetl.admin.core.entity.CoreFunction;
 import com.ibeetl.admin.core.entity.CoreMenu;
-import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreRoleFunction;
 import com.ibeetl.admin.core.entity.CoreRoleMenu;
 import com.ibeetl.admin.core.rbac.tree.FunctionItem;
-import com.ibeetl.admin.core.rbac.tree.OrgItem;
-import com.ibeetl.admin.core.service.BaseService;
+import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.PlatformException;
 /**
@@ -30,7 +28,7 @@ import com.ibeetl.admin.core.util.PlatformException;
  */
 @Service
 @Transactional
-public class FunctionConsoleService  extends BaseService<CoreFunction>{
+public class FunctionConsoleService  extends CoreBaseService<CoreFunction> {
 	
 	@Autowired
 	FunctionConsoleDao functionDao;

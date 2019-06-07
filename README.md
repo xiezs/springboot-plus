@@ -1,12 +1,17 @@
+[TOC]
+
 # springboot-plus
+
 一个基于SpringBoot 2 的管理后台系统,包含了用户管理，组织机构管理，角色管理，功能点管理，菜单管理，权限分配，数据权限分配，代码生成等功能
-相比其他开源的后台系统，SpringBoot-Plus 具有一定的复杂度
+相比其他开源的后台开发平台脚手架，SpringBoot-Plus 具有一定的复杂度
 
 系统基于Spring Boot2.1技术，前端采用了Layui2.4。数据库以MySQL/Oracle/Postgres/SQLServer为实例，理论上是跨数据库平台.
 
 基本技术栈来源于我为电子工业出版社编写的的[<<Spring Boot 2 精髓 >>](https://item.jd.com/12214143.html) (这本书每一章也有各种例子，但Springboot-plus 更偏向于应用而不是教学)
+该书的第二版电子版可以可以在[看云广场购买](https://www.kancloud.cn/xiandafu/springboot2-in-practice/),第二版也包含一章说明Plus系统
 
-当前版本:1.2.0
+
+当前版本:1.3.0
 
 技术交流群：219324263(满) 636321496
 
@@ -45,9 +50,10 @@ com.ibeetl.admin.CosonleApplication 是系统启动类，在admin-console包下,
 还需要修改SpringBoot配置文件application.properties,修改你的数据库地址和访问用户
 
 ~~~properties
-spring.datasource.url=jdbc:mysql://127.0.0.1:3306/starter?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false
-spring.datasource.username=root
-spring.datasource.password=123456
+spring.datasource.baseDataSource.url=jdbc:mysql://127.0.0.1:3306/starter?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&useInformationSchema=true
+spring.datasource.baseDataSource.username=root
+spring.datasource.baseDataSource.password=123456
+spring.datasource.baseDataSource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 ~~~
 
@@ -201,7 +207,63 @@ SpringPlus-Boot 并非以菜单或者按钮来组织整个系统，而是以功�
 
 
 
+# 2 单体系统，系统拆分和微服务
+
+plus是一个适合单体系统，系统拆分的java快速开发平台，也可以经过改造成微服务平台(以前做一个版本，但觉得plus应该聚焦系统核心，而不是简单堆砌功能，所以放弃了)
+
+以下是单体系统，小系统，和微服务的区别
 
 
 
+单体系统是一种常见系统设计方式，也是这十几年年来最主要的设计方式。单体系统的所有功能都在一个工程里，打成一个war包，部署。这样有如下明显好处
+
+- 单体系统开发方式简单，我们从刚开始学习编程，就是完成的单体系统，开发人员只要集中精力开发当前工程
+- 容易修改，如果需要修改任何功能，都非常方便，只需要修改一个工程范围的代码
+- 测试简单，单体系统测试不需要考虑别的系统，避免本书下册要提到的各种REST，MQ调用
+- 部署也很容易：不需要考虑跟别的系统关系，直接打war包部署到Web服务器即可
+- 性能容易扩展，可以通过Nginx，把一个应用部署到多个服务器上。
+
+
+
+随着业务发展，重构，单体系统越来越多，在开发一个庞大的单体系统的时候，就会有如下弊病
+
+- 单体系统庞大，越来越难理解单体系统，微小的改动牵涉面广泛导致开发小组小心谨慎，开发速度会越来越慢。另外，启动一个庞大的单体系统，可能需要3分钟，或者更多时间
+- 多个功能在同一个单体系统上开发，导致测试越来越慢，比如，测试必须排期，串行测试
+- 单体系统如果想对技术进行更新换代，那代价非常大，如果是个小系统构成，则可以选取一个小系统先做尝试。单体大系统是几乎不可能做技术升级的
+- 单体系统的所有功能运行在同一个JVM里，功能会互相影响，比如一个统计上传word文档的页码的功能由于非常消耗CPU，因此，会因为调用统计功能，导致整个系统短暂都不可用，出现假死的现象
+
+
+
+因此，越来越多的架构师在设计系统的时候，会考虑系统拆分成多个单体小系统甚至是微服务。对于传统企业应用，拆成小系统更合适，对互联网系统，使用微服务个更合适，这是因为
+
+
+
+- 传统IT系统本质上还是会用一个数据库，而微服务提倡的是一个服务一个数据库
+- 传统IT系统很少需要调用其他模块服务。传统IT系统通过工作流来串联其他子系统。而电商类的微服务则是通过RPC等方式进行交互，是一个轻量级协议。传统IT系统也可以通过SOA，JMS跟其他系统(非子系统)交互，采用重量级协议
+- 微服务对系统的基础设施要求很高，比如微服务治理，弹性库等等，只要电商系统才有人力物力去做这种事情，而传统IT系统，及时财大气粗，也暂时不具备微服务那样的IT基础设置
+
+
+
+因此，对于大多数传统IT应用来说，单体拆分小系统在技术上没有风险，是一个可以立即实施的架构。如下是一个单体系统拆分后的物理架构
+
+
+
+![design](doc/readme/design.png)
+
+对于用户来说，访问不同的菜单功能，讲定位到不同得子系统，提供服务。
+
+> plus支持多数据库
+
+
+
+# 3 需要技术支持？
+
+P
+
+plus系统足够聚焦内核功能，简单易用功能强大。如果你需要技术支持，可以通过如下方式
+
+* 加入qq技术交流群：219324263(满) 636321496
+* 购买我的《[Spring Boot实战权威指南 基础篇》](https://www.kancloud.cn/xiandafu/springboot2-in-practice/)，从书里解答你的问题
+* ibeetl.com社区搜索你的问题
+* [微信加入我的知识星球，与我一起探索Java技术，连接铁杆粉丝](https://wx.zsxq.com/dweb/#/index/824551244882) (提供半商业技术支持)
 

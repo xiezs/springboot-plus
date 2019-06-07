@@ -21,7 +21,7 @@ import com.ibeetl.admin.core.util.enums.DelFlagEnum;
  */
 @Service
 @Transactional
-public class CoreDictService extends BaseService<CoreDict> {
+public class CoreDictService extends CoreBaseService<CoreDict> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoreDictService.class);
 

@@ -15,16 +15,19 @@ import com.ibeetl.admin.core.annotation.Dict;
 import com.ibeetl.admin.core.entity.CoreDict;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
+ *
  * 描述:
  * @author : xiandafu
  */
-public class BaseService<T> {
+public class CoreBaseService<T> {
 
     @Autowired
     protected CoreDictService dictUtil;
     @Autowired
+	@Qualifier("baseDataSourceSqlManagerFactoryBean")
     protected SQLManager sqlManager;
     
     
@@ -193,5 +196,7 @@ public class BaseService<T> {
         }while(c!=TailBean.class);
         
     }
+
+
 
 }

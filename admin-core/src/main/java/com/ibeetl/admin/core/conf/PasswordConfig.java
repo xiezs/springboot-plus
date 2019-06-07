@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import com.ibeetl.admin.core.conf.PasswordConfig.PasswordEncryptService;
 
 /**
- * 描述: 密码工具，系统默认采用明文
+ * 描述: 密码工具，系统默认采用明文存储,可以自动装配一个加密的
  *
  * @author : xiandafu
  */

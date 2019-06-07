@@ -14,14 +14,14 @@ import com.ibeetl.admin.console.dao.RoleConsoleDao;
 import com.ibeetl.admin.core.entity.CoreRole;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.tree.OrgItem;
-import com.ibeetl.admin.core.service.BaseService;
+import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.RoleTypeEnum;
 
 @Service
 @Transactional
-public class RoleConsoleService extends BaseService<CoreRole> {
+public class RoleConsoleService extends CoreBaseService<CoreRole> {
     private static final Logger LOGGER = LoggerFactory.getLogger(RoleConsoleService.class);
 
     @Autowired

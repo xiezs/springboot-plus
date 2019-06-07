@@ -22,7 +22,7 @@ import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.entity.CoreUserRole;
 import com.ibeetl.admin.core.file.FileService;
 import com.ibeetl.admin.core.rbac.tree.OrgItem;
-import com.ibeetl.admin.core.service.BaseService;
+import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CoreDictService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.PlatformException;
@@ -32,7 +32,7 @@ import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
 
 @Service
 @Transactional
-public class UserConsoleService extends BaseService<CoreUser> {
+public class UserConsoleService extends CoreBaseService<CoreUser> {
 
 	@Autowired
 	UserConsoleDao userDao;

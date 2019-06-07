@@ -12,7 +12,7 @@ import com.ibeetl.admin.console.dao.OrgConsoleDao;
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.tree.OrgItem;
-import com.ibeetl.admin.core.service.BaseService;
+import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.PlatformException;
 
@@ -22,7 +22,7 @@ import com.ibeetl.admin.core.util.PlatformException;
  */
 @Service
 @Transactional
-public class OrgConsoleService extends BaseService<CoreOrg> {
+public class OrgConsoleService extends CoreBaseService<CoreOrg> {
 
     @Autowired
     private OrgConsoleDao orgDao;

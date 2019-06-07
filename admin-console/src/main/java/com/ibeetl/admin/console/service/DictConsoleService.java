@@ -15,7 +15,7 @@ import com.ibeetl.admin.console.dao.DictConsoleDao;
 import com.ibeetl.admin.console.web.dto.DictExcelImportData;
 import com.ibeetl.admin.core.entity.CoreDict;
 import com.ibeetl.admin.core.entity.CoreUser;
-import com.ibeetl.admin.core.service.BaseService;
+import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.util.ExcelError;
 import com.ibeetl.admin.core.util.PlatformException;
 
@@ -25,7 +25,7 @@ import com.ibeetl.admin.core.util.PlatformException;
 
 @Service
 @Transactional
-public class DictConsoleService extends BaseService<CoreDict>{
+public class DictConsoleService extends CoreBaseService<CoreDict> {
 
     @Autowired private DictConsoleDao dictDao;
 

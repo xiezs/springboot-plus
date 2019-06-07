@@ -13,6 +13,7 @@ public @interface Query {
 	
 	public static final  int TYPE_GENERAL = 1;
 	public static final  int TYPE_DATE_BETWEEN = 2;
+	//未实现
 	public static final  int TYPE_DATETIME_BETWEEN = 3;
 	public static final  int TYPE_VALUE_BETWEEN = 4;
 	public static final  int TYPE_DICT = 5;

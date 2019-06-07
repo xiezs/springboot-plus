@@ -7,11 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ibeetl.admin.console.dao.AuditConsoleDao;
 import com.ibeetl.admin.core.entity.CoreAudit;
-import com.ibeetl.admin.core.service.BaseService;
+import com.ibeetl.admin.core.service.CoreBaseService;
 
 @Service
 @Transactional
-public class AuditConsoleService extends BaseService<CoreAudit> {
+public class AuditConsoleService extends CoreBaseService<CoreAudit> {
 
 	@Autowired
 	AuditConsoleDao auditConsoleDao;
