@@ -82,7 +82,7 @@ public class DataAccessFunction implements Function {
 		
 		
 		List<Object> list = (List<Object>)ctx.getGlobal("_paras");
-		StringBuilder sb = new StringBuilder("  ");
+		StringBuilder sb = new StringBuilder("( ");
 		//数据权限范围划定
 		boolean hasAppend = false;
 		for(int i=0;i<roleFuns.size();i++){
@@ -106,6 +106,7 @@ public class DataAccessFunction implements Function {
 			case AllOrg:{
 				//sql 不包含组织机构过滤信息
 				sb.append(" 1=1 /* AllOrg */ ");
+				break;
 			}
 			case OnlyUser:{
 				List<Long> ids = ret.getUserIds();
@@ -164,7 +165,7 @@ public class DataAccessFunction implements Function {
 
 			
 		}
-		
+		sb.append(" ) ");
 		
 		return sb.toString();
 	}
