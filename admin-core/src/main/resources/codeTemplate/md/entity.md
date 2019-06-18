@@ -12,7 +12,7 @@ queryByCondition
     and #function("${entity.code}.query")#
     @for(attr in entity.list){
     		@if(attr.showInQuery){
-    		    @if(attr.isDateRange || attr.isDateTimeRange){
+    		    @if(attr.dateRange || attr.dateTimeRange){
     \@if(!isEmpty(${strutil.replace (attr.name,"Range","")}Start)){
         and  t.${attr.colName} > #${strutil.replace (attr.name,"Range","")}Start#
     \@}

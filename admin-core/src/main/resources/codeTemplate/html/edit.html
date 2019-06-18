@@ -42,7 +42,7 @@
 	<input type="hidden" name="${item.name}" value=\${${entity.code}.${item.name}} ${isNotEmpty(item.verifyList)?('lay-verify="'+verifyFormat(item.verifyList)+'"'):''}/>
 		@}
 	@}
-    <input type="hidden" name="${entity.idAttribute.name}" value=\${${entity.code}.${entity.idAttribute.name}} ${isNotEmpty(item.verifyList)?('lay-verify="'+verifyFormat(item.verifyList)+'"'):''}/>
+    <input type="hidden" name="${entity.idAttribute.name}" value=\${${entity.code}.${entity.idAttribute.name}} />
     <layui:submitButtons id="updateButton" />
 </form>
 <!--#} -->

@@ -54,8 +54,7 @@ public class ${className} extends BaseEntity{
     private ${attr.type} ${attr.name} ;
 	
 	@}
-    public ${className}()
-    {
+    public ${className}(){
     }
 
     @for(attr in attrs){
@@ -65,7 +64,7 @@ public class ${className} extends BaseEntity{
     */
 		@}
     public ${attr.type} get${attr.methodName}(){
-	    return  ${attr.name};
+        return  ${attr.name};
     }
 		@if(!isEmpty(attr.comment)){
     /**${attr.comment}

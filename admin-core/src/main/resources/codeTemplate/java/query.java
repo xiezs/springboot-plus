@@ -14,12 +14,12 @@ public class ${entity.name}Query extends PageParam {
         @if(isNotEmpty(attr.dictType)) {
     \@Query(name = "${attr.displayName}", display = true,type=Query.TYPE_DICT,dict="${attr.dictType}")
     private ${attr.javaType} ${attr.name};
-        @} else if(attr.isDateRange) {
+        @} else if(attr.dateRange) {
     \@Query(name = "${attr.displayName}", display = true,type=Query.TYPE_DATE_BETWEEN)
     private String ${attr.name};
     private Date ${strutil.replace (attr.name,"Range","")}Start;
     private Date ${strutil.replace (attr.name,"Range","")}End;
-        @} else if(attr.isDateTimeRange) {
+        @} else if(attr.dateTimeRange) {
     \@Query(name = "${attr.displayName}", display = true,type=Query.TYPE_DATETIME_BETWEEN)
     private String ${attr.name};
     private Date ${strutil.replace (attr.name,"Range","")}Start;
@@ -30,7 +30,7 @@ public class ${entity.name}Query extends PageParam {
         @}
     @}
     @for(attr in attrs) {
-        @if(attr.isDateRange) {
+        @if(attr.dateRange) {
     public String get${upperFirst(attr.name)}(){
         return  ${attr.name};
     }
@@ -55,7 +55,7 @@ public class ${entity.name}Query extends PageParam {
     public void set${upperFirst(strutil.replace (attr.name,"Range",""))}End(${attr.javaType} ${strutil.replace (attr.name,"Range","")}End){
         this.${strutil.replace (attr.name,"Range","")}End = ${strutil.replace (attr.name,"Range","")}End;
     }
-        @} else if(attr.isDateTimeRange) {
+        @} else if(attr.dateTimeRange) {
     public String get${upperFirst(attr.name)}(){
         return  ${attr.name};
     }
