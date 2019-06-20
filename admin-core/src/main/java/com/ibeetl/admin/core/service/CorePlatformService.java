@@ -381,7 +381,7 @@ public class CorePlatformService {
         //没有做任何事情，交给spring cache来处理了
     }
 
-    @CacheEvict(cacheNames = {CorePlatformService.DICT_CACHE_SAME_LEVEL,CorePlatformService.DICT_CACHE_TYPE,CorePlatformService.DICT_CACHE_VALUE}, allEntries = true)
+    @CacheEvict(cacheNames = {CorePlatformService.DICT_CACHE_CHILDREN,CorePlatformService.DICT_CACHE_SAME_LEVEL,CorePlatformService.DICT_CACHE_TYPE,CorePlatformService.DICT_CACHE_VALUE}, allEntries = true)
     public void clearDictCache() {
     }
     
