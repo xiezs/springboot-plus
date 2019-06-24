@@ -1,11 +1,23 @@
 package ${package};
 
+
+import ${basePackage}.dao.${entity.name}Dao;
+import ${basePackage}.entity.${entity.name};
+
+
+
+import com.ibeetl.admin.core.service.CoreBaseService;
+import com.ibeetl.admin.core.util.PlatformException;
+import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
-{basePackage}.dao.${entity.name}Dao;
-import ${basePackage}.entity.${entity.name};
+
+
+
+
 
 /**
  * ${entity.displayName} Service
@@ -13,7 +25,7 @@ import ${basePackage}.entity.${entity.name};
 
 \@Service
 \@Transactional
-public class ${entity.name}Service extends BaseService<${entity.name}>{
+public class ${entity.name}Service extends CoreBaseService<${entity.name}>{
 
     \@Autowired private ${entity.name}Dao ${entity.code}Dao;
 
