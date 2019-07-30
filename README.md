@@ -1,8 +1,8 @@
 
 # springboot-plus
 
-一个基于SpringBoot 2 的管理后台系统,包含了用户管理，组织机构管理，角色管理，功能点管理，菜单管理，权限分配，数据权限分配，代码生成等功能
-相比其他开源的后台开发平台脚手架，SpringBoot-Plus 具有一定的复杂度
+一个基于SpringBoot 2 的管理后台系统,有数十个基于此的商业应用，包含了用户管理，组织机构管理，角色管理，功能点管理，菜单管理，权限分配，数据权限分配，代码生成等功能
+相比其他开源的后台开发平台脚手架，SpringBoot-Plus 使用简单，可以轻易完成中型，大型系统开发。同时技术栈较为简单
 
 系统基于Spring Boot2.1技术，前端采用了Layui2.4。数据库以MySQL/Oracle/Postgres/SQLServer为实例，理论上是跨数据库平台.
 
@@ -12,7 +12,7 @@
 
 当前版本:1.3.0
 
-技术交流群：219324263(满) 636321496
+技术交流群：636321496,219324263(满) 
 
 开源地址：https://gitee.com/xiandafu/springboot-plus
 
@@ -259,8 +259,9 @@ plus是一个适合单体系统，系统拆分的java快速开发平台，也可
 
 plus系统足够聚焦内核功能，简单易用功能强大。如果你需要技术支持，可以通过如下方式
 
-* 加入qq技术交流群：219324263(满) 636321496
-* 购买我的《[Spring Boot实战权威指南 基础篇》](https://www.kancloud.cn/xiandafu/springboot2-in-practice/)，从书里解答你的问题
+* 加入qq技术交流群：636321496，219324263(满) 
+* SpringBoot基础知识:购买我的《[Spring Boot实战权威指南 基础篇》](https://www.kancloud.cn/xiandafu/springboot2-in-practice/)，从书里解答你的问题
 * ibeetl.com社区搜索你的问题
-* [微信加入我的知识星球，与我一起探索Java技术，连接铁杆粉丝](https://wx.zsxq.com/dweb/#/index/824551244882) (提供半商业技术支持)
+* 提供付费商业技术支持，一年仅需要99员，微信扫描
+![design](doc/readme/xingqiu.jpg)
 

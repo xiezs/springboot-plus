@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -138,7 +139,7 @@ public class UserConsoleController {
 	@PostMapping(MODEL + "/update.json")
 	@Function("user.update")
 	@ResponseBody
-	public JsonResult update(@Validated(ValidateConfig.UPDATE.class) CoreUser user) {
+	public JsonResult update(@Validated(ValidateConfig.UPDATE.class)  CoreUser user) {
 		boolean success = userConsoleService.updateTemplate(user);
 		if (success) {
 			this.platformService.clearFunctionCache();
