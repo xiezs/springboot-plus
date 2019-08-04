@@ -11,5 +11,4 @@ public interface DataAccess {
 	 DataAccessResullt getOrg(Long userId,Long orgId );
 	 String getName();
 	 Integer getType();
-	 
 }

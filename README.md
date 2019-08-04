@@ -7,12 +7,20 @@
 系统基于Spring Boot2.1技术，前端采用了Layui2.4。数据库以MySQL/Oracle/Postgres/SQLServer为实例，理论上是跨数据库平台.
 
 基本技术栈来源于我为电子工业出版社编写的的[<<Spring Boot 2 精髓 >>](https://item.jd.com/12214143.html) (这本书每一章也有各种例子，但Springboot-plus 更偏向于应用而不是教学)
-该书的第二版电子版可以可以在[看云广场购买](https://www.kancloud.cn/xiandafu/springboot2-in-practice/),第二版也包含一章说明Plus系统
+该书的第二版电子版可以可以在[看云广场购买](https://www.kancloud.cn/xiandafu/springboot2-in-practice/), 包含基础篇，分布式篇和微服务篇，第二版也包含一章说明Plus系统
 
 
 当前版本:1.3.0
 
-技术交流群：636321496,219324263(满) 
+技术交流群：252010126
+
+
+
+视频介绍：https://pan.baidu.com/s/1dFPoaT7
+
+w
+
+![](https://oscimg.oschina.net/oscnet/ed05b8bb68eb40a3c55e19557e408fb07fb.jpg)
 
 开源地址：https://gitee.com/xiandafu/springboot-plus
 
@@ -95,7 +103,7 @@ public class MainApplication  extends SpringBootServletInitializer implements We
 
 ### 1.2.1 配置子系统
 
-子系统不需要做任何配置即可在IDE里直接运行，如果你想打包城jar方式运行，则需要添加
+子系统不需要做任何配置即可在IDE里直接运行，如果你想打包jar方式运行，则需要添加
 
 ~~~xml
 <build>
@@ -254,14 +262,4 @@ plus是一个适合单体系统，系统拆分的java快速开发平台，也可
 > plus支持多数据库
 
 
-
-# 3 不懂plus系统？
-
-plus系统足够聚焦内核功能，简单易用功能强大。如果你需要技术支持，可以通过如下方式
-
-* 加入qq技术交流群：636321496，219324263(满) 
-* SpringBoot基础知识:购买我的《[Spring Boot实战权威指南 基础篇》](https://www.kancloud.cn/xiandafu/springboot2-in-practice/)，从书里解答你的问题
-* ibeetl.com社区搜索你的问题
-* 提供付费商业技术支持，一年仅需要99员，微信扫描
-![design](doc/readme/xingqiu.jpg)
 
