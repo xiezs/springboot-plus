@@ -32,7 +32,7 @@ public class CoreFunction extends BaseEntity   {
 	private Long parentId ;
 	@Dict(type=CoreDictType.FUNCTION_TYPE)
 	@NotBlank
-	private String type ="FN0" ;
+	private String type = null;//"FN0" ;
 	
 
 	public String getAccessUrl(){

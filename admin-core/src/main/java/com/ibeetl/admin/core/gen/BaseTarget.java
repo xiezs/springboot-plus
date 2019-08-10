@@ -38,7 +38,7 @@ public abstract class BaseTarget implements Target {
 			cfg.setStatementEnd(null);
 
 			cfg.setHtmlTagSupport(false);
-			cfg.initOther();
+			cfg.build();
 			gt = new GroupTemplate(rs,cfg);
             gt.registerFunction("verifyFormat", new VerifyForamtFunction());
 			gt.registerFunction("upperFirst", new Function() {

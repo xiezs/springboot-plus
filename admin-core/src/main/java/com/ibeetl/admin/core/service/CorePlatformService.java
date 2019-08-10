@@ -260,18 +260,6 @@ public class CorePlatformService {
             return true;
         }
         String str = functionCode;
-//        do {
-//            List<SysRoleFunction> list = sysRoleFunctionDao.getRoleFunction(userId, orgId, str);
-//            boolean canAccess = !list.isEmpty();
-//            if (canAccess) {
-//                return true;
-//            }
-//            int index = str.lastIndexOf('.');
-//            if (index == -1) {
-//                break;
-//            }
-//            str = str.substring(0, index);
-//        } while (true);
         List<CoreRoleFunction> list = sysRoleFunctionDao.getRoleFunction(userId, orgId, str);
         boolean canAccess = !list.isEmpty();
         if (canAccess) {
