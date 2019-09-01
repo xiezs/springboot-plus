@@ -50,7 +50,7 @@ public  class DBIndexHelper {
     
     
     public List<CoreFile> queryByUserId(Long userId,List<FileTag> tags){
-        List<CoreFile> dbDatas = fileDao.createQuery().lambda().andEq(CoreFile::getUserId, userId).select();
+        List<CoreFile> dbDatas = fileDao.createLambdaQuery().andEq(CoreFile::getUserId, userId).select();
         return dbDatas;
     }
     
@@ -68,7 +68,5 @@ public  class DBIndexHelper {
         List<CoreFile> dbDatas = fileDao.template(template);
         return  dbDatas;
     }
-    
-   
-    
+
 }

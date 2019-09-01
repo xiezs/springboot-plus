@@ -1,5 +1,4 @@
-admin-core/target/*
-admin-console/target/*
-.*
+*/target/*
 !.gitignore
 *.iml
+.idea
