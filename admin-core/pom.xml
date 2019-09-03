@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>admin-core</artifactId>
     <packaging>jar</packaging>
-     <parent>
+    <parent>
         <groupId>com.ibeetl</groupId>
         <artifactId>admin</artifactId>
         <version>1.3.2</version>
@@ -11,109 +11,109 @@
     </parent>
     <properties>
         <maven.test.skip>true</maven.test.skip>
-		<druid.version>1.1.10</druid.version>
-		<lombok.version>1.18.2</lombok.version>
-		<disruptor.version>3.4.2</disruptor.version>
+        <druid.version>1.1.10</druid.version>
+        <lombok.version>1.18.2</lombok.version>
+        <disruptor.version>3.4.2</disruptor.version>
     </properties>
     <dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-jdbc</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-cache</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.ibeetl</groupId>
-			<artifactId>beetl-framework-starter</artifactId>
-			<version>1.2.13.RELEASE</version>
-		</dependency>
-		<!-- Log4j2 异步支持 -->
-		<dependency>
-			<groupId>com.lmax</groupId>
-			<artifactId>disruptor</artifactId>
-			<version>${disruptor.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>${lombok.version}</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid-spring-boot-starter</artifactId>
-			<version>${druid.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
-		<!-- <dependency>
-		    <groupId>com.oracle</groupId>
-		    <artifactId>ojdbc6</artifactId>
-		    <version>11.2.0</version>
-	    </dependency> -->
         <dependency>
-			<groupId>org.jxls</groupId>
-			<artifactId>jxls-reader</artifactId>
-			<version>2.0.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jxls</groupId>
-			<artifactId>jxls</artifactId>
-			<version>2.4.3</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>logback-core</artifactId>
-					<groupId>ch.qos.logback</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.jxls</groupId>
-			<artifactId>jxls-poi</artifactId>
-			<version>1.0.14</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.17</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.17</version>
-		</dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ibeetl</groupId>
+            <artifactId>beetl-framework-starter</artifactId>
+            <version>1.2.13.RELEASE</version>
+        </dependency>
+        <!-- Log4j2 异步支持 -->
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>${disruptor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>-->
+        <!-- <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0</version>
+        </dependency> -->
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-reader</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls</artifactId>
+            <version>2.4.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>logback-core</artifactId>
+                    <groupId>ch.qos.logback</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jxls</groupId>
+            <artifactId>jxls-poi</artifactId>
+            <version>1.0.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.17</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.17</version>
+        </dependency>
     </dependencies>
 </project>

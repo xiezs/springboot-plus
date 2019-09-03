@@ -2,12 +2,30 @@ module.exports = {
   root: true,
 
   env: {
-    node: true
+    browser: true,
+    node: true,
+    es6: true
   },
 
-  extends: ['plugin:vue/essential', '@vue/prettier'],
-// 各种eslint检查的规则
+  extends: [
+    'plugin:vue/essential',
+    'plugin:prettier/recommended',
+    'eslint:recommended'
+  ],
+  plugins: ['vue'],
+  // 各种eslint检查的规则
   rules: {
+    'prettier/prettier': [
+      'off',
+      {
+        singleQuote: true,
+        trailingComma: 'none',
+        bracketSpacing: true,
+        jsxBracketSameLine: true,
+        parser: 'flow',
+        semi: false
+      }
+    ],
     'no-console': 'off',
     'no-debugger': 'off',
     'no-unused-vars': 'off',
@@ -20,7 +38,50 @@ module.exports = {
         allowTemplateLiterals: true
       }
     ],
-    'jsx-quotes': [2, 'prefer-single']
+    'jsx-quotes': [2, 'prefer-single'],
+    // 缩进为2个空格
+    'vue/html-indent': [
+      'error',
+      2,
+      {
+        attribute: 1,
+        alignAttributesVertically: true,
+        ignores: []
+      }
+    ],
+    'vue/max-attributes-per-line': [
+      2,
+      {
+        singleline: 10,
+        multiline: {
+          max: 1,
+          allowFirstLine: false
+        }
+      }
+    ],
+    'vue/html-self-closing': 'off',
+    'vue/name-property-casing': ['error', 'PascalCase'],
+    // allow async-await
+    'generator-star-spacing': 'off',
+    // allow debugger during development
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    // 关闭检测函数名称和调用它的左括号之间的空格
+    // 'func-call-spacing': 'off',
+    // 缩进为2个空格
+    indent: ['error', 2],
+    // 关闭检测未使用的变量
+    'no-unused-vars': 'off',
+    // 对象展开时总是要添加逗号，一行时行末不需要逗号
+    // 'comma-dangle': ['error', 'always-multiline'],
+    // 关闭禁用无效标签
+    'no-tabs': 'off',
+    // 关闭空行检测
+    'no-multiple-empty-lines': 'off',
+    // 关闭模板字符串检测
+    'no-template-curly-in-string': 'off',
+    'no-console': 'off',
+    // 禁止添加分号
+    semi: ['error', 'never']
   },
 
   parserOptions: {
@@ -37,4 +98,4 @@ module.exports = {
   ],
 
   extends: ['plugin:vue/essential', '@vue/prettier']
-};
+}

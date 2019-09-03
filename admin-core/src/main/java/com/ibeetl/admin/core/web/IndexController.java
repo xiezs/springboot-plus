@@ -40,7 +40,7 @@ public class IndexController {
 
 	
 
-	@PostMapping("/login.do")
+	@PostMapping("/user/login")
 	public ModelAndView login(String code, String password) {
 		UserLoginInfo info = userService.login(code, password);
 		if (info == null) {

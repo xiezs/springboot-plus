@@ -64,8 +64,8 @@ public class CustomErrorController  extends AbstractErrorController {
 
 
 		//后台打印日志信息方方便查错
-		log.info(status+":"+message+filedErrors, cause);
-		log.info("requestPath"+":"+requestPath);
+		log.error(status+":"+message+filedErrors, cause);
+		log.error("requestPath"+":"+requestPath);
 		
 		
 		response.setStatus(status);
