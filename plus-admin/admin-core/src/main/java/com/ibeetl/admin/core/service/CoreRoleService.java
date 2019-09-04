@@ -13,26 +13,20 @@ import com.ibeetl.admin.core.entity.CoreRole;
 
 /**
  * 描述: 字典 service，包含常规字典和级联字典的操作。
+ *
  * @author : xiandafu
  */
 @Service
 @Transactional
 public class CoreRoleService extends CoreBaseService<CoreRole> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CoreRoleService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CoreRoleService.class);
 
-    @Autowired
-    private CoreRoleDao roleDao;
-    
-    
-    public List<CoreRole> getAllRoles(String type){
-    	CoreRole template = new CoreRole();
-    	template.setType(type);
-    	return roleDao.template(template);
-    }
-   
+  @Autowired private CoreRoleDao roleDao;
 
-    
-    
-  
+  public List<CoreRole> getAllRoles(String type) {
+    CoreRole template = new CoreRole();
+    template.setType(type);
+    return roleDao.template(template);
+  }
 }

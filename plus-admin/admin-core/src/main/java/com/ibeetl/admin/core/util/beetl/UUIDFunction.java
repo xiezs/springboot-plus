@@ -7,9 +7,8 @@ import com.ibeetl.admin.core.util.UUIDUtil;
 
 public class UUIDFunction implements Function {
 
-    @Override
-    public String call(Object[] arg0, Context arg1) {
-        return UUIDUtil.uuid();
-    }
-
+  @Override
+  public String call(Object[] arg0, Context arg1) {
+    return UUIDUtil.uuid();
+  }
 }

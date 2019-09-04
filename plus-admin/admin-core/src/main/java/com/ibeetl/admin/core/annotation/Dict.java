@@ -9,7 +9,6 @@ import com.ibeetl.admin.core.util.enums.CoreDictType;
 
 /**
  * 描述: 用来标注词典字段
- * 
  *
  * @author : lijiazhi
  */
@@ -17,24 +16,24 @@ import com.ibeetl.admin.core.util.enums.CoreDictType;
 @Target(ElementType.FIELD)
 public @interface Dict {
 
-    /**
-     * 类型
-     *
-     * @return
-     */
-    public String type() default "";
+  /**
+   * 类型
+   *
+   * @return
+   */
+  public String type() default "";
 
-    /**
-     * 默认值
-     *
-     * @return
-     */
-    public String defaultDisplay() default "";
+  /**
+   * 默认值
+   *
+   * @return
+   */
+  public String defaultDisplay() default "";
 
-    /**
-     * 字典文本的后缀
-     *
-     * @return
-     */
-    public String suffix() default "Text";
+  /**
+   * 字典文本的后缀
+   *
+   * @return
+   */
+  public String suffix() default "Text";
 }

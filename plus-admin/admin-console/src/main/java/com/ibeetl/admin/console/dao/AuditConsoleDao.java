@@ -9,7 +9,5 @@ import com.ibeetl.admin.core.entity.CoreAudit;
 @SqlResource("console.audit")
 public interface AuditConsoleDao extends BaseMapper<CoreAudit> {
 
-    PageQuery<CoreAudit> queryByCondtion(PageQuery<CoreAudit> query);
-
+  PageQuery<CoreAudit> queryByCondtion(PageQuery<CoreAudit> query);
 }
-

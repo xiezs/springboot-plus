@@ -15,15 +15,14 @@ import com.ibeetl.admin.core.file.FileService;
 @Component
 public class FileFunction implements Function {
 
-    @Autowired
-    FileService fileService;
-    @Override
-    public List<FileItem> call(Object[] paras, Context arg1) {
-        String attachmentId = (String)paras[0];
-        if(StringUtils.isEmpty(attachmentId)) {
-            return Collections.EMPTY_LIST;
-        }
-        return  fileService.queryByBatchId(attachmentId);
-    }
+  @Autowired FileService fileService;
 
+  @Override
+  public List<FileItem> call(Object[] paras, Context arg1) {
+    String attachmentId = (String) paras[0];
+    if (StringUtils.isEmpty(attachmentId)) {
+      return Collections.EMPTY_LIST;
+    }
+    return fileService.queryByBatchId(attachmentId);
+  }
 }

@@ -3,38 +3,38 @@ package com.ibeetl.admin.console.web.query;
 import com.ibeetl.admin.core.annotation.Query;
 import com.ibeetl.admin.core.web.query.PageParam;
 
-/**
- */
+/** */
 public class UserRoleQuery extends PageParam {
 
-   
-	@Query(name="角色",display=true,type=Query.TYPE_CONTROL,control="role")
-    private Long roleId;
-    @Query(name="部门",display=true,type=Query.TYPE_CONTROL,control="org")
-    private Long orgId;
+  @Query(name = "角色", display = true, type = Query.TYPE_CONTROL, control = "role")
+  private Long roleId;
 
-    private Long userId;
-    public Long getUserId() {
-        return userId;
-    }
+  @Query(name = "部门", display = true, type = Query.TYPE_CONTROL, control = "org")
+  private Long orgId;
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+  private Long userId;
 
-    public Long getRoleId() {
-        return roleId;
-    }
+  public Long getUserId() {
+    return userId;
+  }
 
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
-    }
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
 
-    public Long getOrgId() {
-        return orgId;
-    }
+  public Long getRoleId() {
+    return roleId;
+  }
 
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
-    }
+  public void setRoleId(Long roleId) {
+    this.roleId = roleId;
+  }
+
+  public Long getOrgId() {
+    return orgId;
+  }
+
+  public void setOrgId(Long orgId) {
+    this.orgId = orgId;
+  }
 }

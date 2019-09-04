@@ -1,6 +1,5 @@
 package com.ibeetl.admin.console.web;
 
-
 import java.util.List;
 import java.util.Map;
 
@@ -25,59 +24,52 @@ import com.ibeetl.admin.core.util.AnnotationUtil;
 import com.ibeetl.admin.core.web.JsonResult;
 /**
  * 用户管理接口
- * @author xiandafu
  *
+ * @author xiandafu
  */
 @Controller
 public class AuditConsoleController {
-	private  final Log log  = LogFactory.getLog(this.getClass());
-    private static final String MODEL = "/admin/audit";
+  private final Log log = LogFactory.getLog(this.getClass());
+  private static final String MODEL = "/admin/audit";
 
-    @Autowired
-    AuditConsoleService auditConsoleService;
-    
-  
-   /*页面*/
-    
-    @GetMapping(MODEL + "/index.do")
-    @Function("trace")
-    public ModelAndView index() {
-		ModelAndView view = new ModelAndView("/admin/audit/index.html");
-		view.addObject("search", AuditQuery.class.getName());
-        return view;
-    }
-    
-    
-    /*Json*/
+  @Autowired AuditConsoleService auditConsoleService;
 
-    @PostMapping(MODEL + "/view.json")
-    @ResponseBody
-    @Function("trace")
-    public JsonResult<CoreAudit> view(Long id) {
-    		CoreAudit audit = auditConsoleService.queryById(id);
-        return JsonResult.success(audit);
-    }
-    
-    
+  /*页面*/
 
-    @RequestMapping(MODEL + "/list.json")
-    @Function("trace")
-    @ResponseBody
-    public JsonResult<PageQuery<CoreAudit>> list(AuditQuery condtion) {
-       
-        PageQuery<CoreAudit> page = condtion.getPageQuery();
-        auditConsoleService.queryByCondtion(page);
-        return JsonResult.success(page);
-    }
-    
-    
-    @PostMapping(MODEL + "/list/condition.json")
-    @Function("trace")
-    @ResponseBody
-    public JsonResult<List<Map<String, Object>>> listCondtion() {
-    		List<Map<String, Object>> list = AnnotationUtil.getInstance().getAnnotations(Query.class, AuditQuery.class);
-    		return  JsonResult.success(list);
-    }
+  @GetMapping(MODEL + "/index.do")
+  @Function("trace")
+  public ModelAndView index() {
+    ModelAndView view = new ModelAndView("/admin/audit/index.html");
+    view.addObject("search", AuditQuery.class.getName());
+    return view;
+  }
 
+  /*Json*/
 
+  @PostMapping(MODEL + "/view.json")
+  @ResponseBody
+  @Function("trace")
+  public JsonResult<CoreAudit> view(Long id) {
+    CoreAudit audit = auditConsoleService.queryById(id);
+    return JsonResult.success(audit);
+  }
+
+  @RequestMapping(MODEL + "/list.json")
+  @Function("trace")
+  @ResponseBody
+  public JsonResult<PageQuery<CoreAudit>> list(AuditQuery condtion) {
+
+    PageQuery<CoreAudit> page = condtion.getPageQuery();
+    auditConsoleService.queryByCondtion(page);
+    return JsonResult.success(page);
+  }
+
+  @PostMapping(MODEL + "/list/condition.json")
+  @Function("trace")
+  @ResponseBody
+  public JsonResult<List<Map<String, Object>>> listCondtion() {
+    List<Map<String, Object>> list =
+        AnnotationUtil.getInstance().getAnnotations(Query.class, AuditQuery.class);
+    return JsonResult.success(list);
+  }
 }

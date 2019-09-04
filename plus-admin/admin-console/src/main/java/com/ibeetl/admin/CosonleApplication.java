@@ -10,14 +10,13 @@ import org.springframework.cache.annotation.EnableCaching;
 @EnableCaching
 public class CosonleApplication extends SpringBootServletInitializer {
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(CosonleApplication.class);
-    }
+  @Override
+  protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    return application.sources(CosonleApplication.class);
+  }
 
-    public static void main(String[] args) {
+  public static void main(String[] args) {
 
-        SpringApplication.run(CosonleApplication.class, args);
-    }
-
+    SpringApplication.run(CosonleApplication.class, args);
+  }
 }

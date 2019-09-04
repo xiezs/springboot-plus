@@ -4,43 +4,37 @@ import com.ibeetl.admin.core.annotation.Query;
 import com.ibeetl.admin.core.util.enums.CoreDictType;
 import com.ibeetl.admin.core.web.query.PageParam;
 
-/**
- * 描述:  角色李的用户列表
- */
+/** 描述: 角色李的用户列表 */
 public class RoleUserQuery extends PageParam {
-    @Query(name = "编码", display = true)
-    private String userCode;
-    @Query(name = "名称", display = true)
-    private String userName;
-   
-    private Long roleId;
+  @Query(name = "编码", display = true)
+  private String userCode;
 
-	public String getUserCode() {
-		return userCode;
-	}
+  @Query(name = "名称", display = true)
+  private String userName;
 
-	public void setUserCode(String userCode) {
-		this.userCode = userCode;
-	}
+  private Long roleId;
 
-	public String getUserName() {
-		return userName;
-	}
+  public String getUserCode() {
+    return userCode;
+  }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+  public void setUserCode(String userCode) {
+    this.userCode = userCode;
+  }
 
-	public Long getRoleId() {
-		return roleId;
-	}
+  public String getUserName() {
+    return userName;
+  }
 
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 
+  public Long getRoleId() {
+    return roleId;
+  }
 
-  
-
-
+  public void setRoleId(Long roleId) {
+    this.roleId = roleId;
+  }
 }

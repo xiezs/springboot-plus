@@ -33,149 +33,143 @@ import com.ibeetl.admin.core.web.JsonResult;
 
 /**
  * 描述: 组织机构 controller
+ *
  * @author : xiandafu
  */
 @Controller
 public class OrgConsoleController {
-    private final Log log = LogFactory.getLog(this.getClass());
-    private static final String MODEL = "/admin/org";
+  private final Log log = LogFactory.getLog(this.getClass());
+  private static final String MODEL = "/admin/org";
 
-    @Autowired
-    private OrgConsoleService orgConsoleService;
-    
-    @Autowired
-    UserConsoleService userConsoleService;
+  @Autowired private OrgConsoleService orgConsoleService;
 
-    @Autowired
-    CorePlatformService platformService;
-    
-    
-    
-    /*页面*/
-    
-    @GetMapping(MODEL + "/index.do")
-    @Function("org.query")
-    public ModelAndView index() {
-		ModelAndView view = new ModelAndView("/admin/org/index.html");
-		view.addObject("search", OrgQuery.class.getName());
-        return view;
-    }
-    
-    @GetMapping(MODEL + "/edit.do")
-    @Function("org.edit")
-    public ModelAndView edit(String id) {
-    	ModelAndView view = new ModelAndView("/admin/org/edit.html");
-        CoreOrg org = orgConsoleService.queryById(id);
-        view.addObject("org", org);
-        return view;
-    }
-    
-    
-    @GetMapping(MODEL + "/user/list.do")
-    @Function("org.query")
-    public ModelAndView  getUsers(Long orgId) {
-    	ModelAndView view = new ModelAndView("/admin/org/orgUser.html");
-        CoreOrg org = orgConsoleService.queryById(orgId);
-        view.addObject("org", org);
-        view.addObject("search",OrgUserQuery.class.getName());
-        return view;
-    }
-    
-    /**
-     * 组织机构列表  分页
-     * @param condtion 查询条件
-     * @return
-     */
-    @PostMapping(MODEL + "/list.json")
-    @Function("org.query")
-    @ResponseBody
-    public JsonResult<PageQuery<CoreOrg>> list(OrgQuery condtion) {
-        PageQuery page = condtion.getPageQuery();
-        orgConsoleService.queryByCondtion(page);
-        return JsonResult.success(page);
-    }
+  @Autowired UserConsoleService userConsoleService;
 
-    /**
-     * 获取列表查询条件
-     * @return
-     */
-    @PostMapping(MODEL + "/list/condition.json")
-    @Function("org.query")
-    @ResponseBody
-    public JsonResult<List<Map<String, Object>>> listCondtion() {
-        List<Map<String, Object>> list = AnnotationUtil.getInstance().getAnnotations(Query.class, OrgQuery.class);
-        return JsonResult.success(list);
-    }
+  @Autowired CorePlatformService platformService;
 
-    /**
-     * 保存数据
-     * @param org
-     * @return
-     */
-    @PostMapping(MODEL + "/save.json")
-    @Function("org.save")
-    @ResponseBody
-    public JsonResult<Long> save(@Validated(ValidateConfig.ADD.class) CoreOrg org, BindingResult result) {
-        if (result.hasErrors()) {
-        		return JsonResult.failMessage(result.toString());
-           
-        }
+  /*页面*/
 
-        org.setCreateTime(new Date());
-        orgConsoleService.save(org);
-        platformService.clearOrgCache();
-        return JsonResult.success(org.getId());
+  @GetMapping(MODEL + "/index.do")
+  @Function("org.query")
+  public ModelAndView index() {
+    ModelAndView view = new ModelAndView("/admin/org/index.html");
+    view.addObject("search", OrgQuery.class.getName());
+    return view;
+  }
+
+  @GetMapping(MODEL + "/edit.do")
+  @Function("org.edit")
+  public ModelAndView edit(String id) {
+    ModelAndView view = new ModelAndView("/admin/org/edit.html");
+    CoreOrg org = orgConsoleService.queryById(id);
+    view.addObject("org", org);
+    return view;
+  }
+
+  @GetMapping(MODEL + "/user/list.do")
+  @Function("org.query")
+  public ModelAndView getUsers(Long orgId) {
+    ModelAndView view = new ModelAndView("/admin/org/orgUser.html");
+    CoreOrg org = orgConsoleService.queryById(orgId);
+    view.addObject("org", org);
+    view.addObject("search", OrgUserQuery.class.getName());
+    return view;
+  }
+
+  /**
+   * 组织机构列表 分页
+   *
+   * @param condtion 查询条件
+   * @return
+   */
+  @PostMapping(MODEL + "/list.json")
+  @Function("org.query")
+  @ResponseBody
+  public JsonResult<PageQuery<CoreOrg>> list(OrgQuery condtion) {
+    PageQuery page = condtion.getPageQuery();
+    orgConsoleService.queryByCondtion(page);
+    return JsonResult.success(page);
+  }
+
+  /**
+   * 获取列表查询条件
+   *
+   * @return
+   */
+  @PostMapping(MODEL + "/list/condition.json")
+  @Function("org.query")
+  @ResponseBody
+  public JsonResult<List<Map<String, Object>>> listCondtion() {
+    List<Map<String, Object>> list =
+        AnnotationUtil.getInstance().getAnnotations(Query.class, OrgQuery.class);
+    return JsonResult.success(list);
+  }
+
+  /**
+   * 保存数据
+   *
+   * @param org
+   * @return
+   */
+  @PostMapping(MODEL + "/save.json")
+  @Function("org.save")
+  @ResponseBody
+  public JsonResult<Long> save(
+      @Validated(ValidateConfig.ADD.class) CoreOrg org, BindingResult result) {
+    if (result.hasErrors()) {
+      return JsonResult.failMessage(result.toString());
     }
 
+    org.setCreateTime(new Date());
+    orgConsoleService.save(org);
+    platformService.clearOrgCache();
+    return JsonResult.success(org.getId());
+  }
 
-    /**
-     * 更新数据
-     * @param org
-     * @return
-     */
-    @PostMapping(MODEL + "/update.json")
-    @Function("org.update")
-    @ResponseBody
-    public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class) CoreOrg org) {
-        boolean success = orgConsoleService.updateTemplate(org);
-        if (success) {
-        	platformService.clearOrgCache();
-        	return JsonResult.successMessage("保存成功");
-        } else {
-            return JsonResult.failMessage("保存失败");
-        }
+  /**
+   * 更新数据
+   *
+   * @param org
+   * @return
+   */
+  @PostMapping(MODEL + "/update.json")
+  @Function("org.update")
+  @ResponseBody
+  public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class) CoreOrg org) {
+    boolean success = orgConsoleService.updateTemplate(org);
+    if (success) {
+      platformService.clearOrgCache();
+      return JsonResult.successMessage("保存成功");
+    } else {
+      return JsonResult.failMessage("保存失败");
     }
+  }
 
-
-   
-
-
-    /**
-     * 删除组织机构
-     * @param ids 组织id，多个用“,”隔开
-     * @return
-     */
-    @PostMapping(MODEL + "/delete.json")
-    @Function("org.delete")
-    @ResponseBody
-    public JsonResult delete(String ids) {
-        if (ids.endsWith(",")) {
-            ids = StringUtils.substringBeforeLast(ids, ",");
-        }
-        List<Long> idList = ConvertUtil.str2longs(ids);
-        orgConsoleService.deleteById(idList);
-        this.platformService.clearOrgCache();
-        return new JsonResult().success();
+  /**
+   * 删除组织机构
+   *
+   * @param ids 组织id，多个用“,”隔开
+   * @return
+   */
+  @PostMapping(MODEL + "/delete.json")
+  @Function("org.delete")
+  @ResponseBody
+  public JsonResult delete(String ids) {
+    if (ids.endsWith(",")) {
+      ids = StringUtils.substringBeforeLast(ids, ",");
     }
+    List<Long> idList = ConvertUtil.str2longs(ids);
+    orgConsoleService.deleteById(idList);
+    this.platformService.clearOrgCache();
+    return new JsonResult().success();
+  }
 
-    
-    @PostMapping(MODEL + "/user/list.json")
-    @Function("org.query")
-    @ResponseBody
-    public JsonResult<PageQuery<CoreUser>> getUsers(OrgUserQuery userQuery) {
-    	 PageQuery<CoreUser> page = userQuery.getPageQuery();
-         orgConsoleService.queryUserByCondition(page);
-         return JsonResult.success(page);
-    }
-   
+  @PostMapping(MODEL + "/user/list.json")
+  @Function("org.query")
+  @ResponseBody
+  public JsonResult<PageQuery<CoreUser>> getUsers(OrgUserQuery userQuery) {
+    PageQuery<CoreUser> page = userQuery.getPageQuery();
+    orgConsoleService.queryUserByCondition(page);
+    return JsonResult.success(page);
+  }
 }

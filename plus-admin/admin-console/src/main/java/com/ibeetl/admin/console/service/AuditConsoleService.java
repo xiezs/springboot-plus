@@ -13,19 +13,15 @@ import com.ibeetl.admin.core.service.CoreBaseService;
 @Transactional
 public class AuditConsoleService extends CoreBaseService<CoreAudit> {
 
-	@Autowired
-	AuditConsoleDao auditConsoleDao;
+  @Autowired AuditConsoleDao auditConsoleDao;
 
-	/**
-	 * 根据条件查询
-	 *
-	 * @param query
-	 */
-	public void queryByCondtion(PageQuery<CoreAudit> query) {
-		PageQuery<CoreAudit> ret = auditConsoleDao.queryByCondtion(query);
-		queryListAfter(ret.getList());
-	}
-
-	
-
+  /**
+   * 根据条件查询
+   *
+   * @param query
+   */
+  public void queryByCondtion(PageQuery<CoreAudit> query) {
+    PageQuery<CoreAudit> ret = auditConsoleDao.queryByCondtion(query);
+    queryListAfter(ret.getList());
+  }
 }

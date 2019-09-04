@@ -8,11 +8,11 @@ import com.ibeetl.admin.core.util.PlatformException;
  * @author : xiandafu
  */
 public class NoResourceException extends PlatformException {
-    public NoResourceException() {
-        super();
-    }
+  public NoResourceException() {
+    super();
+  }
 
-    public NoResourceException(String message) {
-        super(message);
-    }
+  public NoResourceException(String message) {
+    super(message);
+  }
 }

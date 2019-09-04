@@ -15,33 +15,29 @@ import com.ibeetl.admin.core.rbac.tree.OrgItem;
 import com.ibeetl.admin.core.service.CorePlatformService;
 /**
  * 所有机构
- * @author lijiazhi
  *
+ * @author lijiazhi
  */
 @Component
 public class AllGroupAccess implements DataAccess {
-	
-	@Autowired
-	CorePlatformService platformService;
 
-	@Override
-	public DataAccessResullt getOrg(Long userId, Long orgId) {
-	
-		
-		DataAccessResullt ret = new DataAccessResullt();
-		ret.setStatus(AccessType.AllOrg);
-		return ret;
-		
-	}
+  @Autowired CorePlatformService platformService;
 
-	@Override
-	public String getName() {
-		return "所有机构";
-	}
+  @Override
+  public DataAccessResullt getOrg(Long userId, Long orgId) {
 
-	@Override
-	public Integer getType() {
-		return 5;
-	}
+    DataAccessResullt ret = new DataAccessResullt();
+    ret.setStatus(AccessType.AllOrg);
+    return ret;
+  }
 
+  @Override
+  public String getName() {
+    return "所有机构";
+  }
+
+  @Override
+  public Integer getType() {
+    return 5;
+  }
 }

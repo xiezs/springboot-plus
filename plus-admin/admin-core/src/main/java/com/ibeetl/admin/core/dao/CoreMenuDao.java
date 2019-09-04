@@ -13,11 +13,9 @@ import java.util.List;
 @SqlResource("core.coreMenu")
 public interface CoreMenuDao extends BaseMapper<CoreMenu> {
 
-    public void queryByCondtion(PageQuery query);
+  public void queryByCondtion(PageQuery query);
 
-    public void clearMenuFunction( List<Long> functionIds);
+  public void clearMenuFunction(List<Long> functionIds);
 
-
-    public List<CoreMenu> allMenuWithURL();
-
+  public List<CoreMenu> allMenuWithURL();
 }

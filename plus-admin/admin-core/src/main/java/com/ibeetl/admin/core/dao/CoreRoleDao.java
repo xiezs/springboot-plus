@@ -10,8 +10,4 @@ import com.ibeetl.admin.core.entity.CoreRole;
 import java.util.List;
 
 @SqlResource("core.coreRole")
-public interface CoreRoleDao extends BaseMapper<CoreRole> {
-
-
-
-}
+public interface CoreRoleDao extends BaseMapper<CoreRole> {}

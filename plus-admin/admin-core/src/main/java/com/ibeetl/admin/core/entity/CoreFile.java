@@ -11,154 +11,151 @@ import org.beetl.sql.core.TailBean;
 import java.math.*;
 import com.ibeetl.admin.core.entity.BaseEntity;
 
-/* 
-* 
-* gen by Spring Boot2 Admin 2018-03-08
-*/
+/*
+ *
+ * gen by Spring Boot2 Admin 2018-03-08
+ */
 public class CoreFile extends BaseEntity {
-    @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
-    @SeqID(name = ORACLE_FILE_SEQ_NAME)
-    @AutoID
-    private Long id;
-    // 文件名称
-    private String name;
-    // 路径
-    private String path;
-    // 业务ID
-    private String bizId;
-    // 上传人id
-    private Long userId;
-    // 创建时间
-    private Date createTime;
-    private Long orgId;
-    private String bizType;
-    
-    private String fileBatchId;
+  @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
+  @SeqID(name = ORACLE_FILE_SEQ_NAME)
+  @AutoID
+  private Long id;
+  // 文件名称
+  private String name;
+  // 路径
+  private String path;
+  // 业务ID
+  private String bizId;
+  // 上传人id
+  private Long userId;
+  // 创建时间
+  private Date createTime;
+  private Long orgId;
+  private String bizType;
 
-    public CoreFile() {
-    }
+  private String fileBatchId;
 
-    public Long getId() {
-        return id;
-    }
+  public CoreFile() {}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    /**
-     * 文件名称
-     * 
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    /**
-     * 文件名称
-     * 
-     * @param name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+  /**
+   * 文件名称
+   *
+   * @return
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * 路径
-     * 
-     * @return
-     */
-    public String getPath() {
-        return path;
-    }
+  /**
+   * 文件名称
+   *
+   * @param name
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * 路径
-     * 
-     * @param path
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
+  /**
+   * 路径
+   *
+   * @return
+   */
+  public String getPath() {
+    return path;
+  }
 
-    /**
-     * 业务ID
-     * 
-     * @return
-     */
-    public String getBizId() {
-        return bizId;
-    }
+  /**
+   * 路径
+   *
+   * @param path
+   */
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-    /**
-     * 业务ID
-     * 
-     * @param bizId
-     */
-    public void setBizId(String bizId) {
-        this.bizId = bizId;
-    }
+  /**
+   * 业务ID
+   *
+   * @return
+   */
+  public String getBizId() {
+    return bizId;
+  }
 
-    /**
-     * 上传人id
-     * 
-     * @return
-     */
-    public Long getUserId() {
-        return userId;
-    }
+  /**
+   * 业务ID
+   *
+   * @param bizId
+   */
+  public void setBizId(String bizId) {
+    this.bizId = bizId;
+  }
 
-    /**
-     * 上传人id
-     * 
-     * @param userId
-     */
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+  /**
+   * 上传人id
+   *
+   * @return
+   */
+  public Long getUserId() {
+    return userId;
+  }
 
-    /**
-     * 创建时间
-     * 
-     * @return
-     */
-    public Date getCreateTime() {
-        return createTime;
-    }
+  /**
+   * 上传人id
+   *
+   * @param userId
+   */
+  public void setUserId(Long userId) {
+    this.userId = userId;
+  }
 
-    /**
-     * 创建时间
-     * 
-     * @param createTime
-     */
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+  /**
+   * 创建时间
+   *
+   * @return
+   */
+  public Date getCreateTime() {
+    return createTime;
+  }
 
-    public Long getOrgId() {
-        return orgId;
-    }
+  /**
+   * 创建时间
+   *
+   * @param createTime
+   */
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
 
-    public void setOrgId(Long orgId) {
-        this.orgId = orgId;
-    }
+  public Long getOrgId() {
+    return orgId;
+  }
 
-    public String getBizType() {
-        return bizType;
-    }
+  public void setOrgId(Long orgId) {
+    this.orgId = orgId;
+  }
 
-    public void setBizType(String bizType) {
-        this.bizType = bizType;
-    }
+  public String getBizType() {
+    return bizType;
+  }
 
-    public String getFileBatchId() {
-        return fileBatchId;
-    }
+  public void setBizType(String bizType) {
+    this.bizType = bizType;
+  }
 
-    public void setFileBatchId(String fileBatchId) {
-        this.fileBatchId = fileBatchId;
-    }
-    
-    
+  public String getFileBatchId() {
+    return fileBatchId;
+  }
+
+  public void setFileBatchId(String fileBatchId) {
+    this.fileBatchId = fileBatchId;
+  }
 }

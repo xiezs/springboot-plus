@@ -12,12 +12,9 @@ import com.ibeetl.admin.core.entity.CoreRoleFunction;
 @SqlResource("console.roleFunction")
 public interface RoleFunctionConsoleDao extends BaseMapper<CoreRoleFunction> {
 
+  void deleteRoleFunction(List<Long> ids);
 
-    void deleteRoleFunction(List<Long> ids);
+  List<Long> getFunctionIdByRole(Long roleId);
 
-    List<Long> getFunctionIdByRole(Long roleId);
-
-    List<RoleDataAccessFunction> getQueryFunctionAndRoleData(Long roleId);
-
-
+  List<RoleDataAccessFunction> getQueryFunctionAndRoleData(Long roleId);
 }

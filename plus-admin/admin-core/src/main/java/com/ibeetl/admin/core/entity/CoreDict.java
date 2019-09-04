@@ -15,132 +15,122 @@ import com.ibeetl.admin.core.util.ValidateConfig;
 
 /**
  * 描述: 字典
+ *
  * @author : xiandafu
  */
 public class CoreDict extends BaseEntity {
 
-	@NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
-	@SeqID(name = ORACLE_CORE_SEQ_NAME)
-	@AutoID
-	private Long id;
-	
-    private String value;   // 数据值
-    //删除标识
-    @JsonIgnore
-    protected Integer delFlag = 0;
-    //创建时间
-    protected Date createTime;
-    @NotBlank(message = "字典类型不能为空", groups = ValidateConfig.ADD.class)
-    @JsonView(TypeListView.class)
-    private String type;    //类型
-    @JsonView(TypeListView.class)
-    @NotBlank(message = "字典类型描述不能为空")
-    private String typeName; //类型描述
-    @NotBlank(message = "字典值不能为空", groups = ValidateConfig.ADD.class)
-    
-    @NotBlank(message = "字典值名称不能为空")
-    private String name;    // 标签名
-    private Integer sort;    // 排序
-    private Long parent;  //父Id
-    private String remark;  //备注
+  @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
+  @SeqID(name = ORACLE_CORE_SEQ_NAME)
+  @AutoID
+  private Long id;
 
-    
+  private String value; // 数据值
+  // 删除标识
+  @JsonIgnore protected Integer delFlag = 0;
+  // 创建时间
+  protected Date createTime;
 
-    public Long getId() {
-		return id;
-	}
+  @NotBlank(message = "字典类型不能为空", groups = ValidateConfig.ADD.class)
+  @JsonView(TypeListView.class)
+  private String type; // 类型
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  @JsonView(TypeListView.class)
+  @NotBlank(message = "字典类型描述不能为空")
+  private String typeName; // 类型描述
 
-	public String getType() {
-        return type;
-    }
+  @NotBlank(message = "字典值不能为空", groups = ValidateConfig.ADD.class)
+  @NotBlank(message = "字典值名称不能为空")
+  private String name; // 标签名
 
-    public void setType(String type) {
-        this.type = type;
-    }
+  private Integer sort; // 排序
+  private Long parent; // 父Id
+  private String remark; // 备注
 
-    public String getTypeName() {
-        return typeName;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public String getType() {
+    return type;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public void setType(String type) {
+    this.type = type;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getTypeName() {
+    return typeName;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void setTypeName(String typeName) {
+    this.typeName = typeName;
+  }
 
-    public Integer getSort() {
-        return sort;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public void setSort(Integer sort) {
-        this.sort = sort;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-    public Long getParent() {
-        return parent;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public void setParent(Long parent) {
-        this.parent = parent;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public String getRemark() {
-        return remark;
-    }
+  public Integer getSort() {
+    return sort;
+  }
 
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
+  public void setSort(Integer sort) {
+    this.sort = sort;
+  }
 
+  public Long getParent() {
+    return parent;
+  }
 
+  public void setParent(Long parent) {
+    this.parent = parent;
+  }
 
-    public Integer getDelFlag() {
-        return delFlag;
-    }
+  public String getRemark() {
+    return remark;
+  }
 
-    public void setDelFlag(Integer delFlag) {
-        this.delFlag = delFlag;
-    }
+  public void setRemark(String remark) {
+    this.remark = remark;
+  }
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+  public Integer getDelFlag() {
+    return delFlag;
+  }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+  public void setDelFlag(Integer delFlag) {
+    this.delFlag = delFlag;
+  }
 
+  public Date getCreateTime() {
+    return createTime;
+  }
 
-    public interface TypeListView{
-    }
+  public void setCreateTime(Date createTime) {
+    this.createTime = createTime;
+  }
 
+  public interface TypeListView {}
 
-    @Override
-    public String toString() {
-        return "CoreDict [value=" + value + ", type=" + type + ", name=" + name + "]";
-    }
-
-
-    
-
-    
-    
+  @Override
+  public String toString() {
+    return "CoreDict [value=" + value + ", type=" + type + ", name=" + name + "]";
+  }
 }

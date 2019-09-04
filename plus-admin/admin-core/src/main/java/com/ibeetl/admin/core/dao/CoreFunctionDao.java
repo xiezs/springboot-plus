@@ -9,6 +9,6 @@ import com.ibeetl.admin.core.entity.CoreFunction;
 
 @SqlResource("core.coreFunction")
 public interface CoreFunctionDao extends BaseMapper<CoreFunction> {
-    @Sql("select * from core_function where code = ?")
-    CoreFunction getFunctionByCode(@Param(value = "code") String code);
+  @Sql("select * from core_function where code = ?")
+  CoreFunction getFunctionByCode(@Param(value = "code") String code);
 }
