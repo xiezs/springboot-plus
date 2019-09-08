@@ -30,6 +30,7 @@ module.exports = {
     'no-debugger': 'off',
     'no-unused-vars': 'off',
     'vue/no-unused-vars': 'off',
+    'no-useless-escape': 'off',
     quotes: [
       2,
       'single',

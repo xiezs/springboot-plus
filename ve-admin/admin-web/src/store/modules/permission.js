@@ -1,6 +1,6 @@
 import { constantRoutes } from '@/router'
 import { getRoutes } from '@/api/role'
-import { asyncRoutesMap } from '@/router/route_map'
+import { asyncRoutesMap } from '@/router/maps/index'
 import { deepClone, objectMerge } from '@/utils/index'
 
 /**
@@ -30,11 +30,11 @@ export function filterAsyncRoutes(routesMap, routes, roles) {
     let tempRoute = { ...route }
     let tempRouteMap
     for (let rm of routesMap) {
-      if (!rm.name || !route.name | !rm.path | !route.path) {
-        console.error(`检查路由表中 ${rm.name} 信息`)
+      if ( !rm.path || !route.path) {
+        console.error(`检查路由表中 ${rm.name} 的path信息，path必须在同级唯一`)
         continue
       }
-      if (rm.name === route.name) {
+      if (rm.path === route.path) {
         tempRouteMap = { ...rm }
         break
       }

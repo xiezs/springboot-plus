@@ -3,7 +3,7 @@ package com.ibeetl.admin.core.util;
 import javax.servlet.http.HttpSession;
 
 /**
- * 用户Controller对应的功能 {@link MVCConf}
+ * 用户Controller对应的功能 {@link com.ibeetl.admin.core.conf.MVCConf}
  *
  * @author lijiazhi
  */
