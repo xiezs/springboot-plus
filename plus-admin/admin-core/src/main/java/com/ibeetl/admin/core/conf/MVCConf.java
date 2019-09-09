@@ -1,15 +1,21 @@
 package com.ibeetl.admin.core.conf;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.http.Header;
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.service.CoreUserService;
+import com.ibeetl.admin.core.util.ConvertUtil;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
+import com.ibeetl.admin.core.util.JoseJwtUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -97,19 +104,26 @@ class SessionInterceptor implements HandlerInterceptor {
   }
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws Exception {
-    if (conf.useId != null
-        && conf.orgId != null
-        && request.getSession().getAttribute(CorePlatformService.ACCESS_CURRENT_USER) == null) {
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
+    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+    Map<String, Object> payload = JoseJwtUtil.parsePayload(token);
+    if (payload.isEmpty()) {
+      /*验证失败，无效jwt*/
+      return false;
+    }
+    Long uid = Convert.toLong(payload.get("uid"), -9999999999L);
+    HttpSession requestSession = request.getSession(true);
+    if (requestSession.getAttribute(CorePlatformService.ACCESS_CURRENT_USER) == null) {
       // 模拟用户登录，用于快速开发,未来用rember么代替？
-      CoreUser user = conf.userService.getUserById(conf.useId);
-      CoreOrg org = conf.userService.getOrgById(conf.orgId);
-      List<CoreOrg> orgs = conf.userService.getUserOrg(conf.useId, org.getId());
-      request.getSession().setAttribute(CorePlatformService.ACCESS_CURRENT_USER, user);
-      request.getSession().setAttribute(CorePlatformService.ACCESS_CURRENT_ORG, org);
-      request.getSession().setAttribute(CorePlatformService.ACCESS_USER_ORGS, orgs);
-      request.getSession().setAttribute("ip", request.getRemoteHost());
+      CoreUser user = conf.userService.getUserById(uid);
+      Long orgId = user.getOrgId();
+      CoreOrg org = conf.userService.getOrgById(orgId);
+      List<CoreOrg> orgs = conf.userService.getUserOrg(uid, org.getId());
+      requestSession.setAttribute(CorePlatformService.ACCESS_CURRENT_USER, user);
+      requestSession.setAttribute(CorePlatformService.ACCESS_CURRENT_ORG, org);
+      requestSession.setAttribute(CorePlatformService.ACCESS_USER_ORGS, orgs);
+      requestSession.setAttribute("ip", httpRequestLocal.getRequestIP());
     }
     httpRequestLocal.set(request);
     return true;
