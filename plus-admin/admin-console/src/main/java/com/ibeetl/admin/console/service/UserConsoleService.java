@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +33,7 @@ import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
 @Transactional
 public class UserConsoleService extends CoreBaseService<CoreUser> {
 
-  @Autowired UserConsoleDao userDao;
+  @Autowired UserConsoleDao userConsoleDao;
 
   @Autowired FileService fileService;
 
@@ -48,7 +47,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
    * @param query
    */
   public void queryByCondtion(PageQuery<CoreUser> query) {
-    PageQuery<CoreUser> ret = userDao.queryByCondtion(query);
+    PageQuery<CoreUser> ret = userConsoleDao.queryByCondtion(query);
     queryListAfter(ret.getList());
   }
 
@@ -60,7 +59,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
   public void saveUser(CoreUser user) {
     CoreUser query = new CoreUser();
     query.setCode(user.getCode());
-    CoreUser dbUser = userDao.templateOne(query);
+    CoreUser dbUser = userConsoleDao.templateOne(query);
     if (dbUser != null) {
       throw new PlatformException("保存用户信息失败,用户已经存在");
     }
@@ -68,11 +67,11 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
     user.setState(GeneralStateEnum.ENABLE.getValue());
     user.setPassword(passwordEncryptService.password(user.getPassword()));
     user.setDelFlag(DelFlagEnum.NORMAL.getValue());
-    userDao.insert(user, true);
+    userConsoleDao.insert(user, true);
     if (StringUtils.isNotEmpty(user.getAttachmentId())) {
       // 更新附件详细信息,关联到这个用户
       fileService.updateFile(
-          user.getAttachmentId(), User.class.getSimpleName(), String.valueOf(user.getId()));
+          user.getAttachmentId(), user.getName(), String.valueOf(user.getId()));
     }
   }
 
@@ -82,7 +81,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
    * @param userId
    */
   public CoreUser queryUserById(Long userId) {
-    return userDao.unique(userId);
+    return userConsoleDao.unique(userId);
   }
 
   /**
@@ -92,7 +91,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
    * @return
    */
   public int updateSysUser(CoreUser user) {
-    return userDao.updateTemplateById(user);
+    return userConsoleDao.updateTemplateById(user);
   }
 
   /**
@@ -111,7 +110,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
     user = new CoreUser();
     user.setId(userId);
     user.setDelFlag(DelFlagEnum.DELETED.getValue());
-    userDao.updateTemplateById(user);
+    userConsoleDao.updateTemplateById(user);
   }
 
   /**
@@ -122,7 +121,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
    */
   public void batchDelSysUser(List<Long> userIds) {
     try {
-      userDao.batchDelUserByIds(userIds);
+      userConsoleDao.batchDelUserByIds(userIds);
     } catch (Exception e) {
       throw new PlatformException("批量删除用户失败", e);
     }
@@ -135,13 +134,13 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
    * @param userIds 用户id
    */
   public void batchUpdateUserState(List<Long> userIds, GeneralStateEnum stateEnum) {
-    userDao.batchUpdateUserState(userIds, stateEnum);
+    userConsoleDao.batchUpdateUserState(userIds, stateEnum);
   }
 
   /**
    * 重置用户密码
    *
-   * @param uId
+   * @param id
    * @param password
    */
   public int resetPassword(Long id, String password) {
@@ -149,11 +148,11 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
     user.setId(id);
     user.setPassword(passwordEncryptService.password(password));
     user.setUpdateTime(new Date());
-    return userDao.updateTemplateById(user);
+    return userConsoleDao.updateTemplateById(user);
   }
 
   public List<CoreUserRole> getUserRoles(UserRoleQuery roleQuery) {
-    return userDao.queryUserRole(
+    return userConsoleDao.queryUserRole(
         roleQuery.getUserId(), roleQuery.getOrgId(), roleQuery.getRoleId());
   }
 
@@ -175,7 +174,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
   }
 
   public List<UserExcelExportData> queryExcel(PageQuery<CoreUser> query) {
-    PageQuery<CoreUser> ret = userDao.queryByCondtion(query);
+    PageQuery<CoreUser> ret = userConsoleDao.queryByCondtion(query);
     List<CoreUser> list = ret.getList();
     OrgItem orgRoot = platformService.buildOrg();
     List<UserExcelExportData> items = new ArrayList<>();

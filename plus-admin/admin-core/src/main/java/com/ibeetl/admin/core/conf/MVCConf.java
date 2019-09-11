@@ -1,15 +1,14 @@
 package com.ibeetl.admin.core.conf;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.TypeUtil;
-import cn.hutool.core.util.URLUtil;
 import cn.hutool.json.JSON;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ibeetl.admin.core.annotation.RequestBodyPlus;
 import com.ibeetl.admin.core.entity.CoreOrg;
@@ -19,24 +18,18 @@ import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
 import com.ibeetl.admin.core.util.JoseJwtUtil;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import jdk.nashorn.internal.ir.ReturnNode;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Conventions;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
@@ -44,16 +37,9 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.Assert;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.accept.ContentNegotiationManager;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -65,7 +51,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-import sun.plugin2.util.ColorUtil;
 
 @Configuration
 public class MVCConf implements WebMvcConfigurer, InitializingBean {
@@ -94,8 +79,7 @@ public class MVCConf implements WebMvcConfigurer, InitializingBean {
   public void addInterceptors(InterceptorRegistry registry) {
     registry
         .addInterceptor(new SessionInterceptor(httpRequestLocal, userService))
-        .addPathPatterns("/**")
-        .excludePathPatterns("/user/login", "/error", "/logout");
+        .addPathPatterns("/**");
     // super.addInterceptors(registry);
   }
 
@@ -142,6 +126,11 @@ class SessionInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
+		httpRequestLocal.set(request);
+    if (StrUtil.containsAny(request.getRequestURI(), "/user/login", "/error", "/logout")) {
+    	return true;
+		}
+
     String token = request.getHeader(HttpHeaders.AUTHORIZATION);
     Map<String, Object> payload = JoseJwtUtil.parsePayload(token);
     if (payload.isEmpty()) {
@@ -161,7 +150,6 @@ class SessionInterceptor implements HandlerInterceptor {
       requestSession.setAttribute(CorePlatformService.ACCESS_USER_ORGS, orgs);
       requestSession.setAttribute("ip", httpRequestLocal.getRequestIP());
     }
-    httpRequestLocal.set(request);
     return true;
   }
 
@@ -181,9 +169,10 @@ class SessionInterceptor implements HandlerInterceptor {
   }
 }
 
-/** 自定义注解，用json path 的方式注入json类型的参数 */
+/** 自定义SpringMVC的controller参数注解 {@link RequestBodyPlus} 的注入解析，用json path 的方式注入json请求的参数 */
 class RequestBodyPlusProcessor extends AbstractMessageConverterMethodProcessor {
-  private static final ThreadLocal<String> bodyLocal = ThreadLocal.withInitial(() -> null);
+
+  private static final ThreadLocal<String> bodyLocal = ThreadLocal.withInitial(() -> "{}");
 
   protected RequestBodyPlusProcessor(List<HttpMessageConverter<?>> converters) {
     super(converters);
@@ -203,10 +192,10 @@ class RequestBodyPlusProcessor extends AbstractMessageConverterMethodProcessor {
       throws Exception {
     parameter = parameter.nestedIfOptional();
     /*非json请求过滤*/
-    Class<?> parameterType = parameter.getNestedParameterType();
+    Class<?> parameterClass = parameter.getNestedParameterType();
     if (!StrUtil.containsAny(
         webRequest.getHeader(HttpHeaders.CONTENT_TYPE), MediaType.APPLICATION_JSON_VALUE)) {
-      return ReflectUtil.newInstanceIfPossible(parameterType);
+      return ReflectUtil.newInstanceIfPossible(parameterClass);
     }
 
     HttpServletRequest servletRequest = webRequest.getNativeRequest(HttpServletRequest.class);
@@ -214,23 +203,35 @@ class RequestBodyPlusProcessor extends AbstractMessageConverterMethodProcessor {
     ServletServerHttpRequest inputMessage = new ServletServerHttpRequest(servletRequest);
 
     StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
-    String jsonBody =
-        Optional.ofNullable(bodyLocal.get())
-            .orElseGet(
-                () -> {
-                  try {
-                    bodyLocal.set(stringHttpMessageConverter.read(String.class, inputMessage));
-                  } catch (IOException e) {
-                    logger.error("can't read request body by input stream : {}", e);
-                  }
-                  return bodyLocal.get();
-                });
+
+    String jsonBody;
+    try {
+      String readBody = stringHttpMessageConverter.read(String.class, inputMessage);
+      /*每一个参数的注入都会读取一次输入流，但是request的输入流不可重复读，所以需要保持下来*/
+      if (StrUtil.isBlank(readBody)) {
+        jsonBody = bodyLocal.get();
+      } else {
+        bodyLocal.set(readBody);
+        jsonBody = bodyLocal.get();
+      }
+    } catch (IOException e) {
+      logger.error("Can't read request body by input stream : {}", e);
+      jsonBody = bodyLocal.get();
+    }
 
     RequestBodyPlus requestBodyPlus = parameter.getParameterAnnotation(RequestBodyPlus.class);
     JSON json = JSONUtil.parse(jsonBody);
-    Object parseVal = json.getByPath(requestBodyPlus.value(), parameterType);
-    /*TODO 待将json转成对象*/
-    System.out.println(JSONUtil.parse("{'users':[ {'user':{'name':'lisi'}} ]}").getByPath("users"));
+    Object parseVal = json.getByPath(requestBodyPlus.value(), parameterClass);
+    if (parseVal instanceof Map) {
+      JSONObject jsonObject = JSONUtil.parseObj(parseVal);
+      parseVal = JSONUtil.toBean(jsonObject, parameter.getNestedGenericParameterType(), true);
+    } else if (parseVal instanceof List) {
+      JSONArray jsonArray = JSONUtil.parseArray(parseVal);
+      Type parameterType = TypeUtil.getTypeArgument(parameter.getNestedGenericParameterType());
+      Class parameterTypeClass =
+          null == parameterType ? Object.class : ClassUtil.loadClass(parameterType.getTypeName());
+      parseVal = JSONUtil.toList(jsonArray, parameterTypeClass);
+    }
     return parseVal;
   }
 

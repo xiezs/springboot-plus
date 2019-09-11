@@ -1,22 +1,7 @@
 package com.ibeetl.admin.core.web;
 
+import cn.hutool.core.map.MapUtil;
 import com.ibeetl.admin.core.annotation.RequestBodyPlus;
-import java.util.Enumeration;
-
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.UserLoginInfo;
@@ -24,7 +9,18 @@ import com.ibeetl.admin.core.rbac.tree.MenuItem;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
+import com.ibeetl.admin.core.util.JoseJwtUtil;
 import com.ibeetl.admin.core.util.PlatformException;
+import java.util.Enumeration;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class IndexController {
@@ -63,12 +59,11 @@ public class IndexController {
     return view;
   }*/
 
-  @CrossOrigin
   @PostMapping("/user/login")
+  @ResponseBody
   public Object login(
-      @RequestBodyPlus("username") String username, String password, @RequestBodyPlus Map params) {
+      @RequestBodyPlus("username") String username, @RequestBodyPlus("password") String password) {
     UserLoginInfo info = userService.login(username, password);
-    System.out.println(params);
     if (info == null) {
       throw new PlatformException("用户名密码错误");
     }
@@ -84,7 +79,9 @@ public class IndexController {
     info.setCurrentOrg(currentOrg);
     // 记录登录信息到session
     this.platformService.setLoginUser(info.getUser(), info.getCurrentOrg(), info.getOrgs());
-    return null;
+		Map<Object, Object> resultMap = MapUtil.builder()
+				.put("token", JoseJwtUtil.generateJwtJson(String.valueOf(user.getId()))).build();
+		return JsonResult.success(resultMap);
   }
 
   @RequestMapping("/index.do")

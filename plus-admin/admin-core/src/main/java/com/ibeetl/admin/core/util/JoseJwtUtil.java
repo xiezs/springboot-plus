@@ -1,10 +1,6 @@
 package com.ibeetl.admin.core.util;
 
-import cn.hutool.core.date.DateTime;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 import org.jose4j.jwk.RsaJsonWebKey;
@@ -20,28 +16,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 基于jose4j的jwt库工具类。 包括：生成，反生成
+ * 基于jose4j的jwt库工具类。 包括：生成，验证，解析负载。<br/>
+ * 可以用对称加密算法在此对token进行加密，逻辑上可以每隔一周或者一天，动态生成对称加密算法的密钥，然后防止破解。<br/>
+ * 这样可以用jwt来承担更多的数据传递。至于客官怎么选择——萝卜青菜各有所爱<br/>
  *
  * @author 一日看尽长安花
  */
 public class JoseJwtUtil {
   private static Logger logger = LoggerFactory.getLogger(JoseJwtUtil.class);
 
-  public static String generateJwtJson(String uid, float expiration) {
+  public static String generateJwtJson(String uid) {
     JwtClaims jwtClaims = new JwtClaims();
-    jwtClaims.setExpirationTimeMinutesInTheFuture(expiration); // 以分钟为单位的过期时间
-    jwtClaims.setIssuer("Issuer"); // who creates the token and signs it
-    jwtClaims.setAudience("Audience"); // to whom the token is intended to be sent
-    jwtClaims.setGeneratedJwtId(); // a unique identifier for the token
-    jwtClaims.setIssuedAtToNow(); // when the token was issued/created (now)
-    jwtClaims.setNotBeforeMinutesInThePast(
-        2); // time before which the token is not yet valid (2 minutes ago)
+    jwtClaims.setExpirationTimeMinutesInTheFuture(30);
+    /* 以分钟为单位的过期时间 */
+    /* who creates the token and signs it */
+    jwtClaims.setIssuer("Issuer");
+    /* to whom the token is intended to be sent */
+    jwtClaims.setAudience("Audience");
+    /* a unique identifier for the token */
+    jwtClaims.setGeneratedJwtId();
+    /* when the token was issued/created (now) */
+    jwtClaims.setIssuedAtToNow();
+    /* time before which the token is not yet valid (2 minutes ago) */
+    jwtClaims.setNotBeforeMinutesInThePast(2);
     /*主题：签证*/
     jwtClaims.setSubject("Bearer");
     /*用户id*/
     jwtClaims.setClaim("uid", uid);
     /*登录时间*/
-    jwtClaims.setClaim("ltm", new Date().getTime());
+    jwtClaims.setClaim("ltm", System.currentTimeMillis());
 
     RsaJsonWebKey rsaJsonWebKey = RsaJsonWebKeyBuilder.getRasJsonWebKeyInstance();
     JsonWebSignature jsonWebSignature = new JsonWebSignature();
