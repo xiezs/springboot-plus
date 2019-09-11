@@ -2,7 +2,7 @@ package com.ibeetl.admin.core.rbac;
 
 /**
  * 数据权限算法结果
- *
+ * 类似linux的权限设计，owner,group,other
  * @author xiandafu
  */
 public enum AccessType {

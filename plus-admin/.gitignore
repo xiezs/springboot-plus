@@ -2,3 +2,5 @@
 !.gitignore
 *.iml
 .idea
+rebel.xml
+/logs/*

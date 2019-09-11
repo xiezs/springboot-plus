@@ -1,13 +1,20 @@
 package com.ibeetl.admin.core.web;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
+import com.ibeetl.admin.core.annotation.RequestBodyPlus;
+import com.ibeetl.admin.core.util.JoseJwtUtil;
+import com.ibeetl.admin.core.util.PlatformException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -24,6 +31,7 @@ import com.ibeetl.admin.core.util.HttpRequestLocal;
 import com.ibeetl.admin.core.web.dto.FunctionNodeView;
 import com.ibeetl.admin.core.web.dto.MenuNodeView;
 import com.ibeetl.admin.core.web.dto.SystemMenuView;
+import sun.swing.StringUIClientPropertyKey;
 
 @Controller
 @SuppressWarnings("unchecked")
@@ -78,7 +86,6 @@ public class CoreUserController {
   /**
    * 切换部门
    *
-   * @param code
    * @param orgId
    * @return
    */
@@ -250,4 +257,45 @@ public class CoreUserController {
     }
     return views;
   }
+
+  @GetMapping("/user/info")
+  @ResponseBody
+  public JsonResult info(
+      @RequestBodyPlus("username") String username, @RequestBodyPlus("password") String password) {
+    Map<String, Object> resultMap =
+        MapUtil.<String, Object>builder()
+            .build();
+    return JsonResult.success(resultMap);
+  }
+
+
+  @PostMapping("/user/login")
+  @ResponseBody
+  public JsonResult loginEle(
+      @RequestBodyPlus("username") String username, @RequestBodyPlus("password") String password) {
+    UserLoginInfo info = userService.login(username, password);
+    if (info == null) {
+      throw new PlatformException("用户名密码错误");
+    }
+    CoreUser user = info.getUser();
+    CoreOrg currentOrg = info.getOrgs().stream().findFirst().orElse(null);
+
+    for (CoreOrg org : info.getOrgs()) {
+      if (org.getId().equals(user.getOrgId())) {
+        currentOrg = org;
+        break;
+      }
+    }
+
+    info.setCurrentOrg(currentOrg);
+    // 记录登录信息到session
+    this.platformService.setLoginUser(info.getUser(), info.getCurrentOrg(), info.getOrgs());
+    Map<String, Object> resultMap =
+        MapUtil.<String, Object>builder()
+            .put("token", JoseJwtUtil.generateJwtJson(String.valueOf(user.getId())))
+            .build();
+    return JsonResult.success(resultMap);
+  }
+
+
 }

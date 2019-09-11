@@ -16,7 +16,10 @@ public enum JsonReturnCode {
   SUCCESS("200", "成功"),
   FAIL("500", "内部失败"),
   ACCESS_ERROR("403", "禁止访问"),
-  NOT_FOUND("404", "页面未发现");
+  NOT_FOUND("404", "页面未发现"),
+  TOKEN_EXPIRED("50014", "令牌过期"),
+  INVALID_TOEKN("50008", "非法令牌");
+
   private String code;
   private String desc;
 

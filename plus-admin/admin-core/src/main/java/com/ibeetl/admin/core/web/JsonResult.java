@@ -1,5 +1,9 @@
 package com.ibeetl.admin.core.web;
 
+import cn.hutool.core.map.MapUtil;
+import com.ibeetl.admin.core.util.JoseJwtUtil;
+import java.util.Map;
+
 /**
  * 描述: json格式数据返回对象，使用CustomJsonResultSerializer 来序列化
  *
@@ -8,7 +12,7 @@ package com.ibeetl.admin.core.web;
 public class JsonResult<T> {
 
   private String code;
-  private String msg;
+  private String message;
   private T data;
 
   public String getCode() {
@@ -19,12 +23,12 @@ public class JsonResult<T> {
     this.code = code;
   }
 
-  public String getMsg() {
-    return msg;
+  public String getMessage() {
+    return message;
   }
 
-  public void setMsg(String msg) {
-    this.msg = msg;
+  public void setMessage(String message) {
+    this.message = message;
   }
 
   public T getData() {
@@ -37,13 +41,13 @@ public class JsonResult<T> {
 
   @Override
   public String toString() {
-    return "code=" + code + " message=" + msg + " data=" + data;
+    return "code=" + code + " message=" + message + " data=" + data;
   }
 
   public static <T> JsonResult<T> fail() {
     JsonResult<T> ret = new JsonResult<T>();
     ret.setCode(JsonReturnCode.FAIL.getCode());
-    ret.setMsg(JsonReturnCode.FAIL.getDesc());
+    ret.setMessage(JsonReturnCode.FAIL.getDesc());
     return ret;
   }
 
@@ -55,20 +59,20 @@ public class JsonResult<T> {
 
   public static <T> JsonResult<T> failMessage(String msg) {
     JsonResult<T> ret = JsonResult.fail();
-    ret.setMsg(msg);
+    ret.setMessage(msg);
     return ret;
   }
 
   public static <T> JsonResult<T> successMessage(String msg) {
     JsonResult<T> ret = JsonResult.success();
-    ret.setMsg(msg);
+    ret.setMessage(msg);
     return ret;
   }
 
   public static <T> JsonResult<T> success() {
     JsonResult<T> ret = new JsonResult<T>();
     ret.setCode(JsonReturnCode.SUCCESS.getCode());
-    ret.setMsg(JsonReturnCode.SUCCESS.getDesc());
+    ret.setMessage(JsonReturnCode.SUCCESS.getDesc());
     return ret;
   }
 
@@ -81,7 +85,7 @@ public class JsonResult<T> {
   public static <T> JsonResult<T> http404(T data) {
     JsonResult<T> ret = new JsonResult<T>();
     ret.setCode(JsonReturnCode.NOT_FOUND.getCode());
-    ret.setMsg(JsonReturnCode.NOT_FOUND.getDesc());
+    ret.setMessage(JsonReturnCode.NOT_FOUND.getDesc());
     ret.setData(data);
     return ret;
   }
@@ -89,8 +93,9 @@ public class JsonResult<T> {
   public static <T> JsonResult<T> http403(T data) {
     JsonResult<T> ret = new JsonResult<T>();
     ret.setCode(JsonReturnCode.ACCESS_ERROR.getCode());
-    ret.setMsg(JsonReturnCode.ACCESS_ERROR.getDesc());
+    ret.setMessage(JsonReturnCode.ACCESS_ERROR.getDesc());
     ret.setData(data);
     return ret;
   }
+
 }

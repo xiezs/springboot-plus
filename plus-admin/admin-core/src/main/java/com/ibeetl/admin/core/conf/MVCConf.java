@@ -127,7 +127,7 @@ class SessionInterceptor implements HandlerInterceptor {
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
 		httpRequestLocal.set(request);
-    if (StrUtil.containsAny(request.getRequestURI(), "/user/login", "/error", "/logout")) {
+    if (StrUtil.containsAny(request.getRequestURI(), "/login", "/error", "/logout")) {
     	return true;
 		}
 

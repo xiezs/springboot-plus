@@ -24,6 +24,11 @@ import com.ibeetl.admin.core.util.FunctionLocal;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
 import com.ibeetl.admin.core.util.PlatformException;
 
+/**
+ * 在springboot-plus中，有两种权限：功能点（或者说一个个controller方法）和数据权限。
+ * 菜单实际上也是绑定在了功能点中
+ * @author 一日看尽长安花
+ * */
 @Aspect
 @Component
 public class RbacAnnotationConfig {

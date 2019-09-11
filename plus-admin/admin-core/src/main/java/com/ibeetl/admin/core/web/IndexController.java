@@ -37,7 +37,7 @@ public class IndexController {
     return view;
   }
 
-  /*@PostMapping("/login.do")
+  @PostMapping("/login.do")
   public ModelAndView login(String code, String password) {
     UserLoginInfo info = userService.login(code, password);
     if (info == null) {
@@ -57,31 +57,6 @@ public class IndexController {
     this.platformService.setLoginUser(info.getUser(), info.getCurrentOrg(), info.getOrgs());
     ModelAndView view = new ModelAndView("redirect:/index.do");
     return view;
-  }*/
-
-  @PostMapping("/user/login")
-  @ResponseBody
-  public Object login(
-      @RequestBodyPlus("username") String username, @RequestBodyPlus("password") String password) {
-    UserLoginInfo info = userService.login(username, password);
-    if (info == null) {
-      throw new PlatformException("用户名密码错误");
-    }
-    CoreUser user = info.getUser();
-    CoreOrg currentOrg = info.getOrgs().get(0);
-    for (CoreOrg org : info.getOrgs()) {
-      if (org.getId().equals(user.getOrgId())) {
-        currentOrg = org;
-        break;
-      }
-    }
-
-    info.setCurrentOrg(currentOrg);
-    // 记录登录信息到session
-    this.platformService.setLoginUser(info.getUser(), info.getCurrentOrg(), info.getOrgs());
-		Map<Object, Object> resultMap = MapUtil.builder()
-				.put("token", JoseJwtUtil.generateJwtJson(String.valueOf(user.getId()))).build();
-		return JsonResult.success(resultMap);
   }
 
   @RequestMapping("/index.do")

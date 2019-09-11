@@ -43,19 +43,14 @@ public class JasonConfig {
     public void serialize(JsonResult value, JsonGenerator gen, SerializerProvider serializers)
         throws IOException {
       gen.writeStartObject();
-      if (value.getCode().equals("200")) {
-        gen.writeObjectField("code", 0);
-      } else {
-        gen.writeObjectField("code", Integer.parseInt(value.getCode()));
-      }
-      gen.writeStringField("msg", value.getMsg());
+      gen.writeObjectField("code", Integer.parseInt(value.getCode()));
+      gen.writeStringField("msg", value.getMessage());
       Object data = value.getData();
       if (data instanceof PageQuery) {
         PageQuery query = (PageQuery) (data);
         gen.writeObjectField("count", query.getTotalRow());
         gen.writeObjectField("data", query.getList());
       } else {
-
         gen.writeObjectField("data", data);
       }
       gen.writeEndObject();
