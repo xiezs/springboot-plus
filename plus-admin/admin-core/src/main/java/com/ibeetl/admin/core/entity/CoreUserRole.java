@@ -1,5 +1,7 @@
 package com.ibeetl.admin.core.entity;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
@@ -28,6 +30,8 @@ public class CoreUserRole extends BaseEntity {
   private Long userId;
 
   protected Date createTime;
+
+  protected ZonedDateTime updateTime;
 
   public Long getId() {
     return id;
@@ -67,5 +71,13 @@ public class CoreUserRole extends BaseEntity {
 
   public void setCreateTime(Date createTime) {
     this.createTime = createTime;
+  }
+
+  public ZonedDateTime getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(ZonedDateTime updateTime) {
+    this.updateTime = updateTime;
   }
 }

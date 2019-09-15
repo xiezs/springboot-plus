@@ -1,5 +1,7 @@
 package com.ibeetl.admin.core.conf;
 
+import static com.ibeetl.admin.core.util.HttpRequestLocal.ACCESS_CURRENT_USER;
+
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ClassUtil;
@@ -69,8 +71,6 @@ public class MVCConf implements WebMvcConfigurer, InitializingBean {
 
   @Autowired private BeetlGroupUtilConfiguration beetlGroupUtilConfiguration;
 
-  @Autowired private HttpRequestLocal httpRequestLocal;
-
   @Autowired private GroupTemplate groupTemplate;
 
   @Autowired private RequestMappingHandlerAdapter adapter;
@@ -78,7 +78,7 @@ public class MVCConf implements WebMvcConfigurer, InitializingBean {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry
-        .addInterceptor(new SessionInterceptor(httpRequestLocal, userService))
+        .addInterceptor(new SessionInterceptor(userService))
         .addPathPatterns("/**");
     // super.addInterceptors(registry);
   }
@@ -116,40 +116,25 @@ class SessionInterceptor implements HandlerInterceptor {
 
   CoreUserService userService;
 
-  HttpRequestLocal httpRequestLocal;
-
-  public SessionInterceptor(HttpRequestLocal httpRequestLocal, CoreUserService userService) {
+  public SessionInterceptor(CoreUserService userService) {
     this.userService = userService;
-    this.httpRequestLocal = httpRequestLocal;
   }
 
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
-		httpRequestLocal.set(request);
+		HttpRequestLocal.set(request);
     if (StrUtil.containsAny(request.getRequestURI(), "/login", "/error", "/logout")) {
     	return true;
 		}
 
-    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+    String token = HttpRequestLocal.getAuthorization();
     Map<String, Object> payload = JoseJwtUtil.parsePayload(token);
     if (payload.isEmpty()) {
       /*验证失败，无效jwt*/
       return false;
     }
-    Long uid = Convert.toLong(payload.get("uid"), -9999999999L);
-    HttpSession requestSession = request.getSession(true);
-    if (requestSession.getAttribute(CorePlatformService.ACCESS_CURRENT_USER) == null) {
-      // 模拟用户登录，用于快速开发,未来用rember么代替？
-      CoreUser user = userService.getUserById(uid);
-      Long orgId = user.getOrgId();
-      CoreOrg org = userService.getOrgById(orgId);
-      List<CoreOrg> orgs = userService.getUserOrg(uid, org.getId());
-      requestSession.setAttribute(CorePlatformService.ACCESS_CURRENT_USER, user);
-      requestSession.setAttribute(CorePlatformService.ACCESS_CURRENT_ORG, org);
-      requestSession.setAttribute(CorePlatformService.ACCESS_USER_ORGS, orgs);
-      requestSession.setAttribute("ip", httpRequestLocal.getRequestIP());
-    }
+
     return true;
   }
 

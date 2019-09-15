@@ -3,6 +3,36 @@
 格式见最下方的注释
 需要大改菜单表
  */
+/*
+前端路由映射表中单个路由映射全部具有的信息
+  {
+    "path": "/profile",
+    "component": "Layout",
+    "redirect": "/profile/index",
+    "hidden": true,
+    "alwaysShow": true,
+    "name": "router-name",
+    "meta": {
+      "noCache": true,
+      "affix": true,
+      "breadcrumb": false,
+      "activeMenu": "/example/list"
+    },
+    "children": []
+  }
+后端路由表中单个路由应该具有的信息
+  {
+    "path": "/profile",
+    "name": "router-name",
+    "meta": {
+      "title": "Profile",
+      "roles": ["admin", "editor"],
+      "icon": "user"
+    },
+    "children": []
+  }
+*/
+
 /* Layout */
 import Layout from '@/layout'
 
@@ -11,6 +41,7 @@ import componentsRouter from './components'
 import chartsRouter from './charts'
 import tableRouter from './table'
 import nestedRouter from './nested'
+import coreRouter from './core'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -38,7 +69,7 @@ import nestedRouter from './nested'
  * the routes that need to be dynamically loaded based on user roles
  * 用来匹配后台生成的路由表，根据路由名称
  */
-export const asyncRoutesMap = [
+let asyncRoutes = [
   {
     path: '/permission',
     component: Layout,
@@ -252,32 +283,7 @@ export const asyncRoutesMap = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-/*
-前端路由映射表中单个路由映射全部具有的信息
-  {
-    "path": "/profile",
-    "component": "Layout",
-    "redirect": "/profile/index",
-    "hidden": true,
-    "alwaysShow": true,
-    "name": "router-name",
-    "meta": {
-      "noCache": true,
-      "affix": true,
-      "breadcrumb": false,
-      "activeMenu": "/example/list"
-    },
-    "children": []
-  }
-后端路由表中单个路由应该具有的信息
-  {
-    "path": "/profile",
-    "name": "router-name",
-    "meta": {
-      "title": "Profile",
-      "roles": ["admin", "editor"],
-      "icon": "user"
-    },
-    "children": []
-  }
-*/
+
+const asyncRoutesMap = [...coreRouter, ...asyncRoutes]
+
+export default asyncRoutesMap

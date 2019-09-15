@@ -1,5 +1,9 @@
 package com.ibeetl.admin.core.service;
 
+import static com.ibeetl.admin.core.util.HttpRequestLocal.ACCESS_CURRENT_ORG;
+import static com.ibeetl.admin.core.util.HttpRequestLocal.ACCESS_CURRENT_USER;
+import static com.ibeetl.admin.core.util.HttpRequestLocal.ACCESS_USER_ORGS;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -61,13 +65,6 @@ public class CorePlatformService {
   public static final String USER_DATA_ACCESS_CACHE = "cache:core:userDataAccess";
   public static final String USER_MENU_CACHE = "cache:core:userMenu";
 
-  /*当前用户会话*/
-  public static final String ACCESS_CURRENT_USER = "core:user";
-  /*当前登录用户所在部门*/
-  public static final String ACCESS_CURRENT_ORG = "core:currentOrg";
-  /*用户可选部门*/
-  public static final String ACCESS_USER_ORGS = "core:orgs";
-
   public static final String ACCESS_SUPPER_ADMIN = "admin";
 
   @Autowired HttpRequestLocal httpRequestLocal;
@@ -112,7 +109,7 @@ public class CorePlatformService {
     List<CoreOrg> orgs = this.getCurrentOrgs();
     for (CoreOrg org : orgs) {
       if (org.getId().equals(orgId)) {
-        httpRequestLocal.setSessionValue(CorePlatformService.ACCESS_CURRENT_ORG, org);
+        httpRequestLocal.setSessionValue(ACCESS_CURRENT_ORG, org);
       }
     }
   }
@@ -142,9 +139,9 @@ public class CorePlatformService {
   }
 
   public void setLoginUser(CoreUser user, CoreOrg currentOrg, List<CoreOrg> orgs) {
-    httpRequestLocal.setSessionValue(CorePlatformService.ACCESS_CURRENT_USER, user);
-    httpRequestLocal.setSessionValue(CorePlatformService.ACCESS_CURRENT_ORG, currentOrg);
-    httpRequestLocal.setSessionValue(CorePlatformService.ACCESS_USER_ORGS, orgs);
+    httpRequestLocal.setSessionValue(ACCESS_CURRENT_USER, user);
+    httpRequestLocal.setSessionValue(ACCESS_CURRENT_ORG, currentOrg);
+    httpRequestLocal.setSessionValue(ACCESS_USER_ORGS, orgs);
   }
 
   public MenuItem getMenuItem(long userId, long orgId) {

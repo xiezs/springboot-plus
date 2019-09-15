@@ -44,7 +44,7 @@ public class JasonConfig {
         throws IOException {
       gen.writeStartObject();
       gen.writeObjectField("code", Integer.parseInt(value.getCode()));
-      gen.writeStringField("msg", value.getMessage());
+      gen.writeStringField("message", value.getMessage());
       Object data = value.getData();
       if (data instanceof PageQuery) {
         PageQuery query = (PageQuery) (data);
