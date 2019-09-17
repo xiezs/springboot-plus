@@ -8,15 +8,15 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 @EnableCaching
-public class CosonleApplication extends SpringBootServletInitializer {
+public class ConsoleApplication extends SpringBootServletInitializer {
 
   @Override
   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-    return application.sources(CosonleApplication.class);
+    return application.sources(ConsoleApplication.class);
   }
 
   public static void main(String[] args) {
 
-    SpringApplication.run(CosonleApplication.class, args);
+    SpringApplication.run(ConsoleApplication.class, args);
   }
 }

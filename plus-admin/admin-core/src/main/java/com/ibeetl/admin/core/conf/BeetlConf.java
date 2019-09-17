@@ -78,6 +78,7 @@ public class BeetlConf {
   @Bean
   public WebSimulate getWebSimulate(GroupTemplate gt, ObjectMapper objectMapper) {
     return new WebSimulate(gt, new ObjectMapperJsonUtil(objectMapper)) {
+      @Override
       protected String getRenderPath(HttpServletRequest request) {
         String defaultRenderPath = request.getServletPath();
         return defaultRenderPath.replace(".do", ".html");
@@ -88,7 +89,6 @@ public class BeetlConf {
   @Bean
   public SQLManager sqlManager(
       @Qualifier("baseDataSourceSqlManagerFactoryBean") SQLManager sqlManager) {
-
     Map<Class, JavaSqlTypeHandler> typeHandlerMap = sqlManager.getDefaultBeanProcessors().getHandlers();
     /*Java bean的属性类型处理器，从数据库类型转化到属性Date类型*/
     typeHandlerMap.remove(Date.class);
@@ -171,6 +171,7 @@ public class BeetlConf {
   }
 
   static class StarterDebugInterceptor extends DebugInterceptor {
+    @Override
     protected boolean isSimple(String sqlId) {
       if (sqlId.indexOf("_gen_") != -1) {
         return true;
@@ -179,6 +180,7 @@ public class BeetlConf {
       }
     }
 
+    @Override
     protected void simpleOut(InterceptorContext ctx) {
       return;
     }
