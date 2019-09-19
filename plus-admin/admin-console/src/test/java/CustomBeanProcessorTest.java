@@ -1,4 +1,3 @@
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -13,10 +12,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import resultmap.GridContainer;
+import resultmap.GridHeader;
+import resultmap.GridMapping;
+import resultmap.GridRow;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ConsoleApplication.class)
-public class BeanProcessor {
+public class CustomBeanProcessorTest {
 
   @Autowired CoreFunctionDao coreFunctionDao;
 
@@ -25,7 +28,8 @@ public class BeanProcessor {
   @BeforeClass
   public static void init() {
     resultMap = new JSONObject();
-    resultMap.put("id", "resultmap");
+    resultMap.put("id", "core_route_map");
+
     JSONObject mapping = new JSONObject();
     mapping.put("id", "id");
     mapping.put("parentId", "parent_id");
@@ -36,21 +40,33 @@ public class BeanProcessor {
     JSONObject objMap = new JSONObject();
     objMap.put("title", "title");
     objMap.put("icon", "icon");
-    objMap.put("resultType", CoreRouteMeta.class.getCanonicalName());
-    mapping.put("obj_mapping" + IdUtil.fastSimpleUUID(), objMap);
 
     JSONArray listMap = new JSONArray();
     JSONObject listInnerMap = new JSONObject();
     listInnerMap.put("id", "role_id");
     listMap.add(listInnerMap);
-    mapping.put("list_mapping" + IdUtil.fastSimpleUUID(), listMap);
+    objMap.put("roles", listMap);
 
-    resultMap.put("map", mapping);
+    objMap.put("resultType", CoreRouteMeta.class.getCanonicalName());
+
+    mapping.put("meta", objMap);
+    mapping.put("resultType", CoreRoute.class.getCanonicalName());
+
+    resultMap.put("mapping", mapping);
   }
 
   @Test
   public void maptest() {
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
-    System.out.println(JSONUtil.toJsonStr(resultMap));
+    System.out.println(JSONUtil.toJsonPrettyStr(resultMap));
+    GridMapping gridMapping = new GridMapping(resultMap);
+
+    GridHeader gridHeader = gridMapping.getHeader();
+    System.out.println(gridHeader);
+
+    GridRow gridRow = new GridRow(gridHeader);
+    System.out.println(gridRow);
+    GridContainer gridContainer = new GridContainer();
+    gridMapping.setContainer(gridContainer);
   }
 }
