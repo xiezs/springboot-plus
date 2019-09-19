@@ -4,6 +4,7 @@ import static cn.hutool.core.util.StrUtil.EMPTY;
 import static cn.hutool.core.util.StrUtil.isNotBlank;
 import static java.util.Optional.ofNullable;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class GridHeader {
   String resultType;
 
   /** 嵌套类型的网格头 */
-  GridHeader nestedHeader;
+  List<GridHeader> nestedHeaders = CollUtil.<GridHeader>newArrayList();
 
   /** 嵌套类型的网格头 */
   GridHeader parentHeader;
@@ -60,12 +61,12 @@ public class GridHeader {
     this.resultType = resultType;
   }
 
-  public GridHeader getNestedHeader() {
-    return nestedHeader;
+  public List<GridHeader> getNestedHeaders() {
+    return nestedHeaders;
   }
 
-  public void setNestedHeader(GridHeader nestedHeader) {
-    this.nestedHeader = nestedHeader;
+  public void setNestedHeaders(List<GridHeader> nestedHeaders) {
+    this.nestedHeaders = nestedHeaders;
   }
 
   public GridHeader getParentHeader() {
@@ -103,6 +104,7 @@ public class GridHeader {
   private void processResultMapping(Map<String, Object> resultMapping) {
     Set<Entry<String, Object>> entrySet = resultMapping.entrySet();
     this.setResultType(ofNullable(resultMapping.get("resultType")).orElse(EMPTY).toString());
+    resultMapping.remove("resultType");
     for (Entry<String, Object> objectEntry : entrySet) {
       String key = objectEntry.getKey();
       Object value = objectEntry.getValue();
@@ -115,7 +117,7 @@ public class GridHeader {
         nestedHeader.setIsCollection(true);
         nestedHeader.setNestedPropName(key);
         nestedHeader.setBelongMapping(this.getBelongMapping());
-        this.setNestedHeader(nestedHeader);
+        this.getNestedHeaders().add(nestedHeader);
         nestedHeader.setParentHeader(this);
       } else if (Map.class.isAssignableFrom(valClass)) {
         /*生成嵌套网格头，此嵌套网格头的类型对应单个对象字段*/
@@ -124,7 +126,7 @@ public class GridHeader {
         nestedHeader.setIsCollection(false);
         nestedHeader.setNestedPropName(key);
         nestedHeader.setBelongMapping(this.getBelongMapping());
-        this.setNestedHeader(nestedHeader);
+        this.getNestedHeaders().add(nestedHeader);
         nestedHeader.setParentHeader(this);
       } else if (isNotBlank(key) || (null != value && isNotBlank(String.valueOf(value)))) {
         javaToJdbcMap.put(key, String.valueOf(value));

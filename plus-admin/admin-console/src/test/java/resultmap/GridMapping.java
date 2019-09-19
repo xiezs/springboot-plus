@@ -6,10 +6,11 @@ import static java.util.Optional.ofNullable;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
+import java.util.List;
 import java.util.Map;
 
-/** 网格映射数据结构： 包含一个网格头 {@link GridHeader}和网格容器/体{@link GridContainer} */
-public class GridMapping extends GridContainer {
+/** 网格映射数据结构： 包含一个网格头 {@link GridHeader} */
+public class GridMapping {
   /** 映射id */
   String mappingId;
 
@@ -19,8 +20,7 @@ public class GridMapping extends GridContainer {
   /** 网格头 */
   GridHeader header;
 
-  /** 网格容器 */
-  GridContainer container;
+  List<GridRow> nestedRows;
 
   public GridMapping(Map<String, Object> resultMapping) {
     JSON parse = JSONUtil.parse(resultMapping);
@@ -42,15 +42,6 @@ public class GridMapping extends GridContainer {
     this.header.setBelongMapping(this);
   }
 
-  public GridContainer getContainer() {
-    return container;
-  }
-
-  public void setContainer(GridContainer container) {
-    this.container = container;
-    this.container.setParentContainer(this);
-  }
-
   public String getMappingId() {
     return mappingId;
   }
@@ -65,5 +56,13 @@ public class GridMapping extends GridContainer {
 
   public void setResultType(String resultType) {
     this.resultType = resultType;
+  }
+
+  public List<GridRow> getNestedRows() {
+    return nestedRows;
+  }
+
+  public void setNestedRows(List<GridRow> nestedRows) {
+    this.nestedRows = nestedRows;
   }
 }

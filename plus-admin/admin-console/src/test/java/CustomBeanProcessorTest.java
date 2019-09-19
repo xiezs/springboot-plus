@@ -2,17 +2,26 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ibeetl.admin.ConsoleApplication;
+import com.ibeetl.admin.core.conf.handler.DateTypeHandler;
+import com.ibeetl.admin.core.conf.handler.ZonedDateTimeTypeHandler;
 import com.ibeetl.admin.core.dao.CoreFunctionDao;
 import com.ibeetl.admin.core.entity.CoreRoute;
 import com.ibeetl.admin.core.entity.CoreRouteMeta;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.beetl.sql.core.SQLManager;
+import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import resultmap.GridContainer;
+import processor.JsonBeanProcessor;
 import resultmap.GridHeader;
 import resultmap.GridMapping;
 import resultmap.GridRow;
@@ -23,50 +32,72 @@ public class CustomBeanProcessorTest {
 
   @Autowired CoreFunctionDao coreFunctionDao;
 
-  static JSONObject resultMap;
+  @Autowired
+  @Qualifier("baseDataSourceSqlManagerFactoryBean")
+  SQLManager sqlManager;
+
+  static JSONObject resultMappping;
 
   @BeforeClass
   public static void init() {
-    resultMap = new JSONObject();
-    resultMap.put("id", "core_route_map");
+    resultMappping = new JSONObject();
+    resultMappping.put("id", "core_route_map");
 
-    JSONObject mapping = new JSONObject();
-    mapping.put("id", "id");
-    mapping.put("parentId", "parent_id");
-    mapping.put("path", "path");
-    mapping.put("name", "name");
-    mapping.put("seq", "seq");
+    JSONObject routeMapping = new JSONObject();
+    routeMapping.put("id", "id");
+    routeMapping.put("parentId", "parent_id");
+    routeMapping.put("path", "path");
+    routeMapping.put("name", "name");
+    routeMapping.put("seq", "seq");
 
-    JSONObject objMap = new JSONObject();
-    objMap.put("title", "title");
-    objMap.put("icon", "icon");
+    JSONObject metaMapping = new JSONObject();
+    metaMapping.put("title", "title");
+    metaMapping.put("icon", "icon");
 
-    JSONArray listMap = new JSONArray();
-    JSONObject listInnerMap = new JSONObject();
-    listInnerMap.put("id", "role_id");
-    listMap.add(listInnerMap);
-    objMap.put("roles", listMap);
+    JSONArray roles = new JSONArray();
+    JSONObject roleidMapping = new JSONObject();
+    roleidMapping.put("id", "role_id");
+    roles.add(roleidMapping);
 
-    objMap.put("resultType", CoreRouteMeta.class.getCanonicalName());
+    metaMapping.put("roles", roles);
+    metaMapping.put("resultType", CoreRouteMeta.class.getCanonicalName());
 
-    mapping.put("meta", objMap);
-    mapping.put("resultType", CoreRoute.class.getCanonicalName());
+    JSONObject testMapping = new JSONObject();
+    testMapping.put("id", "test_id");
+    testMapping.put("name", "name");
+    testMapping.put("password", "password");
+    testMapping.put("resultType", entity.Test.class.getCanonicalName());
 
-    resultMap.put("mapping", mapping);
+    routeMapping.put("test", testMapping);
+    routeMapping.put("meta", metaMapping);
+    routeMapping.put("resultType", CoreRoute.class.getCanonicalName());
+
+    resultMappping.put("mapping", routeMapping);
+  }
+
+  @Before
+  public void beanProcessor() {
+    JsonBeanProcessor jsonBeanProcessor = new JsonBeanProcessor(sqlManager);
+    sqlManager.setDefaultBeanProcessors(jsonBeanProcessor);
+    Map<Class, JavaSqlTypeHandler> typeHandlerMap =
+        sqlManager.getDefaultBeanProcessors().getHandlers();
+    /*Java bean的属性类型处理器，从数据库类型转化到属性Date类型*/
+    typeHandlerMap.remove(Date.class);
+    typeHandlerMap.put(Date.class, new DateTypeHandler());
+    typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
   }
 
   @Test
   public void maptest() {
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
-    System.out.println(JSONUtil.toJsonPrettyStr(resultMap));
-    GridMapping gridMapping = new GridMapping(resultMap);
+    System.out.println(routesList);
+    System.out.println(JSONUtil.toJsonPrettyStr(resultMappping));
+    GridMapping gridMapping = new GridMapping(resultMappping);
 
     GridHeader gridHeader = gridMapping.getHeader();
     System.out.println(gridHeader);
 
-    GridRow gridRow = new GridRow(gridHeader);
+    GridRow gridRow = GridRow.generateRowInnerBox(gridHeader);
     System.out.println(gridRow);
-    GridContainer gridContainer = new GridContainer();
-    gridMapping.setContainer(gridContainer);
   }
 }
