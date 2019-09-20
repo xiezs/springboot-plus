@@ -1,18 +1,15 @@
 package resultmap;
 
-import static java.util.Optional.ofNullable;
-
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
-import javax.swing.text.html.Option;
 
 /**
  * 网格行，包含一个个网格列<br>
  * 一行一个对象，或者java类中的一个对象字段
  */
-public class GridRow {
+public class GridRow implements Serializable {
 
   /** 包含的列 */
   List<GridColumn> nestedColumns = CollUtil.<GridColumn>newArrayList();
@@ -69,7 +66,7 @@ public class GridRow {
    *
    * @return
    */
-  public static GridRow generateRowInnerBox(GridHeader gridHeader) {
+  public static GridRow generateRowByHeader(GridHeader gridHeader) {
     if (ObjectUtil.isNull(gridHeader)) {
       return null;
     }
@@ -81,7 +78,7 @@ public class GridRow {
     List<GridHeader> headers = gridHeader.getNestedHeaders();
     for (GridHeader header : headers) {
       GridColumn containerColumn = new GridColumn();
-      GridRow nestedRow = generateRowInnerBox(header);
+      GridRow nestedRow = generateRowByHeader(header);
 
       containerColumn.getNestedRows().add(nestedRow);
       nestedRow.setBelongColumn(containerColumn);

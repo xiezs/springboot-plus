@@ -7,6 +7,7 @@ import static java.util.Optional.ofNullable;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import java.util.Set;
  * 网格头，保存了属性与列的映射关系，以及映射的java类型。<br>
  * 内嵌的网格头，内嵌网格头的映射java类型，是否是映射至List集合字段
  */
-public class GridHeader {
+public class GridHeader implements Serializable {
 
   /** java属性名与数据库列名的对应。顺序：prop:column */
   Map<String, String> javaToJdbcMap;

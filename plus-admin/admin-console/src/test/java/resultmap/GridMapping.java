@@ -3,14 +3,16 @@ package resultmap;
 import static cn.hutool.core.util.StrUtil.EMPTY;
 import static java.util.Optional.ofNullable;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /** 网格映射数据结构： 包含一个网格头 {@link GridHeader} */
-public class GridMapping {
+public class GridMapping implements Serializable {
   /** 映射id */
   String mappingId;
 
@@ -20,7 +22,7 @@ public class GridMapping {
   /** 网格头 */
   GridHeader header;
 
-  List<GridRow> nestedRows;
+  List<GridRow> nestedRows = CollUtil.newArrayList();
 
   public GridMapping(Map<String, Object> resultMapping) {
     JSON parse = JSONUtil.parse(resultMapping);
@@ -64,5 +66,11 @@ public class GridMapping {
 
   public void setNestedRows(List<GridRow> nestedRows) {
     this.nestedRows = nestedRows;
+  }
+
+  public GridRow nextRow(){
+    GridRow row = GridRow.generateRowByHeader(this.header);
+    this.nestedRows.add(row);
+    return row;
   }
 }

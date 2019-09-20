@@ -1,3 +1,5 @@
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -7,6 +9,7 @@ import com.ibeetl.admin.core.conf.handler.ZonedDateTimeTypeHandler;
 import com.ibeetl.admin.core.dao.CoreFunctionDao;
 import com.ibeetl.admin.core.entity.CoreRoute;
 import com.ibeetl.admin.core.entity.CoreRouteMeta;
+import com.ibeetl.admin.core.util.CacheUtil;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -89,15 +92,13 @@ public class CustomBeanProcessorTest {
 
   @Test
   public void maptest() {
+    GridMapping gridMapping = new GridMapping(resultMappping);
+
+    CacheUtil.put("Route_Mapping", gridMapping);
+
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
     System.out.println(routesList);
     System.out.println(JSONUtil.toJsonPrettyStr(resultMappping));
-    GridMapping gridMapping = new GridMapping(resultMappping);
-
-    GridHeader gridHeader = gridMapping.getHeader();
-    System.out.println(gridHeader);
-
-    GridRow gridRow = GridRow.generateRowInnerBox(gridHeader);
-    System.out.println(gridRow);
   }
+
 }

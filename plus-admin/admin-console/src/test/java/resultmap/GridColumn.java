@@ -3,6 +3,7 @@ package resultmap;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,7 +15,7 @@ import java.util.Set;
  * 包含：值映射map、映射类型、最关键的obj key<br>
  * objkey 决定了数据库结果集的多条重复记录会被唯一记录成一个对象。
  */
-public class GridColumn {
+public class GridColumn implements Serializable {
 
   /** 对应的属性与数据库中值的映射，用于map to Bean 转换 */
   Map<String, Object> beanMap;
