@@ -11,12 +11,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-/** 网格映射数据结构： 包含一个网格头 {@link GridHeader} */
+/** 网格映射数据结构： 包含一个网格头 {@link GridHeader}和多个网格行{@link GridRow} */
 public class GridMapping implements Serializable {
   /** 映射id */
   String mappingId;
 
-  /** 映射类型 */
+  /** 当前映射配置对应的class类型 */
   String resultType;
 
   /** 网格头 */

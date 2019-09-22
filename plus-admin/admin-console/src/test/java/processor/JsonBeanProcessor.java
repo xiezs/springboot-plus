@@ -1,28 +1,46 @@
 package processor;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.ibeetl.admin.core.util.CacheUtil;
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import org.beetl.sql.core.BeetlSQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.beetl.sql.core.SQLManager;
-import org.beetl.sql.core.Tail;
-import org.beetl.sql.core.annotatoin.builder.AttributeBuilderHolder;
-import org.beetl.sql.core.annotatoin.builder.AttributeSelectBuilder;
-import org.beetl.sql.core.db.ClassAnnotation;
-import org.beetl.sql.core.db.DBStyle;
 import org.beetl.sql.core.kit.BeanKit;
 import org.beetl.sql.core.mapping.BeanProcessor;
-import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
-import org.beetl.sql.core.mapping.type.TypeParameter;
+import resultmap.GridColumn;
+import resultmap.GridHeader;
 import resultmap.GridMapping;
+import resultmap.GridRow;
 
 public class JsonBeanProcessor extends BeanProcessor {
 
   public JsonBeanProcessor(SQLManager sm) {
     super(sm);
+  }
+
+  @Override
+  public <T> List<T> toBeanList(String sqlId, ResultSet rs, Class<T> type) throws SQLException {
+    if (!rs.next()) {
+      return new ArrayList<T>(0);
+    }
+    List<T> results = new ArrayList<T>();
+    PropertyDescriptor[] props = this.propertyDescriptors(type);
+    ResultSetMetaData rsmd = rs.getMetaData();
+    int[] columnToProperty = this.mapColumnsToProperties(type, rsmd, props);
+
+    results.add(this.createBean(sqlId, rs, type, props, columnToProperty));
+
+    return results;
   }
 
   /** 创建 一个新的对象，并从ResultSet初始化 */
@@ -31,72 +49,87 @@ public class JsonBeanProcessor extends BeanProcessor {
       String sqlId, ResultSet rs, Class<T> type, PropertyDescriptor[] props, int[] columnToProperty)
       throws SQLException {
     GridMapping gridMapping = (GridMapping) CacheUtil.get("Route_Mapping");
-
-    T bean = this.newInstance(type);
-    ResultSetMetaData meta = rs.getMetaData();
-    TypeParameter tp = new TypeParameter(sqlId, this.dbName, type, rs, meta, 1);
-
-    for (int i = 1; i < columnToProperty.length; i++) {
-      // Array.fill数组为-1 ，-1则无对应name
-      tp.setIndex(i);
-      if (columnToProperty[i] == PROPERTY_NOT_FOUND) {
-        String key = rs.getMetaData().getColumnLabel(i);
-        if ((dbType == DBStyle.DB_ORACLE || dbType == DBStyle.DB_SQLSERVER)
-            && key.equalsIgnoreCase("beetl_rn")) {
-          // sql server 特殊处理，sql'server的翻页使用了额外列作为翻页参数，需要过滤
-          continue;
-        }
-
-        if (bean instanceof Tail) {
-          Tail bean2 = (Tail) bean;
-          Object value = noMappingValue(tp);
-          key = this.nc.getPropertyName(type, key);
-          bean2.set(key, value);
-        } else {
-          Method m = BeanKit.getTailMethod(type);
-          // 使用指定方法赋值
-          if (m != null) {
-
-            Object value = noMappingValue(tp);
-            key = this.nc.getPropertyName(type, key);
-            try {
-              m.invoke(bean, key, value);
-            } catch (Exception ex) {
-              throw new BeetlSQLException(BeetlSQLException.TAIL_CALL_ERROR, ex);
-            }
-          } else {
-            // 忽略这个结果集
-          }
-        }
-        continue;
-      }
-
-      // columnToProperty[i]取出对应的在PropertyDescriptor[]中的下标
-      PropertyDescriptor prop = props[columnToProperty[i]];
-      Class<?> propType = prop.getPropertyType();
-      tp.setTarget(propType);
-      ClassAnnotation ca = ClassAnnotation.getClassAnnotation(type);
-      Object value = null;
-      if (!ca.getColHandlers().isEmpty()) {
-        AttributeBuilderHolder holder =
-            (AttributeBuilderHolder) ca.getColHandlers().get(prop.getName());
-        if (holder != null && holder.supportSelectMapping()) {
-          value =
-              ((AttributeSelectBuilder) holder.getInstance())
-                  .toObject(this.sm, holder.getBeanAnnotaton(), sqlId, tp, prop);
-          this.callSetter(bean, prop, value, propType);
-          continue;
-        }
-      }
-      JavaSqlTypeHandler handler = this.handlers.get(propType);
-      if (handler == null) {
-        handler = this.defaultHandler;
-      }
-      value = handler.getValue(tp);
-
-      this.callSetter(bean, prop, value, propType);
+    if (null == gridMapping) {
+      return super.createBean(sqlId, rs, type, props, columnToProperty);
     }
 
-    return bean;
+    fillMappingRow(rs, gridMapping);
+    System.out.println(gridMapping);
+    return null;
+  }
+
+  protected void fillMappingRow(ResultSet resultSet, GridMapping mapping) throws SQLException {
+    GridHeader header = mapping.getHeader();
+    mapping.nextRow();
+    /** flag：用来判断结果集是否应该 next()。可能后期应该改成CacheRowSet更好，这样可以直接操作结果集光标回退一行就行了。 */
+    Boolean flag = true;
+    while (true) {
+      if (flag && !resultSet.next()) {
+        break;
+      }
+      resultSet.previous();
+      GridRow row;
+      if (!flag) {
+        row = mapping.nextRow();
+      } else {
+        row = CollUtil.getLast(mapping.getNestedRows());
+      }
+      flag = fillRowColumn(resultSet, header, row);
+    }
+  }
+  /** flag：用来判断结果集是否 next() */
+  protected boolean fillRowColumn(ResultSet resultSet, GridHeader header, GridRow row)
+      throws SQLException {
+    boolean flag = true;
+    Map<String, Object> tempBeanMap = MapUtil.newHashMap();
+    /*第一步、先处理当前可以处理的*/
+    Map<String, String> javaToJdbcMap = header.getJavaToJdbcMap();
+    Set<Entry<String, String>> entrySet = javaToJdbcMap.entrySet();
+    for (Entry<String, String> entry : entrySet) {
+      tempBeanMap.put(entry.getKey(), resultSet.getObject(entry.getValue()));
+    }
+    Integer rowKey = row.getRowKey();
+    Integer calculateKey = GridColumn.calculateKey(tempBeanMap);
+    if (ObjectUtil.notEqual(rowKey, calculateKey)) {
+      if (ObjectUtil.isNull(row.getBelongColumn())) {
+        flag = false;
+      } else {
+        GridRow generateRow = GridRow.generateRowByHeader(header);
+        generateRow.setBelongColumn(row.getBelongColumn());
+
+        GridColumn tempColumn = new GridColumn();
+        tempColumn.setMappingHeader(header);
+        tempColumn.setResultType(header.getResultType());
+        tempColumn.setBelongRow(row);
+        tempColumn.setBeanMap(tempBeanMap);
+
+        generateRow.getNestedColumns().add(0, tempColumn);
+        row.getBelongColumn().getNestedRows().add(generateRow);
+        flag = true;
+      }
+    } else {
+      List<GridHeader> nestedHeaders = header.getNestedHeaders();
+      for (GridHeader nestedHeader : nestedHeaders) {
+        row = row.getGridColumnByMappingHeader(nestedHeader).getBelongRow();
+        flag = fillRowColumn(resultSet, nestedHeader, row);
+      }
+    }
+    return flag;
+  }
+
+  /**
+   * 根据class取得属性描述PropertyDescriptor
+   *
+   * @param c
+   * @return
+   * @throws SQLException
+   */
+  private PropertyDescriptor[] propertyDescriptors(Class<?> c) throws SQLException {
+
+    try {
+      return BeanKit.propertyDescriptors(c);
+    } catch (IntrospectionException e) {
+      throw new SQLException("Bean introspection failed: " + e.getMessage());
+    }
   }
 }

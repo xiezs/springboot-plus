@@ -7,11 +7,11 @@ import java.util.List;
 
 /**
  * 网格行，包含一个个网格列<br>
- * 一行一个对象，或者java类中的一个对象字段
+ * 一个网格行，对应着SQL select查询出的一个Java的逻辑对象
  */
 public class GridRow implements Serializable {
 
-  /** 包含的列 */
+  /** 包含的列,第0个列代表的是当前整个类的映射，从0列之后是内部对象字段的映射 */
   List<GridColumn> nestedColumns = CollUtil.<GridColumn>newArrayList();
 
   /** 所属的列 */
@@ -20,6 +20,7 @@ public class GridRow implements Serializable {
   /** 映射对象的类型名 */
   String resultType;
 
+  /** 通过每个列的key进行hash得到一个唯一row id */
   Integer rowKey;
 
   public GridRow() {}
@@ -41,16 +42,7 @@ public class GridRow implements Serializable {
   }
 
   public Integer getRowKey() {
-    int hs = 0;
-    for (GridColumn nestedColumn : nestedColumns) {
-      hs = hs + nestedColumn.getObjKey();
-    }
-    rowKey = hs;
-    return rowKey;
-  }
-
-  public void setRowKey(Integer rowKey) {
-    this.rowKey = rowKey;
+    return this.nestedColumns.get(0).getObjKey();
   }
 
   public GridColumn getBelongColumn() {
@@ -62,7 +54,7 @@ public class GridRow implements Serializable {
   }
 
   /**
-   * 根据网格头，生成对应的网格行结构
+   * 根据网格头，生成对应的网格行结构。 行套列或者列套行再套列两种。
    *
    * @return
    */
@@ -71,12 +63,16 @@ public class GridRow implements Serializable {
       return null;
     }
     GridRow gridRow = new GridRow();
+    /*这个列才是真正的存储数据值的*/
     GridColumn gridColumn = new GridColumn();
+
     gridRow.getNestedColumns().add(gridColumn);
+
     gridColumn.setBelongRow(gridRow);
 
     List<GridHeader> headers = gridHeader.getNestedHeaders();
     for (GridHeader header : headers) {
+      /*这只是外部的一个容器性质的列*/
       GridColumn containerColumn = new GridColumn();
       GridRow nestedRow = generateRowByHeader(header);
 
@@ -87,8 +83,26 @@ public class GridRow implements Serializable {
       containerColumn.setBelongRow(gridRow);
     }
 
+    gridColumn.setMappingHeader(gridHeader);
     gridColumn.setResultType(gridHeader.getResultType());
     gridRow.setResultType(gridHeader.getResultType());
     return gridRow;
   }
+
+  public GridColumn getGridColumnByMappingHeader(GridHeader header) {
+    GridColumn obj = null;
+    for (GridColumn column : nestedColumns) {
+      if (CollUtil.isNotEmpty(column.getNestedRows())) {
+        List<GridRow> nestedRows = column.getNestedRows();
+        for (GridRow nestedRow : nestedRows) {
+          obj = nestedRow.getGridColumnByMappingHeader(header);
+        }
+      }
+      if (header.equals(column.getMappingHeader())) {
+        obj = column;
+      }
+    }
+    return obj;
+  }
+
 }

@@ -1,3 +1,4 @@
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
@@ -11,6 +12,7 @@ import com.ibeetl.admin.core.entity.CoreRoute;
 import com.ibeetl.admin.core.entity.CoreRouteMeta;
 import com.ibeetl.admin.core.util.CacheUtil;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
