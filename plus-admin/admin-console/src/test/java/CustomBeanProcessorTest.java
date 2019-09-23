@@ -1,4 +1,5 @@
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -100,5 +101,4 @@ public class CustomBeanProcessorTest {
     System.out.println(routesList);
     System.out.println(JSONUtil.toJsonPrettyStr(resultMappping));
   }
-
 }
