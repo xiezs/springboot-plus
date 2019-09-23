@@ -11,12 +11,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-/** 网格映射数据结构： 包含一个网格头 {@link GridHeader} */
+/** 网格映射数据结构： 包含一个网格头 {@link GridHeader}和多个网格行{@link GridRow} */
 public class GridMapping implements Serializable {
   /** 映射id */
   String mappingId;
 
-  /** 映射类型 */
+  /** 当前映射配置对应的class类型 */
   String resultType;
 
   /** 网格头 */
@@ -68,8 +68,11 @@ public class GridMapping implements Serializable {
     this.nestedRows = nestedRows;
   }
 
-  public GridRow nextRow(){
+  public GridRow nextRow(GridColumn column){
     GridRow row = GridRow.generateRowByHeader(this.header);
+    /*给最外层的row设置一个空的列，为了后面的算法便利。可以理解成仅仅只是一个容器而已*/
+    column.getNestedRows().add(row);
+    row.setBelongColumn(column);
     this.nestedRows.add(row);
     return row;
   }

@@ -1,4 +1,9 @@
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.HexUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
@@ -11,10 +16,16 @@ import com.ibeetl.admin.core.dao.CoreFunctionDao;
 import com.ibeetl.admin.core.entity.CoreRoute;
 import com.ibeetl.admin.core.entity.CoreRouteMeta;
 import com.ibeetl.admin.core.util.CacheUtil;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
 import org.junit.Before;
@@ -29,6 +40,7 @@ import processor.JsonBeanProcessor;
 import resultmap.GridHeader;
 import resultmap.GridMapping;
 import resultmap.GridRow;
+import sun.swing.StringUIClientPropertyKey;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ConsoleApplication.class)
@@ -68,7 +80,7 @@ public class CustomBeanProcessorTest {
 
     JSONObject testMapping = new JSONObject();
     testMapping.put("id", "test_id");
-    testMapping.put("name", "name");
+    testMapping.put("username", "username");
     testMapping.put("password", "password");
     testMapping.put("resultType", entity.Test.class.getCanonicalName());
 

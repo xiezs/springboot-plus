@@ -1,8 +1,8 @@
 package resultmap;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.RandomUtil;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +18,12 @@ import java.util.Set;
 public class GridColumn implements Serializable {
 
   /** 对应的属性与数据库中值的映射，用于map to Bean 转换 */
-  Map<String, Object> beanMap;
+  Map<String, Object> beanMap = MapUtil.newHashMap();
 
   /** 映射类型 */
   String resultType;
 
-  /** 数据库记录对应的唯一key，用 beanMap 中所有非null值的hashcode相加得出 */
+  /** 一个网格列包含一个对象中的所有数据列，通过对这些数据列进行hash得到数据列的唯一性 */
   Integer objKey;
 
   /** 包含的网格行 */
@@ -31,6 +31,8 @@ public class GridColumn implements Serializable {
 
   /** 归属的网格行 */
   GridRow belongRow;
+
+  GridHeader mappingHeader;
 
   public Map<String, Object> getBeanMap() {
     return beanMap;
@@ -49,25 +51,21 @@ public class GridColumn implements Serializable {
   }
 
   public Integer getObjKey() {
-    int hs = 0;
-    if (CollUtil.isNotEmpty(nestedRows)) {
-      for (GridRow nestedRow : nestedRows) {
-        hs = hs + nestedRow.getRowKey();
-      }
-    } else {
-      Set<Entry<String, Object>> entrySet = beanMap.entrySet();
-      for (Entry<String, Object> entry : entrySet) {
-        if (ObjectUtil.isNull(entry.getValue())) continue;
-        hs += entry.getValue().hashCode();
-      }
-    }
-    hs = hs / RandomUtil.randomInt(100);
-    objKey = hs;
+    objKey = calculateKey(beanMap);
     return objKey;
   }
 
-  public void setObjKey(Integer objKey) {
-    this.objKey = objKey;
+  public static Integer calculateKey(Map<String, Object> map) {
+    if (MapUtil.isEmpty(map)) {
+      return Integer.MIN_VALUE;
+    }
+    int hs = 0;
+    Set<Entry<String, Object>> entrySet = map.entrySet();
+    for (Entry<String, Object> entry : entrySet) {
+      if (ObjectUtil.isNull(entry.getValue())) continue;
+      hs += entry.getValue().hashCode();
+    }
+    return hs / 42;
   }
 
   public List<GridRow> getNestedRows() {
@@ -84,5 +82,22 @@ public class GridColumn implements Serializable {
 
   public void setBelongRow(GridRow belongRow) {
     this.belongRow = belongRow;
+  }
+
+  public void setMappingHeader(GridHeader mappingHeader) {
+    this.mappingHeader = mappingHeader;
+  }
+
+  public GridHeader getMappingHeader() {
+    return this.mappingHeader;
+  }
+
+  public GridRow findRowByKey(Integer objKey) {
+    for (GridRow row : this.nestedRows) {
+      if (ObjectUtil.equal(row.getRowKey(), objKey)) {
+        return row;
+      }
+    }
+    return null;
   }
 }
