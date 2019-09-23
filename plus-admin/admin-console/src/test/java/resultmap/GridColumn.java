@@ -65,7 +65,7 @@ public class GridColumn implements Serializable {
       if (ObjectUtil.isNull(entry.getValue())) continue;
       hs += entry.getValue().hashCode();
     }
-    return hs / 42;
+    return hs * 42;
   }
 
   public List<GridRow> getNestedRows() {

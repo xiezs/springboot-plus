@@ -84,7 +84,6 @@ public class CustomBeanProcessorTest {
     testMapping.put("password", "password");
     testMapping.put("resultType", entity.Test.class.getCanonicalName());
 
-    routeMapping.put("test", testMapping);
     routeMapping.put("meta", metaMapping);
     routeMapping.put("resultType", CoreRoute.class.getCanonicalName());
 

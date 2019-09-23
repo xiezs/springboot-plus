@@ -1,7 +1,11 @@
 package processor;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.util.CacheUtil;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -9,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,64 +42,112 @@ public class JsonBeanProcessor extends BeanProcessor {
     ResultSetMetaData rsmd = rs.getMetaData();
     int[] columnToProperty = this.mapColumnsToProperties(type, rsmd, props);
 
-    results.add(this.createBean(sqlId, rs, type, props, columnToProperty));
-
+    GridMapping mapping = (GridMapping) CacheUtil.get("Route_Mapping");
+    if (null == mapping) {
+      do {
+        results.add(super.createBean(sqlId, rs, type, props, columnToProperty));
+      } while (rs.next());
+    } else {
+      fillMappingRow(rs, mapping);
+      results = convertMapping(mapping, type);
+    }
     return results;
   }
 
-  /** 创建 一个新的对象，并从ResultSet初始化 */
-  @Override
-  protected <T> T createBean(
-      String sqlId, ResultSet rs, Class<T> type, PropertyDescriptor[] props, int[] columnToProperty)
-      throws SQLException {
-    GridMapping gridMapping = (GridMapping) CacheUtil.get("Route_Mapping");
-    if (null == gridMapping) {
-      return super.createBean(sqlId, rs, type, props, columnToProperty);
+  /**
+   * 循环转换整个网格映射
+   *
+   * @param mapping
+   * @param objType
+   * @param <T>
+   * @return
+   */
+  public <T> List<T> convertMapping(GridMapping mapping, Class<T> objType) throws SQLException {
+    List<T> results = new ArrayList<T>();
+    List<GridRow> mappingNestedRows = mapping.getNestedRows();
+    for (GridRow mappingNestedRow : mappingNestedRows) {
+      T obj = convertRow(mappingNestedRow, objType);
+      results.add(obj);
     }
-
-    fillMappingRow(rs, gridMapping);
-    System.out.println(gridMapping);
-    return null;
+    return results;
   }
 
-  public String print(GridColumn column) {
-    List<GridRow> nestedRows = column.getNestedRows();
-    String print = "";
-    for (GridRow nestedRow : nestedRows) {
-      List<GridColumn> nestedColumns = nestedRow.getNestedColumns();
-      GridColumn gridColumn = nestedColumns.get(0);
-      print = print.concat(gridColumn.getBeanMap().toString() + "\n\t");
-      for (int i = 1; i < nestedColumns.size(); i++) {
-        GridColumn tempCol = nestedColumns.get(i);
-        if (tempCol.getBeanMap().isEmpty() && !tempCol.getNestedRows().isEmpty()) {
-          /*是一个容器性质的列*/
-          print = print.concat(print(tempCol));
-        } else if (!tempCol.getBeanMap().isEmpty() && tempCol.getNestedRows().isEmpty()) {
-          /*对象存储性质的列*/
-          print = print.concat(tempCol.getBeanMap().toString() + "\n\t");
+  /**
+   * 递归转换整个网格行
+   *
+   * @param row
+   * @param objType
+   * @param <T>
+   * @return
+   */
+  public <T> T convertRow(GridRow row, Class<T> objType) throws SQLException {
+    T obj = super.newInstance(objType);
+
+    List<GridColumn> nestedColumns = row.getNestedColumns();
+    GridColumn curObjCol = nestedColumns.get(0);
+
+    for (int i = 1; i < nestedColumns.size(); i++) {
+      GridColumn nestedColumn = nestedColumns.get(i);
+      GridHeader mappingHeader = nestedColumn.getMappingHeader();
+      String resultType = mappingHeader.getResultType();
+
+      List<GridRow> nestedRows = nestedColumn.getNestedRows();
+      for (GridRow nestedRow : nestedRows) {
+        if (StrUtil.isNotBlank(resultType)) {
+          /*在映射中标明类型，证明是复杂类型*/
+          Class nestedPropType = ClassUtil.loadClass(resultType);
+          String nestedPropName = mappingHeader.getNestedPropName();
+          boolean isCollection = mappingHeader.getIsCollection();
+          Object resultObj = BeanUtil.getFieldValue(obj, nestedPropName);
+          Object nestedPropObj = convertRow(nestedRow, nestedPropType);
+          if (isCollection) {
+            ((Collection)resultObj).add(nestedPropObj);
+            resultObj = CollUtil.removeNull(((Collection)resultObj));
+          } else {
+            resultObj = nestedPropObj;
+          }
+          BeanUtil.setFieldValue(obj, nestedPropName, resultObj);
+        } else {
+          /*在映射中没有标明类型，证明是基本类型*/
+          String nestedPropName = mappingHeader.getNestedPropName();
+          boolean isCollection = mappingHeader.getIsCollection();
+          Object resultObj = BeanUtil.getFieldValue(obj, nestedPropName);
+          Map<String, Object> beanMap = nestedRow.getNestedColumns().get(0).getBeanMap();
+          /*几乎此处说明内嵌的字段是一个基本类型的集合，所以beanmap中应该只有一个值*/
+          Object nestedPropObj = CollUtil.getFirst(beanMap.values());
+          if (isCollection) {
+            ((Collection)resultObj).add(nestedPropObj);
+            resultObj = CollUtil.removeNull(((Collection)resultObj));
+          } else {
+            resultObj = nestedPropObj;
+          }
+          BeanUtil.setFieldValue(obj, nestedPropName, resultObj);
         }
       }
     }
-    return print;
-  }
 
+    BeanUtil.fillBeanWithMap(curObjCol.getBeanMap(), obj, false, true);
+    return obj;
+  }
+  /**
+   * 填充整个网格映射mapping数据结构
+   *
+   * @param resultSet
+   * @param mapping
+   * @throws SQLException
+   */
   protected void fillMappingRow(ResultSet resultSet, GridMapping mapping) throws SQLException {
     GridHeader header = mapping.getHeader();
     GridColumn column = new GridColumn();
-
-    /** flag：用来判断结果集是否应该通过 mapping.nextRow(); 生成新的行 */
-    Boolean flag = true;
     while (resultSet.next()) {
-
       List<GridRow> mappingNestedRows = mapping.getNestedRows();
       GridRow row = fillRowColumn(resultSet, header, column);
       if (!mappingNestedRows.contains(row)) {
         mappingNestedRows.add(row);
       }
     }
-    System.out.println(11);
   }
-  /** flag：用来判断结果集是否 next() */
+  /** 递归填充mapping结构中的每一行 */
   protected GridRow fillRowColumn(ResultSet resultSet, GridHeader header, GridColumn column)
       throws SQLException {
     /*搜寻已经存在的row，如果没有，则插入一个*/
@@ -118,7 +171,6 @@ public class JsonBeanProcessor extends BeanProcessor {
         nestedRows.add(nestedRow);
       }
     }
-
     row.getNestedColumns().get(0).setBeanMap(beanMap);
     return row;
   }
