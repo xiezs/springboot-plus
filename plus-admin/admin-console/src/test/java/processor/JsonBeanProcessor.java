@@ -2,6 +2,7 @@ package processor;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapBuilder;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -32,11 +33,46 @@ public class JsonBeanProcessor extends BeanProcessor {
     super(sm);
   }
 
+  public void getResultSet(ResultSet resultSet) throws SQLException {
+    Map<String, List<Object>> map = MapUtil.<String, List<Object>>builder().build();
+    ResultSetMetaData metaData = resultSet.getMetaData();
+    int count = metaData.getColumnCount();
+    int rn = 0;
+    resultSet.absolute(0);
+    while (resultSet.next()) {
+      for (int i = 1; i <= count; i++) {
+        String columnLabel = metaData.getColumnLabel(i);
+        List<Object> objectList = map.getOrDefault(columnLabel, CollUtil.newArrayList());
+        Object object = resultSet.getObject(i);
+        objectList.add(object);
+        map.put(columnLabel, objectList);
+      }
+      rn++;
+    }
+    resultSet.absolute(0);
+
+    Set<String> keySet = map.keySet();
+    for (String key : keySet) {
+      System.out.printf("| %-32s ", key);
+    }
+    System.out.println();
+
+
+    for(int i=0;i<rn;i++){
+      Set<Entry<String, List<Object>>> entrySet = map.entrySet();
+      for (Entry<String, List<Object>> entry : entrySet) {
+        System.out.printf("| %-32s  ", entry.getValue().get(i));
+      }
+      System.out.println();
+    }
+  }
+
   @Override
   public <T> List<T> toBeanList(String sqlId, ResultSet rs, Class<T> type) throws SQLException {
     if (!rs.next()) {
       return new ArrayList<T>(0);
     }
+
     List<T> results = new ArrayList<T>();
     PropertyDescriptor[] props = this.propertyDescriptors(type);
     ResultSetMetaData rsmd = rs.getMetaData();
@@ -48,6 +84,7 @@ public class JsonBeanProcessor extends BeanProcessor {
         results.add(super.createBean(sqlId, rs, type, props, columnToProperty));
       } while (rs.next());
     } else {
+      rs.absolute(0);
       fillMappingRow(rs, mapping);
       results = convertMapping(mapping, type);
     }
@@ -101,8 +138,8 @@ public class JsonBeanProcessor extends BeanProcessor {
           Object resultObj = BeanUtil.getFieldValue(obj, nestedPropName);
           Object nestedPropObj = convertRow(nestedRow, nestedPropType);
           if (isCollection) {
-            ((Collection)resultObj).add(nestedPropObj);
-            resultObj = CollUtil.removeNull(((Collection)resultObj));
+            ((Collection) resultObj).add(nestedPropObj);
+            resultObj = CollUtil.removeNull(((Collection) resultObj));
           } else {
             resultObj = nestedPropObj;
           }
@@ -116,8 +153,8 @@ public class JsonBeanProcessor extends BeanProcessor {
           /*几乎此处说明内嵌的字段是一个基本类型的集合，所以beanmap中应该只有一个值*/
           Object nestedPropObj = CollUtil.getFirst(beanMap.values());
           if (isCollection) {
-            ((Collection)resultObj).add(nestedPropObj);
-            resultObj = CollUtil.removeNull(((Collection)resultObj));
+            ((Collection) resultObj).add(nestedPropObj);
+            resultObj = CollUtil.removeNull(((Collection) resultObj));
           } else {
             resultObj = nestedPropObj;
           }
