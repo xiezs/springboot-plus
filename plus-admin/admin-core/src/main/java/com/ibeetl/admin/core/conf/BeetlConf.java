@@ -10,6 +10,7 @@ import com.ibeetl.admin.core.util.beetl.DictQueryFunction;
 import com.ibeetl.admin.core.util.beetl.FileFunction;
 import com.ibeetl.admin.core.util.beetl.FunAccessUrlFunction;
 import com.ibeetl.admin.core.util.beetl.FunFunction;
+import com.ibeetl.admin.core.util.beetl.MappingFunction;
 import com.ibeetl.admin.core.util.beetl.MenuFunction;
 import com.ibeetl.admin.core.util.beetl.OrgFunction;
 import com.ibeetl.admin.core.util.beetl.RoleFunction;

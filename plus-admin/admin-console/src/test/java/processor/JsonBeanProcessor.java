@@ -57,8 +57,7 @@ public class JsonBeanProcessor extends BeanProcessor {
     }
     System.out.println();
 
-
-    for(int i=0;i<rn;i++){
+    for (int i = 0; i < rn; i++) {
       Set<Entry<String, List<Object>>> entrySet = map.entrySet();
       for (Entry<String, List<Object>> entry : entrySet) {
         System.out.printf("| %-32s  ", entry.getValue().get(i));
@@ -78,7 +77,8 @@ public class JsonBeanProcessor extends BeanProcessor {
     ResultSetMetaData rsmd = rs.getMetaData();
     int[] columnToProperty = this.mapColumnsToProperties(type, rsmd, props);
 
-    GridMapping mapping = (GridMapping) CacheUtil.get("Route_Mapping");
+    Map json = (Map) CacheUtil.get(sqlId);
+    GridMapping mapping = new GridMapping(json);
     if (null == mapping) {
       do {
         results.add(super.createBean(sqlId, rs, type, props, columnToProperty));
