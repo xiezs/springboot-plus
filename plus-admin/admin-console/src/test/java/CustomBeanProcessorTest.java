@@ -38,64 +38,15 @@ public class CustomBeanProcessorTest {
 
   @Autowired GroupTemplate template;
 
-  static JSONObject resultMappping;
-
-  @BeforeClass
-  public static void init() {
-    resultMappping = new JSONObject();
-    resultMappping.put("id", "core_route_map");
-
-    JSONObject routeMapping = new JSONObject();
-    routeMapping.put("id", "id");
-    routeMapping.put("parentId", "parent_id");
-    routeMapping.put("path", "path");
-    routeMapping.put("name", "name");
-    routeMapping.put("seq", "seq");
-
-    JSONObject metaMapping = new JSONObject();
-    metaMapping.put("title", "title");
-    metaMapping.put("icon", "icon");
-
-    JSONArray roles = new JSONArray();
-    JSONObject roleidMapping = new JSONObject();
-    roleidMapping.put("id", "role_id");
-    roles.add(roleidMapping);
-
-    metaMapping.put("roles", roles);
-    metaMapping.put("resultType", CoreRouteMeta.class.getCanonicalName());
-
-    JSONObject testMapping = new JSONObject();
-    testMapping.put("id", "test_id");
-    testMapping.put("username", "username");
-    testMapping.put("password", "password");
-    testMapping.put("resultType", entity.Test.class.getCanonicalName());
-
-    routeMapping.put("meta", metaMapping);
-    routeMapping.put("resultType", CoreRoute.class.getCanonicalName());
-
-    resultMappping.put("mapping", routeMapping);
-  }
-
   @Before
   public void beanProcessor() {
     JsonBeanProcessor jsonBeanProcessor = new JsonBeanProcessor(sqlManager);
     sqlManager.setDefaultBeanProcessors(jsonBeanProcessor);
-    Map<Class, JavaSqlTypeHandler> typeHandlerMap =
-        sqlManager.getDefaultBeanProcessors().getHandlers();
-    /*Java bean的属性类型处理器，从数据库类型转化到属性Date类型*/
-    typeHandlerMap.remove(Date.class);
-    typeHandlerMap.put(Date.class, new DateTypeHandler());
-    typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
   }
 
   @Test
   public void maptest() {
-    GridMapping gridMapping = new GridMapping(resultMappping);
-
-    CacheUtil.put("Route_Mapping", gridMapping);
-
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
     System.out.println(routesList);
-    System.out.println(JSONUtil.toJsonPrettyStr(resultMappping));
   }
 }

@@ -19,6 +19,7 @@ import com.ibeetl.admin.core.util.beetl.SysFunctionTreeFunction;
 import com.ibeetl.admin.core.util.beetl.UUIDFunction;
 import com.ibeetl.admin.core.util.beetl.XXSDefenderFormat;
 import com.ibeetl.admin.core.web.query.QueryParser;
+import com.ibeetl.starter.BeetlSqlMutipleSourceCustomize;
 import com.ibeetl.starter.BeetlTemplateCustomize;
 import com.ibeetl.starter.ObjectMapperJsonUtil;
 import java.io.UnsupportedEncodingException;
@@ -27,14 +28,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.commons.jexl2.internal.MapGetExecutor;
 import org.beetl.core.Context;
 import org.beetl.core.Function;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.simulate.WebSimulate;
+import org.beetl.sql.core.Interceptor;
 import org.beetl.sql.core.InterceptorContext;
 import org.beetl.sql.core.SQLManager;
+import org.beetl.sql.core.engine.SQLPlaceholderST;
 import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
 import org.beetl.sql.ext.DebugInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -82,15 +89,18 @@ public class BeetlConf {
   }
 
   @Bean
-  public SQLManager sqlManager(
-      @Qualifier("baseDataSourceSqlManagerFactoryBean") SQLManager sqlManager) {
-    Map<Class, JavaSqlTypeHandler> typeHandlerMap =
-        sqlManager.getDefaultBeanProcessors().getHandlers();
-    /*Java bean的属性类型处理器，从数据库类型转化到属性Date类型*/
-    typeHandlerMap.remove(Date.class);
-    typeHandlerMap.put(Date.class, new DateTypeHandler());
-    typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
-    return sqlManager;
+  public BeetlSqlMutipleSourceCustomize beetlSqlMutipleSourceCustomize(){
+    SQLPlaceholderST.textFunList.add("mapping");
+    return (dataSource, manager) -> {
+      Map<Class, JavaSqlTypeHandler> typeHandlerMap =
+          manager.getDefaultBeanProcessors().getHandlers();
+      /*Java bean的属性类型处理器，从数据库类型转化到属性Date类型*/
+      typeHandlerMap.remove(Date.class);
+      typeHandlerMap.put(Date.class, new DateTypeHandler());
+      typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
+      manager.setInters(new Interceptor[]{new StarterDebugInterceptor()});
+
+    };
   }
 
   @Bean
@@ -167,6 +177,8 @@ public class BeetlConf {
   }
 
   static class StarterDebugInterceptor extends DebugInterceptor {
+    private Logger logger= LoggerFactory.getLogger("beetlsql");
+
     @Override
     protected boolean isSimple(String sqlId) {
       if (sqlId.indexOf("_gen_") != -1) {
@@ -177,8 +189,8 @@ public class BeetlConf {
     }
 
     @Override
-    protected void simpleOut(InterceptorContext ctx) {
-      return;
+    protected void println(String str) {
+      logger.info(str);
     }
   }
 }

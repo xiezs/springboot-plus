@@ -24,6 +24,11 @@ public class MappingFunction implements Function {
 
   @Override
   public Object call(Object[] paras, Context ctx) {
+    String currentSqlId = ctx.getGlobal("_id").toString();
+    Object cache = CacheUtil.get(currentSqlId);
+    if(ObjectUtil.isNotNull(cache)){
+      return StrUtil.EMPTY;
+    }
     String sqlSegmentId = (String) paras[0];
     Map inputParas = ctx.globalVar;
     if (paras.length == 2) {
@@ -39,7 +44,7 @@ public class MappingFunction implements Function {
     String file = this.getParentId(ctx);
     SQLResult result;
     if(sqlSegmentId.indexOf(".")==-1){
-      /*证明是同一个md文件的sql段*/
+      /*同一个md文件的sql段*/
       result = sm.getSQLResult(file + "." + sqlSegmentId, inputParas, ctx);
     }else {
       /*另一个md文件的sql段*/
@@ -56,7 +61,7 @@ public class MappingFunction implements Function {
             result.jdbcSql, inputParas, STRING_WRITER, STRING_TEMPLATE_RESOURCE_LOADER);
 
     if (MapUtil.isNotEmpty(rsMap)) {
-      String currentSqlId = ctx.getGlobal("_id").toString();
+      /*TODO 待移到非测试代码中，重写为保持GridMapping，而不是保持Map*/
       CacheUtil.put(currentSqlId, rsMap.values().stream().findFirst().get());
     }
 

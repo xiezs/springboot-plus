@@ -33,7 +33,12 @@ public class JsonBeanProcessor extends BeanProcessor {
     super(sm);
   }
 
-  public void getResultSet(ResultSet resultSet) throws SQLException {
+  /**
+   * 网格化输出结果集
+   * @param resultSet
+   * @throws SQLException
+   */
+  public void printfResultSet(ResultSet resultSet) throws SQLException {
     Map<String, List<Object>> map = MapUtil.<String, List<Object>>builder().build();
     ResultSetMetaData metaData = resultSet.getMetaData();
     int count = metaData.getColumnCount();
@@ -80,10 +85,12 @@ public class JsonBeanProcessor extends BeanProcessor {
     Map json = (Map) CacheUtil.get(sqlId);
     GridMapping mapping = new GridMapping(json);
     if (null == mapping) {
+      /*无映射的情况下使用beetlsql默认自带的映射*/
       do {
         results.add(super.createBean(sqlId, rs, type, props, columnToProperty));
       } while (rs.next());
     } else {
+      /*复杂结果集映射，取消TailBean的便利性*/
       rs.absolute(0);
       fillMappingRow(rs, mapping);
       results = convertMapping(mapping, type);
@@ -162,12 +169,12 @@ public class JsonBeanProcessor extends BeanProcessor {
         }
       }
     }
-
-    BeanUtil.fillBeanWithMap(curObjCol.getBeanMap(), obj, false, true);
+    /*TODO 重写，以便提供命名转换*/
+    BeanUtil.fillBeanWithMap(curObjCol.getBeanMap(), obj, true, true);
     return obj;
   }
   /**
-   * 填充整个网格映射mapping数据结构
+   * 填充整个网格映射mapping数据结构：通过网格头映射生成一个个网格行
    *
    * @param resultSet
    * @param mapping
@@ -184,9 +191,10 @@ public class JsonBeanProcessor extends BeanProcessor {
       }
     }
   }
-  /** 递归填充mapping结构中的每一行 */
-  protected GridRow fillRowColumn(ResultSet resultSet, GridHeader header, GridColumn column)
-      throws SQLException {
+  /**
+   * 网格行中存在一个个网格列，也对应着相应的网格头结构
+   * */
+  protected GridRow fillRowColumn(ResultSet resultSet, GridHeader header, GridColumn column) {
     /*搜寻已经存在的row，如果没有，则插入一个*/
     Map<String, Object> beanMap = extractMapFromRs(resultSet, header);
     Integer calculateKey = GridColumn.calculateKey(beanMap);
@@ -212,6 +220,13 @@ public class JsonBeanProcessor extends BeanProcessor {
     return row;
   }
 
+  /**
+   * 遍历网格头，由网格头的信息从结果集中读取值。<br/>
+   * 这样做的好处是方便算法编写；坏处是失去了tailbean的处理，因为无法确定结果集列的读取状态。
+   * @param resultSet
+   * @param header
+   * @return
+   */
   private Map<String, Object> extractMapFromRs(ResultSet resultSet, GridHeader header) {
     Map<String, Object> tempBeanMap = MapUtil.newHashMap();
     /*第一步、先处理当前可以处理的*/
@@ -221,7 +236,7 @@ public class JsonBeanProcessor extends BeanProcessor {
       try {
         tempBeanMap.put(entry.getKey(), resultSet.getObject(entry.getValue()));
       } catch (SQLException e) {
-        /*普遍错误时从resultset中获取一个不存在的列，但可以忽视*/
+        /*普遍错误：从resultset中获取一个不存在的列，但可以忽视*/
       }
     }
     return tempBeanMap;

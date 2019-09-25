@@ -14,8 +14,9 @@ select router.id,
 from core_function router
        left join core_menu menu on menu.FUNCTION_ID = router.ID
        left join core_role_menu crm on crm.MENU_ID = menu.id
-order by router.ID #text(mapping("RouteMapping"))#
+order by router.ID
 ```
+>- mapping("RouteMapping");
 
 RouteMapping
 ===
