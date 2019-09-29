@@ -1,18 +1,16 @@
-package com.ibeetl.admin.core.util.beetl;
+package com.ibeetl.admin.core.conf.handler;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
+import com.ibeetl.admin.core.conf.resultmap.GridMapping;
 import com.ibeetl.admin.core.util.CacheUtil;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import org.beetl.core.Context;
 import org.beetl.core.Function;
 import org.beetl.core.GroupTemplate;
-import org.beetl.core.ResourceLoader;
 import org.beetl.core.resource.StringTemplateResourceLoader;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.SQLResult;
@@ -20,13 +18,14 @@ import org.beetl.sql.core.SQLResult;
 public class MappingFunction implements Function {
 
   private static final StringWriter STRING_WRITER = new StringWriter();
-  private static final StringTemplateResourceLoader STRING_TEMPLATE_RESOURCE_LOADER = new StringTemplateResourceLoader();
+  private static final StringTemplateResourceLoader STRING_TEMPLATE_RESOURCE_LOADER =
+      new StringTemplateResourceLoader();
 
   @Override
   public Object call(Object[] paras, Context ctx) {
     String currentSqlId = ctx.getGlobal("_id").toString();
     Object cache = CacheUtil.get(currentSqlId);
-    if(ObjectUtil.isNotNull(cache)){
+    if (ObjectUtil.isNotNull(cache)) {
       return StrUtil.EMPTY;
     }
     String sqlSegmentId = (String) paras[0];
@@ -43,10 +42,10 @@ public class MappingFunction implements Function {
     /*获取参数指定的sqlid所在的md文件名*/
     String file = this.getParentId(ctx);
     SQLResult result;
-    if(sqlSegmentId.indexOf(".")==-1){
+    if (sqlSegmentId.indexOf(".") == -1) {
       /*同一个md文件的sql段*/
       result = sm.getSQLResult(file + "." + sqlSegmentId, inputParas, ctx);
-    }else {
+    } else {
       /*另一个md文件的sql段*/
       result = sm.getSQLResult(sqlSegmentId, inputParas, ctx);
     }
@@ -61,8 +60,9 @@ public class MappingFunction implements Function {
             result.jdbcSql, inputParas, STRING_WRITER, STRING_TEMPLATE_RESOURCE_LOADER);
 
     if (MapUtil.isNotEmpty(rsMap)) {
-      /*TODO 待移到非测试代码中，重写为保持GridMapping，而不是保持Map*/
-      CacheUtil.put(currentSqlId, rsMap.values().stream().findFirst().get());
+      GridMapping mapping =
+          new GridMapping((Map<String, Object>) rsMap.values().stream().findFirst().get());
+      CacheUtil.put(currentSqlId, mapping);
     }
 
     return StrUtil.EMPTY;

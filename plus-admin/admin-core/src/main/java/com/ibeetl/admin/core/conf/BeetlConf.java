@@ -1,8 +1,10 @@
 package com.ibeetl.admin.core.conf;
 
+import cn.hutool.core.util.CharsetUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeetl.admin.core.conf.handler.DateTypeHandler;
 import com.ibeetl.admin.core.conf.handler.ZonedDateTimeTypeHandler;
+import com.ibeetl.admin.core.conf.processor.JsonBeanProcessor;
 import com.ibeetl.admin.core.rbac.DataAccess;
 import com.ibeetl.admin.core.rbac.DataAccessFactory;
 import com.ibeetl.admin.core.service.CorePlatformService;
@@ -10,7 +12,6 @@ import com.ibeetl.admin.core.util.beetl.DictQueryFunction;
 import com.ibeetl.admin.core.util.beetl.FileFunction;
 import com.ibeetl.admin.core.util.beetl.FunAccessUrlFunction;
 import com.ibeetl.admin.core.util.beetl.FunFunction;
-import com.ibeetl.admin.core.util.beetl.MappingFunction;
 import com.ibeetl.admin.core.util.beetl.MenuFunction;
 import com.ibeetl.admin.core.util.beetl.OrgFunction;
 import com.ibeetl.admin.core.util.beetl.RoleFunction;
@@ -28,22 +29,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.jexl2.internal.MapGetExecutor;
 import org.beetl.core.Context;
 import org.beetl.core.Function;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.simulate.WebSimulate;
 import org.beetl.sql.core.Interceptor;
-import org.beetl.sql.core.InterceptorContext;
-import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.engine.SQLPlaceholderST;
 import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
 import org.beetl.sql.ext.DebugInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -88,21 +84,34 @@ public class BeetlConf {
     };
   }
 
+  /**
+   * BeetlSql 多数据源
+   *
+   * @return
+   */
   @Bean
-  public BeetlSqlMutipleSourceCustomize beetlSqlMutipleSourceCustomize(){
+  public BeetlSqlMutipleSourceCustomize beetlSqlMutipleSourceCustomize() {
     SQLPlaceholderST.textFunList.add("mapping");
     return (dataSource, manager) -> {
+      /*bean转换处理器*/
+      JsonBeanProcessor jsonBeanProcessor = new JsonBeanProcessor(manager);
+      manager.setDefaultBeanProcessors(jsonBeanProcessor);
+      /*类型处理器*/
       Map<Class, JavaSqlTypeHandler> typeHandlerMap =
           manager.getDefaultBeanProcessors().getHandlers();
       /*Java bean的属性类型处理器，从数据库类型转化到属性Date类型*/
       typeHandlerMap.remove(Date.class);
       typeHandlerMap.put(Date.class, new DateTypeHandler());
       typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
-      manager.setInters(new Interceptor[]{new StarterDebugInterceptor()});
-
+      /*拦截器*/
+      manager.setInters(new Interceptor[] {new StarterDebugInterceptor()});
     };
   }
 
+  /**
+   *  Beetl模板引擎的自定义配置
+   *  @return
+   *  */
   @Bean
   public BeetlTemplateCustomize beetlTemplateCustomize() {
     return groupTemplate -> {
@@ -129,16 +138,6 @@ public class BeetlConf {
           });
 
       groupTemplate.registerFunction(
-          "abcd",
-          new Function() {
-
-            @Override
-            public Boolean call(Object[] paras, Context ctx) {
-              return true;
-            }
-          });
-
-      groupTemplate.registerFunction(
           "env",
           new Function() {
 
@@ -157,7 +156,7 @@ public class BeetlConf {
 
             protected String getStr(String str) {
               try {
-                return new String(str.getBytes("iso8859-1"), "UTF-8");
+                return new String(str.getBytes(CharsetUtil.ISO_8859_1), CharsetUtil.UTF_8);
               } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
               }
@@ -177,8 +176,13 @@ public class BeetlConf {
   }
 
   static class StarterDebugInterceptor extends DebugInterceptor {
-    private Logger logger= LoggerFactory.getLogger("beetlsql");
+    private Logger logger = LoggerFactory.getLogger("beetlsql");
 
+    /**
+     * 将内置生成的SQL排除打印
+     * @param sqlId
+     * @return
+     */
     @Override
     protected boolean isSimple(String sqlId) {
       if (sqlId.indexOf("_gen_") != -1) {
