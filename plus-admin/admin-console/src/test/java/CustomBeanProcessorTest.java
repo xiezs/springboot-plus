@@ -32,18 +32,6 @@ public class CustomBeanProcessorTest {
 
   @Autowired CoreFunctionDao coreFunctionDao;
 
-  @Autowired
-  @Qualifier("baseDataSourceSqlManagerFactoryBean")
-  SQLManager sqlManager;
-
-  @Autowired GroupTemplate template;
-
-  @Before
-  public void beanProcessor() {
-    JsonBeanProcessor jsonBeanProcessor = new JsonBeanProcessor(sqlManager);
-    sqlManager.setDefaultBeanProcessors(jsonBeanProcessor);
-  }
-
   @Test
   public void maptest() {
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
