@@ -1,6 +1,8 @@
 package com.ibeetl.admin.core.conf;
 
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.setting.SettingUtil;
+import cn.hutool.setting.dialect.Props;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeetl.admin.core.conf.handler.DateTypeHandler;
 import com.ibeetl.admin.core.conf.handler.ZonedDateTimeTypeHandler;
@@ -23,6 +25,7 @@ import com.ibeetl.admin.core.web.query.QueryParser;
 import com.ibeetl.starter.BeetlSqlMutipleSourceCustomize;
 import com.ibeetl.starter.BeetlTemplateCustomize;
 import com.ibeetl.starter.ObjectMapperJsonUtil;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -85,7 +88,7 @@ public class BeetlConf {
   }
 
   /**
-   * BeetlSql 多数据源
+   * 对BeetlSql 的多数据源中每个数据源单独自定义配置
    *
    * @return
    */
@@ -194,7 +197,7 @@ public class BeetlConf {
 
     @Override
     protected void println(String str) {
-      logger.info(str);
+      logger.info(System.lineSeparator()+str);
     }
   }
 }

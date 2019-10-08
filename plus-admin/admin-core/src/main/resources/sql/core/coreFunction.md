@@ -3,20 +3,22 @@ getAllRoutes
 ===
 
 ```sql
-select router.id,
-       router.PARENT_ID,
-       ifnull(router.ACCESS_URL, '/error/404') path,
-       router.NAME,
-       menu.NAME                               title,
+
+select menu.id,
+       menu.PARENT_MENU_ID      PARENT_ID,
+       menu.NAME                title,
        menu.ICON,
-       ifnull(menu.SEQ, 999999)                seq,
-       crm.ROLE_ID
-from core_function router
-       left join core_menu menu on menu.FUNCTION_ID = router.ID
-       left join core_role_menu crm on crm.MENU_ID = menu.id
-order by router.ID
+       ifnull(menu.SEQ, 999999) seq,
+       route.ACCESS_URL          path,
+       route.NAME,
+       role_menu.ROLE_ID
+from core_menu menu
+       left join core_function route on route.ID = menu.FUNCTION_ID
+       left join core_role_menu role_menu on role_menu.MENU_ID = menu.id
+where menu.TYPE!='MENU_S'
+
 ```
->- mapping("RouteMapping");
+@ mapping("RouteMapping");
 
 RouteMapping
 ===

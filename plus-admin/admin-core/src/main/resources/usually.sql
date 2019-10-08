@@ -36,15 +36,30 @@ SELECT router.id,
        menu.NAME                               title,
        menu.ICON,
        IFNULL(menu.SEQ, -9999)                 seq,
-       crm.ROLE_ID
+       (select from core_role_menu crm where crm.
 FROM core_function router
          LEFT JOIN core_menu menu
-                   ON menu.FUNCTION_ID = router.ID
-         LEFT JOIN core_role_menu crm
-                   ON crm.MENU_ID = menu.id;
+                   ON menu.FUNCTION_ID = router.ID;
 
-select *
-from core_function;
+select router.id,
+       router.PARENT_ID,
+       IFNULL(router.ACCESS_URL, '/error/404') path,
+       router.NAME,
+       menu.NAME                               title,
+       menu.ICON,
+       IFNULL(menu.SEQ, -9999)                 seq,
+       from core_menu cm left join core_function cf on cf.id=cm.function_id
+
+union
+
+select router.id,
+       router.PARENT_ID,
+       IFNULL(router.ACCESS_URL, '/error/404') path,
+       router.NAME,
+       menu.NAME                               title,
+       menu.ICON,
+       IFNULL(menu.SEQ, -9999)                 seq,
+       from core_menu cm right join core_function cf on cf.id=cm.function_id;
 
 -- 分为系统，导航，菜单。系统是顶部菜单，导航就是父菜单，菜单是导航的子菜单
 select cm.*,

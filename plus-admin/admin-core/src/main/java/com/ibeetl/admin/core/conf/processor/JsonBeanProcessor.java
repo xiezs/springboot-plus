@@ -95,6 +95,7 @@ public class JsonBeanProcessor extends BeanProcessor {
     } else {
       /*复杂结果集映射，取消TailBean的便利性*/
       rs.absolute(0);
+      mapping.setNestedRows(null);
       fillMappingRow(rs, mapping);
       results = convertMapping(mapping, type);
     }
@@ -131,6 +132,7 @@ public class JsonBeanProcessor extends BeanProcessor {
     } else {
       /*复杂结果集映射，取消TailBean的便利性*/
       rs.absolute(0);
+      mapping.getNestedRows().clear();
       fillMappingRow(rs, mapping);
       results = convertMapping(mapping, type);
     }

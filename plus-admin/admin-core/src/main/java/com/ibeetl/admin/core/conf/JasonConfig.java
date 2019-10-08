@@ -1,5 +1,10 @@
 package com.ibeetl.admin.core.conf;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
@@ -23,11 +28,17 @@ public class JasonConfig {
   @ConditionalOnMissingBean(ObjectMapper.class)
   public ObjectMapper getObjectMapper() {
     ObjectMapper objectMapper = new ObjectMapper();
+
     objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+
     objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
     SimpleModule simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
     simpleModule.addSerializer(JsonResult.class, new CustomJsonResultSerializer());
+    simpleModule.addSerializer(Long.class, ToStringSerializer.instance);
+    simpleModule.addSerializer(Long.TYPE, ToStringSerializer.instance);
     objectMapper.registerModule(simpleModule);
+
     return objectMapper;
   }
   /**
@@ -48,7 +59,7 @@ public class JasonConfig {
       Object data = value.getData();
       if (data instanceof PageQuery) {
         PageQuery query = (PageQuery) (data);
-        gen.writeObjectField("count", query.getTotalRow());
+        gen.writeNumberField("count", query.getTotalRow());
         gen.writeObjectField("data", query.getList());
       } else {
         gen.writeObjectField("data", data);
