@@ -7,16 +7,15 @@ getAllRoutes
 select menu.id,
        menu.PARENT_MENU_ID      PARENT_ID,
        menu.NAME                title,
+       menu.CODE                name,
        menu.ICON,
        ifnull(menu.SEQ, 999999) seq,
-       route.ACCESS_URL          path,
-       route.NAME,
+       func.ACCESS_URL          path,
        role_menu.ROLE_ID
 from core_menu menu
-       left join core_function route on route.ID = menu.FUNCTION_ID
+       left join core_function func on func.ID = menu.FUNCTION_ID
        left join core_role_menu role_menu on role_menu.MENU_ID = menu.id
-where menu.TYPE!='MENU_S'
-
+       
 ```
 @ mapping("RouteMapping");
 

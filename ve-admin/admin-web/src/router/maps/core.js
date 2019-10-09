@@ -1,14 +1,14 @@
-// 后台数据中的对应的路由表
 /*
+前端路由映射表中单个路由映射全部具有的信息
   {
     "path": "/profile",
     "component": "Layout",
     "redirect": "/profile/index",
-    "hidden": true,
-    "alwaysShow": true,
+    "hidden": true,//非菜单路由需要设置
+    "alwaysShow": true,//默认不设置
     "name": "router-name",
     "meta": {
-      "noCache": true,
+      "noCache": true,//默认缓存
       "affix": true,
       "breadcrumb": false,
       "activeMenu": "/example/list"
@@ -16,23 +16,15 @@
     "children": []
   }
 */
-import Layout from '@/layout'
+import Layout from '@/layout';
 
 const coreRouter = [
   {
-    path: '/admin/user/index.do',
-    name: '用户功能',
+    path: '/profile',
     component: Layout,
-    alwaysShow: true,
-    meta: {
-      affix: true,
-      title: '用户管理',
-      icon: null,
-      roles: [1, 173, 3]
-    },
-    children: []
-  }
-]
+    name: 'router-name',
+    children: [],
+  },
+];
 
-
-export default coreRouter
+export default coreRouter;

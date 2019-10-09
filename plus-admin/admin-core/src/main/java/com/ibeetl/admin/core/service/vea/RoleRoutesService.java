@@ -84,7 +84,7 @@ public class RoleRoutesService {
     CoreRoute root = new CoreRoute();
     root.setId(0L);
     buildRoutesTree(root, routesList);
-    return root.getChildren();
+    return CollUtil.getFirst(root.getChildren()).getChildren();
   }
 
   /**

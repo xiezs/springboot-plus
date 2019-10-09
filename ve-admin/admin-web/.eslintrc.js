@@ -4,27 +4,46 @@ module.exports = {
   env: {
     browser: true,
     node: true,
-    es6: true
+    es6: true,
   },
 
-  extends: [
-    'plugin:vue/essential',
-    'plugin:prettier/recommended',
-    'eslint:recommended'
+  parserOptions: {
+    parser: 'babel-eslint',
+  },
+
+  overrides: [
+    {
+      files: ['**/__tests__/*.{j,t}s?(x)'],
+      env: {
+        jest: true,
+      },
+    },
   ],
+
+  extends: [
+    'plugin:vue/recommended',
+    'plugin:prettier/recommended',
+    '@vue/prettier',
+  ],
+
   plugins: ['vue'],
+
   // 各种eslint检查的规则
   rules: {
     'prettier/prettier': [
-      'off',
+      0,
       {
+        eslintIntegration: true,
+        printWidth: 80,
+        tabWidth: 2,
+        useTabs: false,
         singleQuote: true,
-        trailingComma: 'none',
+        semi: true,
+        trailingComma: 'all',
         bracketSpacing: true,
-        jsxBracketSameLine: true,
-        parser: 'flow',
-        semi: false
-      }
+        jsxBracketSameLine: false,
+        arrowParens: 'avoid',
+      },
     ],
     'no-console': 'off',
     'no-debugger': 'off',
@@ -36,8 +55,8 @@ module.exports = {
       'single',
       {
         avoidEscape: true,
-        allowTemplateLiterals: true
-      }
+        allowTemplateLiterals: true,
+      },
     ],
     'jsx-quotes': [2, 'prefer-single'],
     // 缩进为2个空格
@@ -47,8 +66,8 @@ module.exports = {
       {
         attribute: 1,
         alignAttributesVertically: true,
-        ignores: []
-      }
+        ignores: [],
+      },
     ],
     'vue/max-attributes-per-line': [
       2,
@@ -56,9 +75,9 @@ module.exports = {
         singleline: 10,
         multiline: {
           max: 1,
-          allowFirstLine: false
-        }
-      }
+          allowFirstLine: false,
+        },
+      },
     ],
     'vue/html-self-closing': 'off',
     'vue/name-property-casing': ['error', 'PascalCase'],
@@ -81,22 +100,5 @@ module.exports = {
     // 关闭模板字符串检测
     'no-template-curly-in-string': 'off',
     'no-console': 'off',
-    // 禁止添加分号
-    semi: ['error', 'never']
   },
-
-  parserOptions: {
-    parser: 'babel-eslint'
-  },
-
-  overrides: [
-    {
-      files: ['**/__tests__/*.{j,t}s?(x)'],
-      env: {
-        jest: true
-      }
-    }
-  ],
-
-  extends: ['plugin:vue/essential', '@vue/prettier']
 }
