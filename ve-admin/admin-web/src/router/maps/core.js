@@ -20,10 +20,93 @@ import Layout from '@/layout';
 
 const coreRouter = [
   {
-    path: '/profile',
+    path: '/admin',
+    name: '基础管理',
     component: Layout,
-    name: 'router-name',
-    children: [],
+    meta: {},
+    children: [
+      {
+        path: '/admin/user/index.do',
+        name: '用户管理',
+        meta: {},
+      },
+      {
+        path: '/admin/org/index.do',
+        name: '组织机构管理',
+        meta: {},
+      },
+      {
+        path: '/admin/role/index.do',
+        name: '角色管理',
+        meta: {},
+      },
+      {
+        path: '/admin/menu/index.do',
+        name: '菜单项',
+        meta: {},
+      },
+      {
+        path: '/admin/function/index.do',
+        name: '功能点管理',
+        meta: {},
+      },
+      {
+        path: '/admin/dict/index.do',
+        name: '字典数据管理',
+        meta: {},
+      },
+      {
+        path: '/admin/role/function.do',
+        name: '角色功能授权',
+        meta: {},
+      },
+      {
+        path: '/admin/role/data.do',
+        name: '角色数据授权',
+        meta: {},
+      },
+    ],
+  },
+  {
+    path: '/core',
+    name: '代码生成导航',
+    component: Layout,
+    meta: {},
+    children: [
+      {
+        path: '/core/codeGen/project.do',
+        name: '子系统生成',
+        meta: {},
+      },
+      {
+        path: '/core/codeGen/index.do',
+        name: '代码生成',
+        meta: {},
+      },
+    ],
+  },
+  {
+    path: '/moniter',
+    name: '监控管理',
+    component: Layout,
+    meta: {},
+    children: [
+      {
+        path: '/admin/workflow/index.do',
+        name: '流程监控',
+        meta: {},
+      },
+      {
+        path: '/admin/audit/index.do',
+        name: '审计查询',
+        meta: {},
+      },
+      {
+        path: '/admin/blog/index.do',
+        name: '博客测试',
+        meta: {},
+      },
+    ],
   },
 ];
 

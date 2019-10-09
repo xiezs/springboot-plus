@@ -43,8 +43,9 @@ export function filterAsyncRoutes(routesMap, routes, roles) {
         isNotNullAndNotUndefined(route.name) &&
         isNotNullAndNotUndefined(rm.path) &&
         isNotNullAndNotUndefined(route.path) &&
-        (rm.name === route.name || rm.path === route.path)
+        (rm.path === route.path || rm.name === route.name)
       ) {
+        // 优先path判断，是因为导航菜单的展开和收起是根据path判断的。
         tempRouteMap = { ...rm };
         break;
       }
@@ -97,7 +98,7 @@ const actions = {
             roles,
           );
           accessedRoutes.push({ path: '*', redirect: '/404', hidden: true });
-          debugger;
+
           commit('SET_ROUTES', accessedRoutes);
           resolve(accessedRoutes);
         })
