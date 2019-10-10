@@ -68,7 +68,7 @@ const coreRouter = [
     ],
   },
   {
-    path: '/core',
+    path: '/code',
     name: '代码生成导航',
     component: Layout,
     meta: {},
@@ -86,7 +86,7 @@ const coreRouter = [
     ],
   },
   {
-    path: '/moniter',
+    path: '/monitor',
     name: '监控管理',
     component: Layout,
     meta: {},
