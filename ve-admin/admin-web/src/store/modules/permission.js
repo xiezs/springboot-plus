@@ -1,11 +1,15 @@
+/*
+ * @Description: In User Settings Edit
+ * @Author: your name
+ * @Date: 2019-09-09 12:16:28
+ * @LastEditTime: 2019-09-09 12:16:28
+ * @LastEditors: your name
+ */
 import { constantRoutes } from '@/router';
 import { getRoutes } from '@/api/role';
 import { default as asyncRoutesMap } from '@/router/maps/index';
-import {
-  deepClone,
-  objectMerge,
-  isNotNullAndNotUndefined,
-} from '@/utils/index';
+import { deepClone, objectMerge } from '@/utils/index';
+import { isExists, isNotExists } from '@/utils/object-util';
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -39,10 +43,10 @@ export function filterAsyncRoutes(routesMap, routes, roles) {
     // 从前端路由表中选出与当前后端路由信息相对应的那条路由信息
     for (let rm of routesMap) {
       if (
-        isNotNullAndNotUndefined(rm.name) &&
-        isNotNullAndNotUndefined(route.name) &&
-        isNotNullAndNotUndefined(rm.path) &&
-        isNotNullAndNotUndefined(route.path) &&
+        isExists(rm.name) &&
+        isExists(route.name) &&
+        isExists(rm.path) &&
+        isExists(route.path) &&
         (rm.path === route.path || rm.name === route.name)
       ) {
         // 优先path判断，是因为导航菜单的展开和收起是根据path判断的。
@@ -57,7 +61,7 @@ export function filterAsyncRoutes(routesMap, routes, roles) {
         tempRoute.children = filterAsyncRoutes(
           tempRouteMap.children,
           tempRoute.children,
-          roles,
+          roles
         );
       }
       // 以后台路由表优先，相同属性覆盖前台路由映射.除去路由路径交由前台控制
@@ -74,14 +78,14 @@ export function filterAsyncRoutes(routesMap, routes, roles) {
 
 const state = {
   routes: [],
-  addRoutes: [],
+  addRoutes: []
 };
 
 const mutations = {
   SET_ROUTES: (state, routes) => {
     state.addRoutes = routes;
     state.routes = constantRoutes.concat(routes);
-  },
+  }
 };
 
 const actions = {
@@ -95,7 +99,7 @@ const actions = {
           accessedRoutes = filterAsyncRoutes(
             deepClone(asyncRoutesMap),
             asyncRoutes,
-            roles,
+            roles
           );
           accessedRoutes.push({ path: '*', redirect: '/404', hidden: true });
 
@@ -106,12 +110,12 @@ const actions = {
           reject(error);
         });
     });
-  },
+  }
 };
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions,
+  actions
 };
