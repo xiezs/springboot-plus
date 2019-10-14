@@ -1,7 +1,7 @@
 <!--
  * @Author: ???????
  * @since: 2019-09-09 12:16:29
- * @LastEditTime: 2019-10-12 17:10:36
+ * @LastEditTime: 2019-10-14 16:02:48
  * @LastEditors: ???????
  * @Description:
  -->
@@ -438,7 +438,7 @@ export default {
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: '操作Success',
+        message: 'Modify Success',
         type: 'success'
       });
       row.status = status;
@@ -574,13 +574,14 @@ export default {
         })
       );
     },
+    /* eslint-disable indent */
     getSortClass: function(key) {
       const sort = this.listQuery.sort;
       return sort === `+${key}`
         ? 'ascending'
         : sort === `-${key}`
-          ? 'descending'
-          : '';
+        ? 'descending'
+        : '';
     }
   }
 };
