@@ -1,30 +1,14 @@
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.ibeetl.admin.ConsoleApplication;
-import com.ibeetl.admin.core.conf.handler.DateTypeHandler;
-import com.ibeetl.admin.core.conf.handler.ZonedDateTimeTypeHandler;
 import com.ibeetl.admin.core.dao.CoreFunctionDao;
 import com.ibeetl.admin.core.entity.CoreRoute;
-import com.ibeetl.admin.core.entity.CoreRouteMeta;
-import com.ibeetl.admin.core.util.CacheUtil;
-import java.time.ZonedDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import org.beetl.core.GroupTemplate;
-import org.beetl.sql.core.SQLManager;
-import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import processor.JsonBeanProcessor;
-import resultmap.GridMapping;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = ConsoleApplication.class)
@@ -36,5 +20,19 @@ public class CustomBeanProcessorTest {
   public void maptest() {
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
     System.out.println(routesList);
+  }
+
+  @Test
+  public void test() {
+    for (int i = 0; i < 1000; i++) {
+      Calendar instance = Calendar.getInstance();
+      instance.setTimeInMillis(System.currentTimeMillis());
+      instance.set(Calendar.DAY_OF_MONTH, 1);
+      instance.set(Calendar.HOUR_OF_DAY, 0);
+      instance.set(Calendar.MINUTE, 0);
+      instance.set(Calendar.SECOND, 0);
+      Date time = instance.getTime();
+      System.out.println(time);
+    }
   }
 }
