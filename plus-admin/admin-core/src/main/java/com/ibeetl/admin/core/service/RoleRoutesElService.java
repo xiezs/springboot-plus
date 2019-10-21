@@ -1,4 +1,4 @@
-package com.ibeetl.admin.core.service.vea;
+package com.ibeetl.admin.core.service;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @Transactional
-public class RoleRoutesService {
+public class RoleRoutesElService {
 
   @Autowired private CoreFunctionDao coreFunctionDao;
 

@@ -1,9 +1,18 @@
 package com.ibeetl.admin.console.web;
 
+import com.ibeetl.admin.console.service.MenuConsoleService;
+import com.ibeetl.admin.console.web.query.MenuQuery;
+import com.ibeetl.admin.core.annotation.Function;
+import com.ibeetl.admin.core.annotation.Query;
+import com.ibeetl.admin.core.entity.CoreMenu;
+import com.ibeetl.admin.core.rbac.tree.MenuItem;
+import com.ibeetl.admin.core.service.CorePlatformService;
+import com.ibeetl.admin.core.util.AnnotationUtil;
+import com.ibeetl.admin.core.util.ConvertUtil;
+import com.ibeetl.admin.core.web.JsonResult;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.beetl.sql.core.engine.PageQuery;
@@ -14,19 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.ibeetl.admin.console.service.MenuConsoleService;
-import com.ibeetl.admin.console.web.query.FunctionQuery;
-import com.ibeetl.admin.console.web.query.MenuQuery;
-import com.ibeetl.admin.core.annotation.Function;
-import com.ibeetl.admin.core.annotation.Query;
-import com.ibeetl.admin.core.entity.CoreFunction;
-import com.ibeetl.admin.core.entity.CoreMenu;
-import com.ibeetl.admin.core.rbac.tree.MenuItem;
-import com.ibeetl.admin.core.service.CorePlatformService;
-import com.ibeetl.admin.core.util.AnnotationUtil;
-import com.ibeetl.admin.core.util.ConvertUtil;
-import com.ibeetl.admin.core.web.JsonResult;
 
 /** @author lijiazhi */
 @Controller
@@ -70,7 +66,6 @@ public class MenuController {
   /**
    * 查询
    *
-   * @param menu
    * @return
    */
   @PostMapping(MODEL + "/list/condition.json")
@@ -117,7 +112,7 @@ public class MenuController {
   @ResponseBody
   public JsonResult update(CoreMenu fun) {
     menuService.updateMenu(fun);
-    return new JsonResult().success();
+    return JsonResult.success();
   }
 
   /**
@@ -149,7 +144,7 @@ public class MenuController {
   @ResponseBody
   public JsonResult delete(Long id) {
     menuService.deleteMenu(id);
-    return new JsonResult().success();
+    return JsonResult.success();
   }
 
   /**
@@ -164,6 +159,6 @@ public class MenuController {
   public JsonResult delete(String ids) {
     List<Long> dels = ConvertUtil.str2longs(ids);
     menuService.batchDeleteMenuId(dels);
-    return new JsonResult().success();
+    return JsonResult.success();
   }
 }

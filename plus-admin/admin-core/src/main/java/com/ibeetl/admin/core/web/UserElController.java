@@ -1,4 +1,4 @@
-package com.ibeetl.admin.core.web.vea;
+package com.ibeetl.admin.core.web;
 
 import cn.hutool.core.map.MapUtil;
 import com.ibeetl.admin.core.annotation.RequestBodyPlus;
@@ -7,7 +7,7 @@ import com.ibeetl.admin.core.entity.CoreRoute;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.UserLoginInfo;
 import com.ibeetl.admin.core.rbac.UserRoleInfo;
-import com.ibeetl.admin.core.service.vea.RoleRoutesService;
+import com.ibeetl.admin.core.service.RoleRoutesElService;
 import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
 import com.ibeetl.admin.core.util.JoseJwtUtil;
@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserRestController {
+public class UserElController {
 
-  @Autowired private RoleRoutesService roleRoutesService;
+  @Autowired private RoleRoutesElService roleRoutesService;
 
   @Autowired private CoreUserService coreUserService;
 
