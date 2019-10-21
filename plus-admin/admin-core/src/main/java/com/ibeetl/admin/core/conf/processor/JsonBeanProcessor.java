@@ -292,13 +292,19 @@ public class JsonBeanProcessor extends BeanProcessor {
       }
       columnLableToIndexMap.putIfAbsent(key, i);
     }
-    /*第一步、先处理当前可以处理的*/
-    Class objectClass = ClassUtil.loadClass(header.getResultType(), false);
+    String resultType = header.getResultType();
+    Class objectClass =
+        StrUtil.isNotBlank(resultType) ? ClassUtil.loadClass(resultType, false) : null;
 
     Map<String, String> javaToJdbcMap = header.getJavaToJdbcMap();
     Set<Entry<String, String>> entrySet = javaToJdbcMap.entrySet();
     for (Entry<String, String> entry : entrySet) {
       try {
+        if (objectClass == null) {
+          tempBeanMap.put(entry.getKey(), resultSet.getObject(entry.getValue()));
+          continue;
+        }
+
         Field declaredField = ClassUtil.getDeclaredField(objectClass, entry.getKey());
         Class fieldType = declaredField != null ? declaredField.getType() : null;
 
