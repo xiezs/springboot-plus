@@ -14,12 +14,25 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ElColumn {
 
+  /**
+   * 数据表格中的列名称
+   *  @return
+   *  */
   String name();
 
+  /**
+   * 该列的类型。{@link }
+   * @return
+   * */
   String type();
 
+  /**
+   * 增加数据表格的手动排序
+   *  @return
+   *  */
   boolean sortable() default false;
 
+  /**  @return */
   boolean visible() default true;
 
   boolean required() default false;
