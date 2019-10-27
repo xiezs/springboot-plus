@@ -1,4 +1,4 @@
-package com.ibeetl.admin.console.annotation;
+package com.ibeetl.admin.core.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -32,8 +32,15 @@ public @interface ElColumn {
    *  */
   boolean sortable() default false;
 
-  /**  @return */
+  /**
+   * 是否在前端页面可见，本质是在后端过滤掉注解的字段
+   * @return
+   * */
   boolean visible() default true;
 
+  /**
+   * 是否在表单中是必填。暂时没做规则的生成功能，暂定没有
+   * @return
+   * */
   boolean required() default false;
 }

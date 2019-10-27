@@ -68,7 +68,12 @@ public class CoreUserService {
   }
 
   public List<CoreUser> getAllUsersByRole(String role) {
+
     return userDao.getUserByRole(role);
+  }
+
+  public List<CoreUser> getAllUsers(Integer page, Integer limit) {
+    return sqlManager.lambdaQuery(CoreUser.class).page(page, limit).getList();
   }
 
   public CoreUser getUserByCode(String userName) {

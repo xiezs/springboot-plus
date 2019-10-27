@@ -1,4 +1,4 @@
-package com.ibeetl.admin.core.conf.resultmap;
+package com.ibeetl.admin.core.conf.beetl.resultmap;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;

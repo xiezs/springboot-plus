@@ -1,4 +1,4 @@
-package com.ibeetl.admin.core.conf.processor;
+package com.ibeetl.admin.core.conf.beetl.processor;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -6,10 +6,10 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.ibeetl.admin.core.conf.resultmap.GridColumn;
-import com.ibeetl.admin.core.conf.resultmap.GridHeader;
-import com.ibeetl.admin.core.conf.resultmap.GridMapping;
-import com.ibeetl.admin.core.conf.resultmap.GridRow;
+import com.ibeetl.admin.core.conf.beetl.resultmap.GridColumn;
+import com.ibeetl.admin.core.conf.beetl.resultmap.GridHeader;
+import com.ibeetl.admin.core.conf.beetl.resultmap.GridMapping;
+import com.ibeetl.admin.core.conf.beetl.resultmap.GridRow;
 import com.ibeetl.admin.core.util.CacheUtil;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -277,8 +277,8 @@ public class JsonBeanProcessor extends BeanProcessor {
    */
   private Map<String, Object> extractMapFromRs(String sqlId, ResultSet resultSet, GridHeader header)
       throws SQLException {
-    /*TODO  待处理TypeParameter和映射类型的注解的处理*/
     Map<String, Object> tempBeanMap = MapUtil.newHashMap();
+    /*保存着结果集的列标签与索引的映射关系*/
     Map<String, Integer> columnLableToIndexMap = MapUtil.newHashMap();
     ResultSetMetaData metaData = resultSet.getMetaData();
     for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -292,6 +292,7 @@ public class JsonBeanProcessor extends BeanProcessor {
       }
       columnLableToIndexMap.putIfAbsent(key, i);
     }
+    /*处理每个头部映射的bean类型与结果集的列的类型转换*/
     String resultType = header.getResultType();
     Class objectClass =
         StrUtil.isNotBlank(resultType) ? ClassUtil.loadClass(resultType, false) : null;
@@ -308,6 +309,7 @@ public class JsonBeanProcessor extends BeanProcessor {
         Field declaredField = ClassUtil.getDeclaredField(objectClass, entry.getKey());
         Class fieldType = declaredField != null ? declaredField.getType() : null;
 
+        /*忽视列标签的大小写问题*/
         Integer columnIndex = columnLableToIndexMap.getOrDefault(entry.getValue(), -1);
         columnIndex =
             columnIndex != -1

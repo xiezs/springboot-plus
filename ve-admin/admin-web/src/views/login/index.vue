@@ -1,3 +1,10 @@
+<!--
+ * @Author: 一日看尽长安花
+ * @since: 2019-09-04 20:55:14
+ * @LastEditTime: 2019-10-27 22:58:09
+ * @LastEditors: 一日看尽长安花
+ * @Description:
+ -->
 <template>
   <div class="login-container">
     <el-form
@@ -92,8 +99,8 @@
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate'
-import SocialSign from './components/SocialSignin'
+import { validUsername } from '@/utils/validate';
+import SocialSign from './components/SocialSignin';
 
 export default {
   name: 'Login',
@@ -101,18 +108,18 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('Please enter the correct user name'));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('The password can not be less than 6 digits'));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     return {
       loginForm: {
         username: 'admin',
@@ -132,15 +139,15 @@ export default {
       showDialog: false,
       redirect: undefined,
       otherQuery: {}
-    }
+    };
   },
   watch: {
     $route: {
       handler: function(route) {
-        const query = route.query
+        const query = route.query;
         if (query) {
-          this.redirect = query.redirect
-          this.otherQuery = this.getOtherQuery(query)
+          this.redirect = query.redirect;
+          this.otherQuery = this.getOtherQuery(query);
         }
       },
       immediate: true
@@ -151,9 +158,9 @@ export default {
   },
   mounted() {
     if (this.loginForm.username === '') {
-      this.$refs.username.focus()
+      this.$refs.username.focus();
     } else if (this.loginForm.password === '') {
-      this.$refs.password.focus()
+      this.$refs.password.focus();
     }
   },
   destroyed() {
@@ -166,54 +173,54 @@ export default {
           (shiftKey && (key >= 'a' && key <= 'z')) ||
           (!shiftKey && (key >= 'A' && key <= 'Z'))
         ) {
-          this.capsTooltip = true
+          this.capsTooltip = true;
         } else {
-          this.capsTooltip = false
+          this.capsTooltip = false;
         }
       }
       if (key === 'CapsLock' && this.capsTooltip === true) {
-        this.capsTooltip = false
+        this.capsTooltip = false;
       }
     },
     showPwd() {
       if (this.passwordType === 'password') {
-        this.passwordType = ''
+        this.passwordType = '';
       } else {
-        this.passwordType = 'password'
+        this.passwordType = 'password';
       }
       this.$nextTick(() => {
-        this.$refs.password.focus()
-      })
+        this.$refs.password.focus();
+      });
     },
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
+          this.loading = true;
           this.$store
             .dispatch('user/login', this.loginForm)
             .then(() => {
               this.$router.push({
                 path: this.redirect || '/',
                 query: this.otherQuery
-              })
-              this.loading = false
+              });
+              this.loading = false;
             })
             .catch(() => {
-              this.loading = false
-            })
+              this.loading = false;
+            });
         } else {
-          console.log('error submit!!')
-          return false
+          console.log('error submit!!');
+          return false;
         }
-      })
+      });
     },
     getOtherQuery(query) {
       return Object.keys(query).reduce((acc, cur) => {
         if (cur !== 'redirect') {
-          acc[cur] = query[cur]
+          acc[cur] = query[cur];
         }
-        return acc
-      }, {})
+        return acc;
+      }, {});
     }
     // afterQRScan() {
     //   if (e.key === 'x-admin-oauth-code') {
@@ -234,7 +241,7 @@ export default {
     //   }
     // }
   }
-}
+};
 </script>
 
 <style lang="scss">

@@ -52,18 +52,20 @@ queryUserRole
 
 * 查询用户所有权限
 
-    select	
-    ur.*, u.code as user_code,
-    u.name as user_name,
-    org.name as org_name, role.name as role_name
-    from core_user_role ur
-    left join core_org org on org.id = ur.org_id
-    left join core_user u on u.id = ur.user_id
-    left join core_role role on role.id = ur.role_id
-    where u.id=#id# 
-    @if(isNotEmpty(orgId)){
-    	and org.id=#orgId#
-    @}
-    @if(isNotEmpty(roleId)){
-    	and role.id=#roleId#
-    @}
+```sql
+select	
+ur.*, u.code as user_code,
+u.name as user_name,
+org.name as org_name, role.name as role_name
+from core_user_role ur
+left join core_org org on org.id = ur.org_id
+left join core_user u on u.id = ur.user_id
+left join core_role role on role.id = ur.role_id
+where u.id=#id# 
+@if(isNotEmpty(orgId)){
+    and org.id=#orgId#
+@}
+@if(isNotEmpty(roleId)){
+    and role.id=#roleId#
+@}
+```

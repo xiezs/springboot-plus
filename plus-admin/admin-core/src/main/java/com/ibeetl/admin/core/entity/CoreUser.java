@@ -1,5 +1,6 @@
 package com.ibeetl.admin.core.entity;
 
+import com.ibeetl.admin.core.annotation.ElColumn;
 import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
@@ -23,21 +24,24 @@ public class CoreUser extends BaseEntity {
 
   @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
   @SeqID(name = ORACLE_CORE_SEQ_NAME)
+  @ElColumn(name = "ID", type = "string")
   @AutoID
   protected Long id;
   // 删除标识
   @JsonIgnore protected Integer delFlag = 0;
   // 创建时间
-
+  @ElColumn(name = "创建时间", type = "date")
   protected Date createTime;
 
   // 登录名，编号
   @NotBlank(message = "用户编号不能为空", groups = ValidateConfig.ADD.class)
   @Null(message = "用户编号不能为空", groups = ValidateConfig.UPDATE.class)
+  @ElColumn(name = "用户名", type = "string")
   private String code;
 
   // 用户姓名
   @NotBlank(message = "用户名不能为空")
+  @ElColumn(name = "姓名", type = "string")
   private String name;
 
   // 组织机构id
@@ -48,13 +52,16 @@ public class CoreUser extends BaseEntity {
   @JsonIgnore private String password;
 
   @Dict(type = CoreDictType.USER_STATE)
+  @ElColumn(name = "状态", type = "string")
   private String state;
 
   // 扩展例子
   @Dict(type = "job_type")
+  @ElColumn(name = "职位", type = "string")
   private String jobType0;
 
   @Dict(type = "job_type")
+  @ElColumn(name = "职位", type = "string")
   private String jobType1;
 
   private Date updateTime;

@@ -3,7 +3,7 @@ package com.ibeetl.admin.console.util;
 import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.map.MapBuilder;
 import cn.hutool.core.map.MapUtil;
-import com.ibeetl.admin.console.annotation.ElColumn;
+import com.ibeetl.admin.core.annotation.ElColumn;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Optional;

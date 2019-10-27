@@ -1,6 +1,4 @@
 import com.ibeetl.admin.ConsoleApplication;
-import com.ibeetl.admin.console.model.vo.Table;
-import com.ibeetl.admin.console.util.VOUtil;
 import com.ibeetl.admin.core.dao.CoreFunctionDao;
 import com.ibeetl.admin.core.entity.CoreRoute;
 import java.util.List;
@@ -23,7 +21,5 @@ public class CustomBeanProcessorTest {
   }
 
   @Test
-  public void test() {
-    VOUtil.resolveElColumn(Table.class);
-  }
+  public void test() {}
 }

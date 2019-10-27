@@ -1,4 +1,4 @@
-package com.ibeetl.admin.core.conf.resultmap;
+package com.ibeetl.admin.core.conf.beetl.resultmap;
 
 import static cn.hutool.core.util.StrUtil.EMPTY;
 import static cn.hutool.core.util.StrUtil.isNotBlank;

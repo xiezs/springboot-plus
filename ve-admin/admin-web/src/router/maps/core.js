@@ -1,4 +1,11 @@
 /*
+ * @Author: 一日看尽长安花
+ * @since: 2019-09-15 15:22:58
+ * @LastEditTime: 2019-10-27 22:44:09
+ * @LastEditors: 一日看尽长安花
+ * @Description:
+ */
+/*
 前端路由映射表中单个路由映射全部具有的信息
   {
     "path": "/profile",
@@ -28,44 +35,45 @@ const coreRouter = [
       {
         path: '/admin/user/index.do',
         name: '用户管理',
-        meta: {},
+        component: () => import('@/views/users/index'),
+        meta: {}
       },
       {
         path: '/admin/org/index.do',
         name: '组织机构管理',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/role/index.do',
         name: '角色管理',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/menu/index.do',
         name: '菜单项',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/function/index.do',
         name: '功能点管理',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/dict/index.do',
         name: '字典数据管理',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/role/function.do',
         name: '角色功能授权',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/role/data.do',
         name: '角色数据授权',
-        meta: {},
-      },
-    ],
+        meta: {}
+      }
+    ]
   },
   {
     path: '/code',
@@ -76,14 +84,14 @@ const coreRouter = [
       {
         path: '/core/codeGen/project.do',
         name: '子系统生成',
-        meta: {},
+        meta: {}
       },
       {
         path: '/core/codeGen/index.do',
         name: '代码生成',
-        meta: {},
-      },
-    ],
+        meta: {}
+      }
+    ]
   },
   {
     path: '/monitor',
@@ -94,20 +102,20 @@ const coreRouter = [
       {
         path: '/admin/workflow/index.do',
         name: '流程监控',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/audit/index.do',
         name: '审计查询',
-        meta: {},
+        meta: {}
       },
       {
         path: '/admin/blog/index.do',
         name: '博客测试',
-        meta: {},
-      },
-    ],
-  },
+        meta: {}
+      }
+    ]
+  }
 ];
 
 export default coreRouter;
