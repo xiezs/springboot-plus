@@ -100,6 +100,9 @@ class CustomJsonResultSerializer extends JsonSerializer<JsonResult> {
 
   CustomJsonResultSerializer() {}
 
+  /**
+   * 处理 JsonResult 返回结果。自动分离分页信息，不需要手动在controller中分离
+   */
   @Override
   public void serialize(JsonResult value, JsonGenerator gen, SerializerProvider serializers)
       throws IOException {

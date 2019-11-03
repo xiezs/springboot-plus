@@ -11,8 +11,19 @@ import java.util.Map;
  */
 public class JsonResult<T> {
 
+  /**
+   * 建议标准http响应码
+   * */
   private String code;
+
+  /**
+   * 自定义信息
+   * */
   private String message;
+
+  /**
+   * 携带数据
+   * */
   private T data;
 
   public String getCode() {

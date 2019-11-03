@@ -1,9 +1,9 @@
 package com.ibeetl.admin.core.util;
 
-import javax.servlet.http.HttpSession;
+import com.ibeetl.admin.core.conf.SpringWebMvcConfigurer;
 
 /**
- * 用户Controller对应的功能 {@link com.ibeetl.admin.core.conf.MVCConf}
+ * 用户Controller对应的功能 {@link SpringWebMvcConfigurer}
  *
  * @author lijiazhi
  */

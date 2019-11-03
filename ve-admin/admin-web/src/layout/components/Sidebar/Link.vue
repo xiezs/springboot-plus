@@ -1,6 +1,14 @@
+<!--
+ * @Author: 一日看尽长安花
+ * @since: 2019-09-04 20:55:14
+ * @LastEditTime: 2019-10-30 19:53:28
+ * @LastEditors: 一日看尽长安花
+ * @Description:
+ -->
 <template>
   <!-- eslint-disable vue/require-component-is -->
-  <component :is="linkProps(to)">
+  <!-- 该is特性不要使用官网的v-bind:is -->
+  <component v-bind="linkProps(to)">
     <slot />
   </component>
 </template>
@@ -12,8 +20,8 @@ export default {
   props: {
     to: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   methods: {
     linkProps(url) {
@@ -22,14 +30,14 @@ export default {
           is: 'a',
           href: url,
           target: '_blank',
-          rel: 'noopener',
+          rel: 'noopener'
         };
       }
       return {
         is: 'router-link',
-        to: url,
+        to: url
       };
-    },
-  },
+    }
+  }
 };
 </script>

@@ -9,9 +9,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.stream.Stream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,10 +17,10 @@ import javax.servlet.http.HttpSession;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
-import com.ibeetl.admin.core.conf.MVCConf;
+import com.ibeetl.admin.core.conf.SpringWebMvcConfigurer;
 
 /**
- * 保留用户会话，以方便在业务代码任何地方调用 {@link MVCConf}
+ * 保留用户会话，以方便在业务代码任何地方调用 {@link SpringWebMvcConfigurer}
  *
  * @author lijiazhi
  */

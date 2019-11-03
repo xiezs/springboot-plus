@@ -1,4 +1,11 @@
 /*
+ * @Author: 一日看尽长安花
+ * @since: 2019-09-04 20:55:14
+ * @LastEditTime: 2019-10-30 19:54:00
+ * @LastEditors: 一日看尽长安花
+ * @Description:
+ */
+/*
 路由映射表，由路由名映射确定。
 格式见最下方的注释
 强制：name和path必须存在，且两者同时决定唯一性
@@ -80,19 +87,19 @@ let asyncRoutes = [
       {
         path: 'page',
         component: () => import('@/views/permission/page'),
-        name: 'PagePermission',
+        name: 'PagePermission'
       },
       {
         path: 'directive',
         component: () => import('@/views/permission/directive'),
-        name: 'DirectivePermission',
+        name: 'DirectivePermission'
       },
       {
         path: 'role',
         component: () => import('@/views/permission/role'),
-        name: 'RolePermission',
-      },
-    ],
+        name: 'RolePermission'
+      }
+    ]
   },
 
   {
@@ -104,9 +111,9 @@ let asyncRoutes = [
         path: 'index',
         component: () => import('@/views/icons/index'),
         name: 'Icons',
-        meta: { noCache: true },
-      },
-    ],
+        meta: { noCache: true }
+      }
+    ]
   },
 
   /** when your routing map is too long, you can split it into small modules **/
@@ -123,21 +130,21 @@ let asyncRoutes = [
       {
         path: 'create',
         component: () => import('@/views/example/create'),
-        name: 'CreateArticle',
+        name: 'CreateArticle'
       },
       {
         path: 'edit/:id(\\d+)',
         component: () => import('@/views/example/edit'),
         name: 'EditArticle',
         meta: { noCache: true, activeMenu: '/example/list' },
-        hidden: true,
+        hidden: true
       },
       {
         path: 'list',
         component: () => import('@/views/example/list'),
-        name: 'ArticleList',
-      },
-    ],
+        name: 'ArticleList'
+      }
+    ]
   },
 
   {
@@ -148,9 +155,9 @@ let asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/tab/index'),
-        name: 'Tabs',
-      },
-    ],
+        name: 'Tabs'
+      }
+    ]
   },
 
   {
@@ -163,15 +170,15 @@ let asyncRoutes = [
         path: '401',
         component: () => import('@/views/error-page/401'),
         name: 'Page401',
-        meta: { noCache: true },
+        meta: { noCache: true }
       },
       {
         path: '404',
         component: () => import('@/views/error-page/404'),
         name: 'Page404',
-        meta: { noCache: true },
-      },
-    ],
+        meta: { noCache: true }
+      }
+    ]
   },
 
   {
@@ -182,9 +189,9 @@ let asyncRoutes = [
       {
         path: 'log',
         component: () => import('@/views/error-log/index'),
-        name: 'ErrorLogs',
-      },
-    ],
+        name: 'ErrorLogs'
+      }
+    ]
   },
 
   {
@@ -196,24 +203,24 @@ let asyncRoutes = [
       {
         path: 'export-excel',
         component: () => import('@/views/excel/export-excel'),
-        name: 'ExportExcel',
+        name: 'ExportExcel'
       },
       {
         path: 'export-selected-excel',
         component: () => import('@/views/excel/select-excel'),
-        name: 'SelectExcel',
+        name: 'SelectExcel'
       },
       {
         path: 'export-merge-header',
         component: () => import('@/views/excel/merge-header'),
-        name: 'MergeHeader',
+        name: 'MergeHeader'
       },
       {
         path: 'upload-excel',
         component: () => import('@/views/excel/upload-excel'),
-        name: 'UploadExcel',
-      },
-    ],
+        name: 'UploadExcel'
+      }
+    ]
   },
 
   {
@@ -226,9 +233,9 @@ let asyncRoutes = [
       {
         path: 'download',
         component: () => import('@/views/zip/index'),
-        name: 'ExportZip',
-      },
-    ],
+        name: 'ExportZip'
+      }
+    ]
   },
 
   {
@@ -240,15 +247,15 @@ let asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/pdf/index'),
-        name: 'PDFS',
-      },
-    ],
+        name: 'PDFS'
+      }
+    ]
   },
   {
     path: '/pdf/download',
     name: 'PdfDown',
     component: () => import('@/views/pdf/download'),
-    hidden: true,
+    hidden: true
   },
 
   {
@@ -259,9 +266,9 @@ let asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/theme/index'),
-        name: 'Themes',
-      },
-    ],
+        name: 'Themes'
+      }
+    ]
   },
 
   {
@@ -272,9 +279,9 @@ let asyncRoutes = [
       {
         path: 'index',
         component: () => import('@/views/clipboard/index'),
-        name: 'ClipboardDemo',
-      },
-    ],
+        name: 'ClipboardDemo'
+      }
+    ]
   },
 
   {
@@ -284,13 +291,13 @@ let asyncRoutes = [
     children: [
       {
         path: 'https://github.com/PanJiaChen/vue-element-admin',
-        name: 'link',
-      },
-    ],
+        name: 'link'
+      }
+    ]
   },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true },
+  { path: '*', redirect: '/404', hidden: true }
 ];
 
 const asyncRoutesMap = [...coreRouter, ...asyncRoutes];

@@ -2,8 +2,8 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime: 2019-09-09 12:16:28
- * @LastEditors: your name
+ * @LastEditTime: 2019-10-30 20:32:19
+ * @LastEditors: 一日看尽长安花
  */
 import { constantRoutes } from '@/router';
 import { getRoutes } from '@/api/role';

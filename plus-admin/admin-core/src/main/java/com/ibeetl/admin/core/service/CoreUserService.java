@@ -1,7 +1,10 @@
 package com.ibeetl.admin.core.service;
 
+import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import org.beetl.sql.core.SQLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +30,7 @@ public class CoreUserService {
 
   @Autowired PasswordEncryptService passwordEncryptService;
 
-  @Autowired SQLManager sqlManager;
+  @Autowired SQLManagerBaseDao sqlManagerBaseDao;
 
   public UserLoginInfo login(String userName, String password) {
     CoreUser query = new CoreUser();
@@ -72,8 +75,9 @@ public class CoreUserService {
     return userDao.getUserByRole(role);
   }
 
-  public List<CoreUser> getAllUsers(Integer page, Integer limit) {
-    return sqlManager.lambdaQuery(CoreUser.class).page(page, limit).getList();
+  @Valid
+  public List<CoreUser> getAllUsers(@NotNull Integer page, @NotNull Integer limit) {
+    return sqlManagerBaseDao.getSQLManager().lambdaQuery(CoreUser.class).page(page, limit).getList();
   }
 
   public CoreUser getUserByCode(String userName) {

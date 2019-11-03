@@ -1,5 +1,11 @@
 package com.ibeetl.admin.core.conf;
 
+import static cn.hutool.system.SystemUtil.LINE_SEPRATOR;
+import static java.lang.String.format;
+
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.setting.dialect.Props;
+import cn.hutool.system.SystemUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeetl.admin.core.util.FormFieldException;
 import com.ibeetl.admin.core.util.PlatformException;
@@ -44,11 +50,11 @@ public class CustomErrorController extends AbstractErrorController {
   @RequestMapping(ERROR_PATH)
   public ModelAndView getErrorPath(HttpServletRequest request, HttpServletResponse response) {
     Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(request, false));
-
     Throwable cause = getCause(request);
+
     int status = (Integer) model.get("status");
     // 错误信息
-    String message = (String) model.get("message");
+    //    String message = (String) model.get("message");
     // 友好提示
     String errorMessage = getErrorMessage(cause);
     String requestPath = (String) model.get("path");
@@ -56,8 +62,7 @@ public class CustomErrorController extends AbstractErrorController {
     List<FieldError> filedErrors = this.getFieldError(model, cause);
 
     // 后台打印日志信息方方便查错
-    logger.error("{} : {} {} {}", status, message, filedErrors, cause);
-    logger.error("requestPath : {}", requestPath);
+    prettyLog(model, cause, filedErrors);
 
     response.setStatus(status);
     if (!isJsonRequest(request)) {
@@ -78,9 +83,26 @@ public class CustomErrorController extends AbstractErrorController {
       } else {
         writeJson(response, JsonResult.fail(this.wrapFieldErrors(filedErrors)));
       }
-
       return null;
     }
+  }
+
+  protected void prettyLog(Map model, Throwable cause, List<FieldError> filedErrors) {
+    Object path = model.get("path");
+    Object status = model.get("status");
+    Object message = model.get("message");
+    StringBuilder log = new StringBuilder();
+    log.append(SystemUtil.get(LINE_SEPRATOR))
+        .append(StrUtil.format("┏━━━━ response status: <{}> ━━━━", status))
+        .append(SystemUtil.get(LINE_SEPRATOR))
+        .append(StrUtil.format("┣━━━━ error message: <{}> ━━━━", message))
+        .append(SystemUtil.get(LINE_SEPRATOR))
+        .append(StrUtil.format("┣━━━━ error fileds: <{}> ━━━━", filedErrors))
+        .append(SystemUtil.get(LINE_SEPRATOR))
+        .append(StrUtil.format("┗━━━━ error cause: <{}> ━━━━", cause))
+        .append(SystemUtil.get(LINE_SEPRATOR))
+        .append(StrUtil.format("┗━━━━ request path <{}> error log.━━━━", path));
+    logger.error(log.toString());
   }
 
   protected List<FieldError> getFieldError(Map<String, Object> model, Throwable cause) {
@@ -133,6 +155,7 @@ public class CustomErrorController extends AbstractErrorController {
   }
 
   protected String getErrorMessage(Throwable ex) {
+
     if (ex instanceof PlatformException) {
       return ex.getMessage();
     } else {
@@ -152,7 +175,6 @@ public class CustomErrorController extends AbstractErrorController {
 
   @Override
   public String getErrorPath() {
-    // TODO Auto-generated method stub
-    return null;
+    return ERROR_PATH;
   }
 }

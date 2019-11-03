@@ -1,9 +1,6 @@
 package com.ibeetl.admin.core.conf;
 
-import static com.ibeetl.admin.core.util.HttpRequestLocal.ACCESS_CURRENT_USER;
-
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,9 +10,6 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ibeetl.admin.core.annotation.RequestBodyPlus;
-import com.ibeetl.admin.core.entity.CoreOrg;
-import com.ibeetl.admin.core.entity.CoreUser;
-import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
 import com.ibeetl.admin.core.util.JoseJwtUtil;
@@ -26,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
 import org.springframework.beans.factory.InitializingBean;
@@ -41,6 +34,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -55,7 +49,7 @@ import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConv
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 @Configuration
-public class MVCConf implements WebMvcConfigurer, InitializingBean {
+public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBean {
 
   public static final String DEFAULT_APP_NAME = "开发平台";
 
@@ -75,19 +69,32 @@ public class MVCConf implements WebMvcConfigurer, InitializingBean {
 
   @Autowired private RequestMappingHandlerAdapter adapter;
 
+  /**
+   * 添加拦截器
+   *
+   * @param registry 拦截器的注册器
+   */
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry
-        .addInterceptor(new SessionInterceptor(userService))
-        .addPathPatterns("/**");
+    registry.addInterceptor(new SessionInterceptor(userService)).addPathPatterns("/**");
     // super.addInterceptors(registry);
   }
 
+  /**
+   * 增加跨域映射
+   *
+   * @param registry 跨域映射注册器
+   */
   @Override
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**");
   }
 
+  /**
+   * SpringMVC的请求响应消息的转换格式器
+   *
+   * @param registry
+   */
   @Override
   public void addFormatters(FormatterRegistry registry) {
     registry.addFormatter(new DateFormatter("yyyy-MM-dd HH:mm:ss"));
@@ -123,10 +130,10 @@ class SessionInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
-		HttpRequestLocal.set(request);
+    HttpRequestLocal.set(request);
     if (StrUtil.containsAny(request.getRequestURI(), "/login", "/error", "/logout")) {
-    	return true;
-		}
+      return true;
+    }
 
     String token = HttpRequestLocal.getAuthorization();
     Map<String, Object> payload = JoseJwtUtil.parsePayload(token);

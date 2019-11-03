@@ -1,29 +1,36 @@
+/*
+ * @Author: 一日看尽长安花
+ * @since: 2019-09-04 20:55:14
+ * @LastEditTime: 2019-10-29 23:17:53
+ * @LastEditors: 一日看尽长安花
+ * @Description:
+ */
 module.exports = {
   root: true,
 
   env: {
     browser: true,
     node: true,
-    es6: true,
+    es6: true
   },
 
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: 'babel-eslint'
   },
 
   overrides: [
     {
       files: ['**/__tests__/*.{j,t}s?(x)'],
       env: {
-        jest: true,
-      },
-    },
+        jest: true
+      }
+    }
   ],
 
   extends: [
     'plugin:vue/recommended',
     'plugin:prettier/recommended',
-    '@vue/prettier',
+    '@vue/prettier'
   ],
 
   plugins: ['vue'],
@@ -42,21 +49,22 @@ module.exports = {
         trailingComma: 'none',
         bracketSpacing: true,
         jsxBracketSameLine: false,
-        arrowParens: 'avoid',
-      },
+        arrowParens: 'avoid'
+      }
     ],
     'no-console': 'off',
     'no-debugger': 'off',
     'no-unused-vars': 'off',
     'vue/no-unused-vars': 'off',
     'no-useless-escape': 'off',
+    'vue/require-component-is': 'off',
     quotes: [
       2,
       'single',
       {
         avoidEscape: true,
-        allowTemplateLiterals: true,
-      },
+        allowTemplateLiterals: true
+      }
     ],
     'jsx-quotes': [2, 'prefer-single'],
     // 缩进为2个空格
@@ -66,8 +74,8 @@ module.exports = {
       {
         attribute: 1,
         alignAttributesVertically: true,
-        ignores: [],
-      },
+        ignores: []
+      }
     ],
     'vue/max-attributes-per-line': [
       2,
@@ -75,9 +83,9 @@ module.exports = {
         singleline: 10,
         multiline: {
           max: 1,
-          allowFirstLine: false,
-        },
-      },
+          allowFirstLine: false
+        }
+      }
     ],
     'vue/html-self-closing': 'off',
     'vue/name-property-casing': ['error', 'PascalCase'],
@@ -99,6 +107,6 @@ module.exports = {
     'no-multiple-empty-lines': 'off',
     // 关闭模板字符串检测
     'no-template-curly-in-string': 'off',
-    'no-console': 'off',
-  },
-}
+    'no-console': 'off'
+  }
+};
