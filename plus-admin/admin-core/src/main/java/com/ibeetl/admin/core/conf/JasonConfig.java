@@ -112,7 +112,9 @@ class CustomJsonResultSerializer extends JsonSerializer<JsonResult> {
     Object data = value.getData();
     if (data instanceof PageQuery) {
       PageQuery query = (PageQuery) (data);
+      /*可能叫法不一样，所以返回两种命名*/
       gen.writeNumberField("count", query.getTotalRow());
+      gen.writeNumberField("total", query.getTotalRow());
       gen.writeObjectField("data", query.getList());
     } else {
       gen.writeObjectField("data", data);

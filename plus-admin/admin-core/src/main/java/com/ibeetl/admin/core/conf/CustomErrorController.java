@@ -3,30 +3,45 @@ package com.ibeetl.admin.core.conf;
 import static cn.hutool.system.SystemUtil.LINE_SEPRATOR;
 import static java.lang.String.format;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.setting.dialect.Props;
 import cn.hutool.system.SystemUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeetl.admin.core.util.FormFieldException;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.web.JsonResult;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.error.AbstractErrorController;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -41,91 +56,143 @@ public class CustomErrorController extends AbstractErrorController {
 
   private Logger logger = LoggerFactory.getLogger(CustomErrorController.class);
 
+  private final DefaultErrorAttributes defaultErrorAttributes;
+
   @Autowired ObjectMapper objectMapper;
 
-  public CustomErrorController() {
-    super(new DefaultErrorAttributes());
+  public CustomErrorController(DefaultErrorAttributes defaultErrorAttributes) {
+    super(defaultErrorAttributes);
+    this.defaultErrorAttributes = defaultErrorAttributes;
   }
 
   @RequestMapping(ERROR_PATH)
   public ModelAndView getErrorPath(HttpServletRequest request, HttpServletResponse response) {
-    Map<String, Object> model = Collections.unmodifiableMap(getErrorAttributes(request, false));
-    Throwable cause = getCause(request);
-
-    int status = (Integer) model.get("status");
-    // 错误信息
-    //    String message = (String) model.get("message");
-    // 友好提示
-    String errorMessage = getErrorMessage(cause);
-    String requestPath = (String) model.get("path");
-    /*参数错误*/
-    List<FieldError> filedErrors = this.getFieldError(model, cause);
-
+    Throwable cause = getRealException(request);
+    Map<String, Object> errorInfo = wrapErrorInfo(request);
     // 后台打印日志信息方方便查错
-    prettyLog(model, cause, filedErrors);
-
-    response.setStatus(status);
-    if (!isJsonRequest(request)) {
-      ModelAndView view = new ModelAndView("/error.html");
-      view.addAllObjects(model);
-      view.addObject("errorMessage", errorMessage);
-      view.addObject("filedErrors", filedErrors);
-      view.addObject("cause", cause);
-      view.addObject("requestPath", requestPath);
-      return view;
+    prettyLog(errorInfo);
+    response.setStatus(Convert.toInt(errorInfo.get("status")));
+    if (cause instanceof PlatformException) {
+      return hanlderPlatformException(errorInfo, response);
+    } else if (cause instanceof ConstraintViolationException) {
+      return hanlderConstraintViolationException(errorInfo, request, response);
     } else {
-      if (filedErrors == null) {
-        if (status == 404) {
-          writeJson(response, JsonResult.http404(requestPath));
-        } else {
-          writeJson(response, JsonResult.failMessage(getErrorMessage(cause)));
-        }
-      } else {
-        writeJson(response, JsonResult.fail(this.wrapFieldErrors(filedErrors)));
-      }
-      return null;
+      return hanlderGeneralException(errorInfo, response);
     }
   }
 
-  protected void prettyLog(Map model, Throwable cause, List<FieldError> filedErrors) {
-    Object path = model.get("path");
-    Object status = model.get("status");
-    Object message = model.get("message");
+  private ModelAndView hanlderGeneralException(
+      Map<String, Object> errorInfo, HttpServletResponse response) {
+    ModelAndView modelAndView = handlerHtml(errorInfo);
+    if (modelAndView != null) {
+      modelAndView.addObject("errorMessage", "服务器内部错误，请联系管理员");
+    } else {
+      handlerAjax(errorInfo, response);
+    }
+    return modelAndView;
+  }
+
+  private ModelAndView hanlderConstraintViolationException(
+      Map<String, Object> errorInfo, HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView modelAndView = handlerHtml(errorInfo);
+    if (modelAndView != null) {
+      modelAndView.addObject("errorMessage", "服务器内部错误，请联系管理员");
+      logger.error("方法参数校验失败，请查看上述详细信息");
+    } else {
+      if (Convert.toInt(errorInfo.get("status")).equals(HttpStatus.NOT_FOUND.value())) {
+        writeJson(response, JsonResult.http404(errorInfo.get("path")));
+      } else {
+        ConstraintViolationException constraintViolationException =
+            (ConstraintViolationException) getRealException(request);
+        Set<ConstraintViolation<?>> constraintViolations =
+            constraintViolationException.getConstraintViolations();
+        List<String> messages = CollUtil.<String>newArrayList();
+        for (ConstraintViolation<?> violation : constraintViolations) {
+          String msg = violation.getPropertyPath().toString() + violation.getMessage();
+          messages.add(msg);
+        }
+        writeJson(response, JsonResult.fail(messages));
+      }
+    }
+    return modelAndView;
+  }
+
+  private ModelAndView hanlderPlatformException(
+      Map<String, Object> errorInfo, HttpServletResponse response) {
+    ModelAndView modelAndView = handlerHtml(errorInfo);
+    if (modelAndView != null) {
+      modelAndView.addObject("errorMessage", errorInfo.get("message"));
+    } else {
+      handlerAjax(errorInfo, response);
+    }
+    return modelAndView;
+  }
+
+  /**
+   * 通用处理页面请求方法
+   *
+   * @param errorInfo
+   * @return
+   */
+  protected ModelAndView handlerHtml(Map<String, Object> errorInfo) {
+    ModelAndView view = null;
+    if (!Convert.toBool(errorInfo.get("isAjax"))) {
+      view = new ModelAndView("/error.html");
+      view.addAllObjects(errorInfo);
+      view.addObject("filedErrors", errorInfo.get("errors"));
+      view.addObject("cause", errorInfo.get("exception"));
+      view.addObject("requestPath", errorInfo.get("path"));
+    }
+    return view;
+  }
+
+  protected void handlerAjax(Map<String, Object> errorInfo, HttpServletResponse response) {
+    if (Convert.toInt(errorInfo.get("status")).equals(HttpStatus.NOT_FOUND.value())) {
+      writeJson(response, JsonResult.http404(errorInfo.get("path")));
+    } else {
+      writeJson(
+          response, JsonResult.failMessage(errorInfo.getOrDefault("message", "无错误信息").toString()));
+    }
+  }
+
+  /**
+   * 提取errorAttributes 中的错误信息，包括：<br>
+   * timestamp：时间<br>
+   * status：http响应码<br>
+   * error：响应码的原因<br>
+   * exception：异常类名<br>
+   * errors：controller可能的校验错误对象集合<br>
+   * message：controller的错误信息<br>
+   * trace: 异常的堆栈信息<br>
+   * path：请求路径<br>
+   *
+   * @param request
+   * @return
+   */
+  protected Map<String, Object> wrapErrorInfo(HttpServletRequest request) {
+    Map<String, Object> errorAttributes = super.getErrorAttributes(request, true);
+    errorAttributes.put("isAjax", isJsonRequest(request));
+    return Collections.unmodifiableMap(errorAttributes);
+  }
+
+  protected void prettyLog(Map errorInfo) {
+    Object path = errorInfo.get("path");
+    Object status = errorInfo.get("status");
+    Object message = errorInfo.get("message");
+    Object errors = errorInfo.get("errors");
+    Object cause = errorInfo.get("exception");
     StringBuilder log = new StringBuilder();
     log.append(SystemUtil.get(LINE_SEPRATOR))
         .append(StrUtil.format("┏━━━━ response status: <{}> ━━━━", status))
         .append(SystemUtil.get(LINE_SEPRATOR))
         .append(StrUtil.format("┣━━━━ error message: <{}> ━━━━", message))
         .append(SystemUtil.get(LINE_SEPRATOR))
-        .append(StrUtil.format("┣━━━━ error fileds: <{}> ━━━━", filedErrors))
+        .append(StrUtil.format("┣━━━━ error fileds: <{}> ━━━━", errors))
         .append(SystemUtil.get(LINE_SEPRATOR))
         .append(StrUtil.format("┗━━━━ error cause: <{}> ━━━━", cause))
         .append(SystemUtil.get(LINE_SEPRATOR))
         .append(StrUtil.format("┗━━━━ request path <{}> error log.━━━━", path));
     logger.error(log.toString());
-  }
-
-  protected List<FieldError> getFieldError(Map<String, Object> model, Throwable cause) {
-    List<FieldError> filedErrors = (List<FieldError>) model.get("errors");
-    if (filedErrors != null) {
-      return filedErrors;
-    }
-    if (cause instanceof FormFieldException) {
-      FormFieldException fe = (FormFieldException) cause;
-      return fe.getErrors();
-    }
-    return null;
-  }
-
-  protected List<Map<String, String>> wrapFieldErrors(List<FieldError> errors) {
-    List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-    for (FieldError e : errors) {
-      Map<String, String> error = new HashMap<String, String>();
-      error.put("field", e.getField());
-      error.put("message", e.getDefaultMessage());
-      list.add(error);
-    }
-    return list;
   }
 
   /**
@@ -145,8 +212,15 @@ public class CustomErrorController extends AbstractErrorController {
     }
   }
 
+  /**
+   * json响应的输出流方式
+   *
+   * @param response
+   * @param error
+   */
   protected void writeJson(HttpServletResponse response, JsonResult error) {
-    response.setContentType("application/json;charset=utf-8");
+    response.addHeader(HttpHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON_VALUE);
+    response.addHeader(HttpHeaders.ACCEPT_CHARSET, CharsetUtil.UTF_8);
     try {
       response.getWriter().write(objectMapper.writeValueAsString(error));
     } catch (IOException e) {
@@ -154,16 +228,13 @@ public class CustomErrorController extends AbstractErrorController {
     }
   }
 
-  protected String getErrorMessage(Throwable ex) {
-
-    if (ex instanceof PlatformException) {
-      return ex.getMessage();
-    } else {
-      return "服务器错误,请联系管理员";
-    }
-  }
-
-  protected Throwable getCause(HttpServletRequest request) {
+  /**
+   * 获取真正的异常，而不是被tomcat等包装的异常
+   *
+   * @param request
+   * @return
+   */
+  protected Throwable getRealException(HttpServletRequest request) {
     Throwable error = (Throwable) request.getAttribute("javax.servlet.error.exception");
     if (error != null) {
       while (error instanceof ServletException && error.getCause() != null) {

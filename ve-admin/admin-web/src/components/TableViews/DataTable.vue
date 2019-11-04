@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-10-27 23:14:25
+ * @LastEditTime: 2019-11-04 21:06:33
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -112,6 +112,10 @@ export default {
       },
       cloneTableData: null
     };
+  },
+  updated() {
+    console.log(this.metedata);
+    console.log(this.tabledata);
   },
   methods: {
     searchTable() {

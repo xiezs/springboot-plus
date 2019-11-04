@@ -48,6 +48,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+/**
+ * 切勿在此配置类中向SpringMVC中添加bean。
+ * 也就是不要 @Bean这类方法。
+ * 会出现无法ServletContext注入null，因为父接口的原因
+ * */
 @Configuration
 public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBean {
 

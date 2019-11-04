@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-10-27 22:49:20
+ * @LastEditTime: 2019-11-04 23:25:52
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -43,7 +43,7 @@ export default {
   computed: {},
   mounted() {
     this.obtainMetedata();
-    this.obtainData();
+    this.obtainData({ page: 1, limit: 10 });
   },
   methods: {
     obtainMetedata() {

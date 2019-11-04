@@ -3,8 +3,10 @@ package com.ibeetl.admin.core.conf;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import org.apache.commons.digester3.RegexRules;
 import org.hibernate.validator.HibernateValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
@@ -38,5 +40,11 @@ public class SpringConfiguration {
     MethodValidationPostProcessor postProcessor = new MethodValidationPostProcessor();
     postProcessor.setValidator(validator);
     return postProcessor;
+  }
+
+  @Bean
+  public DefaultErrorAttributes defaultErrorAttributes(){
+    DefaultErrorAttributes defaultErrorAttributes = new DefaultErrorAttributes(true);
+    return defaultErrorAttributes;
   }
 }

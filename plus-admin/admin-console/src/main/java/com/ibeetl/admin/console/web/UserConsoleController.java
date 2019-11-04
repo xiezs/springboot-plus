@@ -165,7 +165,6 @@ public class UserConsoleController {
   @Function("user.query")
   @ResponseBody
   public JsonResult<PageQuery<CoreUser>> index(UserQuery condtion) {
-
     PageQuery<CoreUser> page = condtion.getPageQuery();
     userConsoleService.queryByCondtion(page);
     return JsonResult.success(page);
