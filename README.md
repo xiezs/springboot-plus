@@ -20,6 +20,8 @@ Plus系统是一个使用简单，功能较为复杂的开源系统，已经数�
 基本技术栈来源于我为电子工业出版社编写的的[<<Spring Boot 2 精髓 >>](https://item.jd.com/12214143.html) (这本书每一章也有各种例子，但Springboot-plus 更偏向于应用而不是教学)
 该书的第二版电子版可以可以在[看云广场购买](https://www.kancloud.cn/xiandafu/springboot2-in-practice/), 包含基础篇，分布式篇和微服务篇，第二版也包含一章说明Plus系统
 
+> 我的新书，程序员性能优化，程序装B宝典[《Java系统性能优化》](https://item.jd.com/12742086.html)，可以在京东上购买了
+
 
 当前版本:1.3.0
 
