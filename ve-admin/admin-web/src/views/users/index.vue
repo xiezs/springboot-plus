@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-11-04 23:25:52
+ * @LastEditTime: 2019-11-24 10:50:41
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -63,7 +63,7 @@ export default {
       users(queryParams)
         .then(result => {
           const { code, data } = { ...result };
-          this.tabledata = Object.assign({}, data);
+          this.tabledata = Object.assign({}, result);
         })
         .catch(err => {})
         .finally(() => {

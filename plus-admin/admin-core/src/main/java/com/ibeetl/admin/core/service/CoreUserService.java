@@ -3,14 +3,12 @@ package com.ibeetl.admin.core.service;
 import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
 import java.util.List;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import org.beetl.sql.core.SQLManager;
+import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ibeetl.admin.core.conf.PasswordConfig;
 import com.ibeetl.admin.core.conf.PasswordConfig.PasswordEncryptService;
 import com.ibeetl.admin.core.dao.CoreOrgDao;
 import com.ibeetl.admin.core.dao.CoreUserDao;
@@ -75,9 +73,11 @@ public class CoreUserService {
     return userDao.getUserByRole(role);
   }
 
-  @Valid
-  public List<CoreUser> getAllUsers(@NotNull Integer page, @NotNull Integer limit) {
-    return sqlManagerBaseDao.getSQLManager().lambdaQuery(CoreUser.class).page(page, limit).getList();
+  public PageQuery<CoreUser> getAllUsers(@NotNull Integer page, @NotNull Integer limit) {
+    return sqlManagerBaseDao
+        .getSQLManager()
+        .lambdaQuery(CoreUser.class)
+        .page(page, limit);
   }
 
   public CoreUser getUserByCode(String userName) {

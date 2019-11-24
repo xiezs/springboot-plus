@@ -4,9 +4,9 @@ import com.ibeetl.admin.console.util.VOUtil;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.web.JsonResult;
-import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
+import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +24,8 @@ public class UserElController {
   }
 
   @GetMapping("/users")
-  public JsonResult<List<CoreUser>> users(@NotNull Integer page, @NotNull Integer limit) {
-    List<CoreUser> allUsers = coreUserService.getAllUsers(page, limit);
+  public JsonResult<PageQuery<CoreUser>> users(@NotNull Integer page, @NotNull Integer limit) {
+    PageQuery<CoreUser> allUsers = coreUserService.getAllUsers(page, limit);
     return JsonResult.success(allUsers);
   }
 }

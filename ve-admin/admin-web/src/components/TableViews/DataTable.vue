@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-11-04 21:06:33
+ * @LastEditTime: 2019-11-24 10:52:05
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -32,7 +32,7 @@
       >
       </el-table-column>
 
-      <el-table-column :key="Math.random()" align="right">
+      <el-table-column :key="Math.random()" width="170" align="right">
         <template #header="slot">
           <el-input
             v-model="search"

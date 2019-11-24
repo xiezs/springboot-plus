@@ -1,9 +1,10 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-11-04 21:00:21
+ * @LastEditTime: 2019-11-24 21:24:42
  * @LastEditors: 一日看尽长安花
- * @Description:
+ * @Description: 后台管理页面的自动生成，
+ * 主要暴露了分页方法、过滤表格（单纯前端过滤）、条件查询、增删改方法
  -->
 <template>
   <div>
