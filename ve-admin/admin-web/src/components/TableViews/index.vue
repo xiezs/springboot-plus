@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-11-24 21:24:42
+ * @LastEditTime: 2019-11-30 22:23:06
  * @LastEditors: 一日看尽长安花
  * @Description: 后台管理页面的自动生成，
  * 主要暴露了分页方法、过滤表格（单纯前端过滤）、条件查询、增删改方法
@@ -12,7 +12,14 @@
       :metedata="metedata"
       @filter-search="filterSearch"
       @handle-create="handleCreate"
-    ></search-pane>
+    >
+      <template #filter-condition="{filterData:filterData}">
+        <slot name="filter-condition" :filter-data="filterData"> </slot>
+      </template>
+      <template #operation-btn-group>
+        <slot name="operation-btn-group"> </slot>
+      </template>
+    </search-pane>
     <data-table
       :loading="loading"
       :metedata="metedata"
@@ -32,7 +39,9 @@
       @create-data="$emit('create-data')"
       @update-data="$emit('update-data')"
     >
-      <template #dialog-form-item="{dialogData:dialogData}"> </template>
+      <template #dialog-form-item="{dialogData:dialogData}">
+        <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
+      </template>
     </edit-dialog>
   </div>
 </template>

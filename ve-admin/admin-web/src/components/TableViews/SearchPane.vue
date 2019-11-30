@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-10-17 11:48:19
+ * @LastEditTime: 2019-11-25 22:58:49
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -29,7 +29,7 @@
           />
           <div
             v-else-if="judgeType(val.type, 'date')"
-            style="display:inline-block"
+            style="display: inline-block;position: relative;top: -0.3rem;"
           >
             <el-date-picker
               v-model="filterData[key + 'Start']"
@@ -130,6 +130,10 @@ export default {
 };
 </script>
 <style scoped>
+.filter-container {
+  margin-top: 1rem;
+}
+
 .filter-item-container {
   display: inline-block;
   margin: 0.15em;

@@ -1,23 +1,21 @@
 package com.ibeetl.admin.core.service;
 
-import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
-import java.util.List;
-
-import javax.validation.constraints.NotNull;
-import org.beetl.sql.core.engine.PageQuery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ibeetl.admin.core.conf.PasswordConfig.PasswordEncryptService;
 import com.ibeetl.admin.core.dao.CoreOrgDao;
 import com.ibeetl.admin.core.dao.CoreUserDao;
+import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.UserLoginInfo;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
+import java.util.List;
+import javax.validation.constraints.NotNull;
+import org.beetl.sql.core.engine.PageQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

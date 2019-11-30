@@ -55,6 +55,7 @@
             <el-option />
           </el-select>
         </el-form-item>
+        <!-- 给某些无法自动生成表单域的插槽，并将数据向插槽传递 -->
         <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
       </el-form>
       <template v-slot:footer>
