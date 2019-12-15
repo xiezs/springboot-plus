@@ -10,7 +10,7 @@ import com.ibeetl.admin.core.conf.beetl.resultmap.GridColumn;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridHeader;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridMapping;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridRow;
-import com.ibeetl.admin.core.util.CacheUtil;
+import com.ibeetl.admin.core.util.cache.CacheUtil;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;

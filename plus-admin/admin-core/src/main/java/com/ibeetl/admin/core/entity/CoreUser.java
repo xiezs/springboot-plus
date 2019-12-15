@@ -1,6 +1,7 @@
 package com.ibeetl.admin.core.entity;
 
 import com.ibeetl.admin.core.annotation.ElColumn;
+import com.ibeetl.admin.core.util.enums.ElColumnType;
 import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
@@ -24,24 +25,24 @@ public class CoreUser extends BaseEntity {
 
   @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
   @SeqID(name = ORACLE_CORE_SEQ_NAME)
-  @ElColumn(name = "ID", type = "string")
+  @ElColumn(name = "ID", type = ElColumnType.STRING)
   @AutoID
   protected Long id;
   // 删除标识
   @JsonIgnore protected Integer delFlag = 0;
   // 创建时间
-  @ElColumn(name = "创建时间", type = "date")
+  @ElColumn(name = "创建时间", type = ElColumnType.DATE)
   protected Date createTime;
 
   // 登录名，编号
   @NotBlank(message = "用户编号不能为空", groups = ValidateConfig.ADD.class)
   @Null(message = "用户编号不能为空", groups = ValidateConfig.UPDATE.class)
-  @ElColumn(name = "用户名", type = "string")
+  @ElColumn(name = "用户名", type = ElColumnType.STRING)
   private String code;
 
   // 用户姓名
   @NotBlank(message = "用户名不能为空")
-  @ElColumn(name = "姓名", type = "string")
+  @ElColumn(name = "姓名", type = ElColumnType.STRING)
   private String name;
 
   // 组织机构id
@@ -52,17 +53,17 @@ public class CoreUser extends BaseEntity {
   @JsonIgnore private String password;
 
   @Dict(type = CoreDictType.USER_STATE)
-  @ElColumn(name = "状态", type = "string")
+  @ElColumn(name = "状态", type = ElColumnType.STRING)
   private String state;
 
   // 扩展例子
   @Dict(type = "job_type")
-  @ElColumn(name = "职位", type = "string")
-  private String jobType0;
+  @ElColumn(name = "职位", type = ElColumnType.DICT)
+  private DictType jobType0;
 
   @Dict(type = "job_type")
-  @ElColumn(name = "职位", type = "string")
-  private String jobType1;
+  @ElColumn(name = "职位", type = ElColumnType.DICT)
+  private DictType jobType1;
 
   private Date updateTime;
 
@@ -125,19 +126,19 @@ public class CoreUser extends BaseEntity {
     this.createTime = createTime;
   }
 
-  public String getJobType0() {
+  public DictType getJobType0() {
     return jobType0;
   }
 
-  public void setJobType0(String jobType0) {
+  public void setJobType0(DictType jobType0) {
     this.jobType0 = jobType0;
   }
 
-  public String getJobType1() {
+  public DictType getJobType1() {
     return jobType1;
   }
 
-  public void setJobType1(String jobType1) {
+  public void setJobType1(DictType jobType1) {
     this.jobType1 = jobType1;
   }
 

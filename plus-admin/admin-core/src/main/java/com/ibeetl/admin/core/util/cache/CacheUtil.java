@@ -1,4 +1,4 @@
-package com.ibeetl.admin.core.util;
+package com.ibeetl.admin.core.util.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;

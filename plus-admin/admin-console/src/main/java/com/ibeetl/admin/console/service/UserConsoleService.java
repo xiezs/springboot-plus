@@ -1,9 +1,11 @@
 package com.ibeetl.admin.console.service;
 
+import com.ibeetl.admin.core.entity.DictType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,8 +188,9 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
       CoreDict dict = dictService.findCoreDict(CoreDictType.USER_STATE, user.getState());
       userItem.setStateText(dict.getName());
 
-      if (StringUtils.isNotEmpty(user.getJobType1())) {
-        dict = dictService.findCoreDict("job_type", user.getJobType1());
+      String dictValue = Optional.ofNullable(user.getJobType1()).map(DictType::getValue).orElse(null);
+      if (StringUtils.isNotEmpty(dictValue)) {
+        dict = dictService.findCoreDict(CoreDictType.JOB_TYPE, dictValue);
         userItem.setJobType1Text(dict.getName());
       }
 

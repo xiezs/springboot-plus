@@ -4,7 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridMapping;
-import com.ibeetl.admin.core.util.CacheUtil;
+import com.ibeetl.admin.core.util.cache.CacheUtil;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;

@@ -1,14 +1,30 @@
 package com.ibeetl.admin.core.service;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
+import com.ibeetl.admin.core.entity.DictType;
+import com.ibeetl.admin.core.util.AnnotationUtil;
+import com.ibeetl.admin.core.util.FileDownloadUtil;
+import com.ibeetl.admin.core.util.cache.DictCacheUtil;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.TailBean;
+import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ibeetl.admin.core.annotation.Dict;
@@ -194,5 +210,34 @@ public class CoreBaseService<T> {
       }
       c = c.getSuperclass();
     } while (c != TailBean.class);
+  }
+
+  public void processObjectsDictField(PageQuery pageQuery){
+    processObjectsDictField(pageQuery.getList());
+  }
+
+  public void processObjectsDictField(Collection collection){
+    for (Object o : collection) {
+      processDictField(o);
+    }
+  }
+
+  public void processDictField(Object object) {
+    Field[] fields = ReflectUtil.getFields(object.getClass());
+    for (Field field : fields) {
+      Class<?> fieldDeclaringClass = field.getType();
+      if (!fieldDeclaringClass.getCanonicalName().equals(DictType.class.getCanonicalName())) {
+        continue;
+      }
+      Dict dictAnnotation = field.getDeclaredAnnotation(Dict.class);
+      String type = dictAnnotation.type();
+      DictType dictType = (DictType) ReflectUtil.getFieldValue(object, field);
+      if (dictType == null || StrUtil.isBlank(dictType.getValue())) {
+        continue;
+      }
+      DictType key = new DictType(type, dictType.getValue());
+      dictType = DictCacheUtil.get(key);
+      ReflectUtil.setFieldValue(object, field, dictType);
+    }
   }
 }

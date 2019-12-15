@@ -2,12 +2,11 @@ package processor;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.map.MapBuilder;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.ibeetl.admin.core.util.CacheUtil;
+import com.ibeetl.admin.core.util.cache.CacheUtil;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.sql.ResultSet;

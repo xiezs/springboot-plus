@@ -21,7 +21,7 @@ public @interface ElColumn {
   String name();
 
   /**
-   * 该列的类型。{@link }
+   * 该列的类型。{@link com.ibeetl.admin.core.util.enums.ElColumnType}
    * @return
    * */
   String type();

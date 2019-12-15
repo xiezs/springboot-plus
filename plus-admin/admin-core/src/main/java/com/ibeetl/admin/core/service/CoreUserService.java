@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class CoreUserService {
+public class CoreUserService extends CoreBaseService {
   @Autowired CoreUserDao userDao;
 
   @Autowired CoreOrgDao orgDao;
@@ -72,10 +72,12 @@ public class CoreUserService {
   }
 
   public PageQuery<CoreUser> getAllUsers(@NotNull Integer page, @NotNull Integer limit) {
-    return sqlManagerBaseDao
+    PageQuery<CoreUser> pageQuery = sqlManagerBaseDao
         .getSQLManager()
         .lambdaQuery(CoreUser.class)
         .page(page, limit);
+    processObjectsDictField(pageQuery);
+    return pageQuery;
   }
 
   public CoreUser getUserByCode(String userName) {

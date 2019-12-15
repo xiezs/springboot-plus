@@ -4,8 +4,10 @@ import cn.hutool.core.util.CharsetUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeetl.admin.core.conf.JasonConfig;
 import com.ibeetl.admin.core.conf.beetl.handler.DateTypeHandler;
+import com.ibeetl.admin.core.conf.beetl.handler.DictTypeHandler;
 import com.ibeetl.admin.core.conf.beetl.handler.ZonedDateTimeTypeHandler;
 import com.ibeetl.admin.core.conf.beetl.processor.JsonBeanProcessor;
+import com.ibeetl.admin.core.entity.DictType;
 import com.ibeetl.admin.core.rbac.DataAccess;
 import com.ibeetl.admin.core.rbac.DataAccessFactory;
 import com.ibeetl.admin.core.service.CorePlatformService;
@@ -104,6 +106,7 @@ public class BeetlConf {
       typeHandlerMap.remove(Date.class);
       typeHandlerMap.put(Date.class, new DateTypeHandler());
       typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
+      typeHandlerMap.put(DictType.class, new DictTypeHandler());
       /*拦截器*/
       manager.setInters(new Interceptor[] {new StarterDebugInterceptor()});
     };

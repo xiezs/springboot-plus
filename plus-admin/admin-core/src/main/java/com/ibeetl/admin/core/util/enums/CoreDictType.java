@@ -3,6 +3,7 @@ package com.ibeetl.admin.core.util.enums;
 /** @author : xiandafu */
 public class CoreDictType {
 
+  public static final String JOB_TYPE = "job_type";
   public static final String ORG_TYPE = "org_type";
   public static final String USER_STATE = "user_state";
   public static final String DEL_FLAG = "del_flag";
