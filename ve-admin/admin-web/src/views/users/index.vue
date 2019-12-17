@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-11-30 22:55:19
+ * @LastEditTime: 2019-12-17 20:56:50
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -18,7 +18,7 @@
       @delete-data="deleteData"
       @update-data="updateData"
     >
-      <!-- todo 待解决的问题：样式问题。猜测原因：应该是样式穿透问题，不能是scope -->
+      <!-- fixed 待解决的问题：样式问题。猜测原因：应该是样式穿透问题，不能是scope -->
       <!-- 往搜索栏中添加搜索条件 -->
       <template #filter-condition="{filterData:filterData}">
         <div class="filter-item-container">
@@ -65,7 +65,7 @@ import TableViews from '@/components/TableViews';
 import { users, usersMetedata } from '@/api/user';
 
 export default {
-  name: 'Demo2',
+  name: 'CoreUsers',
   components: { TableViews },
   props: {},
   data() {

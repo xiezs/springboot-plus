@@ -161,7 +161,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
   public void deleteUserRoles(List<Long> ids) {
     // 考虑到这个操作较少使用，就不做批处理优化了
     for (Long id : ids) {
-      sqlManager.deleteById(CoreUserRole.class, id);
+      sqlManager.deleteById(id);
     }
   }
 
