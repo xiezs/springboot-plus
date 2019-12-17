@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-11-24 10:52:05
+ * @LastEditTime: 2019-12-17 14:07:33
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -25,7 +25,7 @@
       <el-table-column
         v-for="(val, key) in metedata"
         :key="key"
-        :prop="key"
+        :prop="val.type === 'dict' ? key + '.name' : key"
         :label="val.name"
         :sortable="val.sortable"
         :show-overflow-tooltip="true"

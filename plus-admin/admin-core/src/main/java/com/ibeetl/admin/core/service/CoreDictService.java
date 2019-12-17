@@ -46,7 +46,7 @@ public class CoreDictService extends CoreBaseService<CoreDict> {
   /**
    * 级联字典查询，必须提供一个字典类型
    *
-   * @param group
+   * @param type
    * @param value
    * @return
    */
@@ -59,7 +59,7 @@ public class CoreDictService extends CoreBaseService<CoreDict> {
   /**
    * 级联字段下一级的字段列表
    *
-   * @param parentValue
+   * @param id : 父级的 parentValue
    * @return
    */
   @Cacheable(value = CorePlatformService.DICT_CACHE_CHILDREN)

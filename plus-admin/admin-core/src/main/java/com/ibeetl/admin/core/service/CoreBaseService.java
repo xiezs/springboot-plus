@@ -5,6 +5,7 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
+import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
 import com.ibeetl.admin.core.entity.DictType;
 import com.ibeetl.admin.core.util.AnnotationUtil;
 import com.ibeetl.admin.core.util.FileDownloadUtil;
@@ -43,8 +44,7 @@ public class CoreBaseService<T> {
   @Autowired protected CoreDictService dictUtil;
 
   @Autowired
-  @Qualifier("baseDataSourceSqlManagerFactoryBean")
-  protected SQLManager sqlManager;
+  protected SQLManagerBaseDao sqlManager;
 
   /**
    * 根据id查询对象，如果主键ID不存在
@@ -53,7 +53,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public T queryById(Object id) {
-    T t = sqlManager.single(getCurrentEntityClassz(), id);
+    T t = sqlManager.getSQLManager().single(getCurrentEntityClassz(), id);
     queryEntityAfter((Object) t);
     return t;
   }
@@ -66,7 +66,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public T queryById(Class<T> classz, Object id) {
-    T t = sqlManager.unique(classz, id);
+    T t = sqlManager.getSQLManager().unique(classz, id);
     queryEntityAfter((Object) t);
     return t;
   }
@@ -78,7 +78,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public boolean save(T model) {
-    return sqlManager.insert(model, true) > 0;
+    return sqlManager.getSQLManager().insert(model, true) > 0;
   }
 
   /**
@@ -103,7 +103,7 @@ public class CoreBaseService<T> {
 
       list.add(map);
     }
-    int[] count = sqlManager.updateBatchTemplateById(getCurrentEntityClassz(), list);
+    int[] count = sqlManager.getSQLManager().updateBatchTemplateById(getCurrentEntityClassz(), list);
     int successCount = 0;
     for (int successFlag : count) {
       successCount += successFlag;
@@ -117,7 +117,7 @@ public class CoreBaseService<T> {
     // always id,delFlag for pojo
     map.put("id", id);
     map.put("delFlag", DelFlagEnum.DELETED.getValue());
-    int ret = sqlManager.updateTemplateById(getCurrentEntityClassz(), map);
+    int ret = sqlManager.getSQLManager().updateTemplateById(getCurrentEntityClassz(), map);
     return ret == 1;
   }
   /**
@@ -127,7 +127,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public int forceDelete(Long id) {
-    return sqlManager.deleteById(getCurrentEntityClassz(), id);
+    return sqlManager.getSQLManager().deleteById(getCurrentEntityClassz(), id);
   }
 
   /**
@@ -137,7 +137,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public int forceDelete(Class<T> classz, Long id) {
-    return sqlManager.deleteById(classz, id);
+    return sqlManager.getSQLManager().deleteById(classz, id);
   }
 
   /**
@@ -147,7 +147,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public boolean updateTemplate(T model) {
-    return sqlManager.updateTemplateById(model) > 0;
+    return sqlManager.getSQLManager().updateTemplateById(model) > 0;
   }
 
   /**
@@ -157,7 +157,7 @@ public class CoreBaseService<T> {
    * @return
    */
   public boolean update(T model) {
-    return sqlManager.updateById(model) > 0;
+    return sqlManager.getSQLManager().updateById(model) > 0;
   }
 
   /**

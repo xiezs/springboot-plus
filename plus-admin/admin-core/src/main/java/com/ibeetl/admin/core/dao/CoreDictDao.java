@@ -1,5 +1,6 @@
 package com.ibeetl.admin.core.dao;
 
+import com.ibeetl.admin.core.entity.DictType;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,15 @@ public interface CoreDictDao extends BaseMapper<CoreDict> {
    * @return
    */
   List<CoreDict> findAllList(String type);
+
+  /**
+   * 查询某个类型下的字典集合<br/>
+   * 主要用于提供给前端的下拉选择菜单使用，业务上请使用返回值为{@link CoreDict}的方法
+   *
+   * @param type 字典类型
+   * @return
+   */
+  List<DictType> findAllDictType(String type);
 
   /**
    * 查询字段类型列表

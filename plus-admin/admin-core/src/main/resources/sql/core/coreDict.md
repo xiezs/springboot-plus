@@ -5,6 +5,14 @@ findAllList
 	    and  type = #type#
 	@}
 	ORDER BY type, sort DESC
+	
+findAllDictType
+===
+	select * from core_dict where del_flag = 0
+	@if(!isEmpty(type)){
+	    and  type = #type#
+	@}
+	ORDER BY type, sort DESC	
 
 findTypeList
 ===

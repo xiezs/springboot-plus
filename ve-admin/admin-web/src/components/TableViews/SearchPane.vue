@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-11-25 22:58:49
+ * @LastEditTime: 2019-12-17 14:41:14
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -129,7 +129,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style>
 .filter-container {
   margin-top: 1rem;
 }
