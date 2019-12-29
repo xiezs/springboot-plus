@@ -69,6 +69,15 @@ public class OrgConsoleController {
         view.addObject("org", org);
         return view;
     }
+
+
+    @GetMapping(MODEL + "/add.do")
+    @Function("org.add")
+    public ModelAndView add() {
+        ModelAndView view = new ModelAndView("/admin/org/add.html");
+
+        return view;
+    }
     
     
     @GetMapping(MODEL + "/user/list.do")
