@@ -67,12 +67,18 @@ public class UserConsoleController {
 	OrgConsoleService orgConsoleService;
 	@Autowired
 	FileService fileService;
-	
 
-   
+
+
+	@GetMapping(MODEL + "/test.do")
+	@ResponseBody
+	public String test(Date date) {
+		System.out.println(date);
+		return date.toString();
+	}
+
 
 	/* 页面 */
-
 	@GetMapping(MODEL + "/index.do")
 	@Function("user")
 	public ModelAndView index() {
@@ -236,8 +242,7 @@ public class UserConsoleController {
 	/**
 	 * 用户所有授权角色列表
 	 * 
-	 * @param id
-	 *            用户id
+	 * @param roleQuery
 	 * @return
 	 */
 	@PostMapping(MODEL + "/role/list.json")
