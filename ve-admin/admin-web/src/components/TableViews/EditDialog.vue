@@ -7,7 +7,9 @@
  -->
 <template>
   <div class="dialog-container">
-    <!-- 对话框 -->
+    <!--
+      对话框：通过$emit 继续提交open和close事件改变对话框的显示和隐藏
+    -->
     <el-dialog
       :title="dialogTitle"
       :visible="dialogVisible"
@@ -24,7 +26,7 @@
         style="width: 400px; margin-left:50px;"
       >
         <el-form-item
-          v-for="(val, key) in metedata"
+          v-for="(val, key) in metadata"
           :key="key"
           :label="val.name"
           :prop="key"
@@ -45,17 +47,8 @@
             :placeholder="val.name + '时间'"
           >
           </el-date-picker>
-
-          <el-select
-            v-else-if="judgeType(val.type, 'dict')"
-            :placeholder="val.name"
-            :clearable="true"
-            class="filter-item"
-          >
-            <el-option />
-          </el-select>
         </el-form-item>
-        <!-- 给某些无法自动生成表单域的插槽，并将数据向插槽传递 -->
+        <!-- 用于面板中的自定义表单元素，例如级联选择器，并通过作用域插槽的方式将数据传递给自定义表单 -->
         <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
       </el-form>
       <template v-slot:footer>
@@ -81,7 +74,7 @@ import { equalsIgnoreCase } from '@/utils/str-util';
 export default {
   name: 'EditDialog',
   props: {
-    metedata: {
+    metadata: {
       type: Object,
       default() {
         return {};
@@ -123,6 +116,8 @@ export default {
       this.$refs['editForm'].validate(valid => {
         if (valid) {
           this.$emit('create-data', this.dialogData);
+          /* 将回调延迟到下次 DOM 更新循环之后执行。
+          而数据更新就代表dom更新，所以如果创建成功，数据就会更新 */
           this.$nextTick(() => {
             this.$emit('update:dialogVisible', false);
             this.$notify({
@@ -166,6 +161,7 @@ export default {
       });
     },
     openDialog() {
+      /* 参照vue中 .sync 修饰符章节，方便的刷新父组件的dialogVisible值*/
       this.$emit('update:dialogVisible', true);
     },
     closeDialog() {

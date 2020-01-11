@@ -46,7 +46,7 @@ public class CoreDictController {
   @ResponseBody
   public JsonResult<List<CoreDict>> viewChild(String group, String value) {
     CoreDict dict = dictService.findCoreDict(group, value);
-    List<CoreDict> list = dictService.findChildByParent(dict.getId());
+    List<CoreDict> list = dictService.findChildByParent(dict.getId(), null);
     return JsonResult.success(list);
   }
 }

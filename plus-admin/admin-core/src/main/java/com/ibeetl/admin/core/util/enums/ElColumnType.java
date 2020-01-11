@@ -7,7 +7,10 @@ public interface ElColumnType {
   /** 前端页面输入框 */
   String STRING = "string";
 
-  /** 前端页面下拉选择器 */
+  /**
+   * 不出现在搜索面板中，只出现在数据表格中。
+   * 建议下拉选择器通过级联选择器实现
+   * */
   String DICT = "dict";
 
   /** 前端页面的日期选择器 */

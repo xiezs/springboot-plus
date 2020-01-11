@@ -25,24 +25,20 @@ public class CoreUser extends BaseEntity {
 
   @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
   @SeqID(name = ORACLE_CORE_SEQ_NAME)
-  @ElColumn(name = "ID", type = ElColumnType.STRING)
   @AutoID
   protected Long id;
   // 删除标识
   @JsonIgnore protected Integer delFlag = 0;
   // 创建时间
-  @ElColumn(name = "创建时间", type = ElColumnType.DATE)
   protected Date createTime;
 
   // 登录名，编号
   @NotBlank(message = "用户编号不能为空", groups = ValidateConfig.ADD.class)
   @Null(message = "用户编号不能为空", groups = ValidateConfig.UPDATE.class)
-  @ElColumn(name = "用户名", type = ElColumnType.STRING)
   private String code;
 
   // 用户姓名
   @NotBlank(message = "用户名不能为空")
-  @ElColumn(name = "姓名", type = ElColumnType.STRING)
   private String name;
 
   // 组织机构id
@@ -53,16 +49,13 @@ public class CoreUser extends BaseEntity {
   @JsonIgnore private String password;
 
   @Dict(type = CoreDictType.USER_STATE)
-  @ElColumn(name = "状态", type = ElColumnType.STRING)
   private String state;
 
   // 扩展例子
   @Dict(type = "job_type")
-  @ElColumn(name = "职位", type = ElColumnType.DICT)
   private DictType jobType0;
 
   @Dict(type = "job_type")
-  @ElColumn(name = "职位", type = ElColumnType.DICT)
   private DictType jobType1;
 
   private Date updateTime;

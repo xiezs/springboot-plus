@@ -1,19 +1,10 @@
 package com.ibeetl.admin.core.service;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.Assert;
-import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
 import com.ibeetl.admin.core.entity.DictType;
-import com.ibeetl.admin.core.util.AnnotationUtil;
-import com.ibeetl.admin.core.util.FileDownloadUtil;
-import com.ibeetl.admin.core.util.cache.DictCacheUtil;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
+import com.ibeetl.admin.core.util.cache.DictTypeCacheUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -22,8 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.Optional;
-import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.TailBean;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +21,6 @@ import com.ibeetl.admin.core.annotation.Dict;
 import com.ibeetl.admin.core.entity.CoreDict;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * 描述:
@@ -213,12 +201,12 @@ public class CoreBaseService<T> {
   }
 
   public void processObjectsDictField(PageQuery pageQuery){
-    processObjectsDictField(pageQuery.getList());
+    this.processObjectsDictField(pageQuery.getList());
   }
 
   public void processObjectsDictField(Collection collection){
     for (Object o : collection) {
-      processDictField(o);
+      this.processDictField(o);
     }
   }
 
@@ -236,7 +224,7 @@ public class CoreBaseService<T> {
         continue;
       }
       DictType key = new DictType(type, dictType.getValue());
-      dictType = DictCacheUtil.get(key);
+      dictType = DictTypeCacheUtil.get(key);
       ReflectUtil.setFieldValue(object, field, dictType);
     }
   }

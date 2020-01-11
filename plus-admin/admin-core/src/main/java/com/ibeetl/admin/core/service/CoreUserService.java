@@ -76,7 +76,7 @@ public class CoreUserService extends CoreBaseService {
         .getSQLManager()
         .lambdaQuery(CoreUser.class)
         .page(page, limit);
-    processObjectsDictField(pageQuery);
+    super.processObjectsDictField(pageQuery);
     return pageQuery;
   }
 

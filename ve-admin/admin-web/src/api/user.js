@@ -38,9 +38,9 @@ export function users(params) {
   });
 }
 
-export function usersMetedata() {
+export function usersMetadata() {
   return request({
-    url: '/users/metedata',
+    url: '/users/metadata',
     method: 'get'
   });
 }

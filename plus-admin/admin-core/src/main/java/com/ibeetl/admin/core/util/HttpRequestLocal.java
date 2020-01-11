@@ -75,6 +75,10 @@ public final class HttpRequestLocal {
     getHttpSession().removeAttribute(ACCESS_USER_ORGS);
   }
 
+  public static void destory() {
+    requests.remove();
+  }
+
   public static Cookie getCookieByName(String cookieName) {
     Assert.notNull(cookieName);
     Cookie[] cookies = get().getCookies();

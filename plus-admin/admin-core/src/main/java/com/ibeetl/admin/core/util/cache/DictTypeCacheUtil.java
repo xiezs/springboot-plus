@@ -10,7 +10,13 @@ import com.ibeetl.admin.core.util.SpringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DictCacheUtil {
+/**
+ * Class DictTypeCacheUtil : <br/>
+ * 描述：{@link DictType} 类的缓存工具类，同时提供将 {@link CoreDict} 转换至 {@link DictType} 方法
+ * @author 一日看尽长安花
+ * Created on 2020/1/11
+ */
+public class DictTypeCacheUtil {
   private static final Cache<String, Object> CACHE =
       Caffeine.newBuilder().maximumSize(1024).recordStats().build();
 
@@ -38,6 +44,12 @@ public class DictCacheUtil {
             });
   }
 
+  /**
+   * Method getKey ...
+   * 一个字典记录的key应该由type + value 构成
+   * @param dictType of type DictType
+   * @return String
+   */
   public static String getKey(DictType dictType) {
     return dictType.getType() + ":" + dictType.getValue();
   }

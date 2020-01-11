@@ -1,9 +1,13 @@
 package com.ibeetl.admin.core.service;
 
+import cn.hutool.core.util.StrUtil;
+import com.ibeetl.admin.core.web.JsonResult;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.beetl.sql.core.mapper.internal.LambdaQueryAmi;
+import org.beetl.sql.core.query.LambdaQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +27,6 @@ import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 @Service
 @Transactional
 public class CoreDictService extends CoreBaseService<CoreDict> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CoreDictService.class);
 
   @Autowired private CoreDictDao dictDao;
 
@@ -57,14 +59,27 @@ public class CoreDictService extends CoreBaseService<CoreDict> {
   }
 
   /**
-   * 级联字段下一级的字段列表
+   * Method findChildByParent ...<br>
+   * 获取某类型或者某个父级下的字典列表，参数二选一即可，也可都有。不可都不存在 <br>
    *
-   * @param id : 父级的 parentValue
-   * @return
+   * @param parentId of type Long 父级id
+   * @param type of type String 字典type
+   * @return List<CoreDict>
    */
   @Cacheable(value = CorePlatformService.DICT_CACHE_CHILDREN)
-  public List<CoreDict> findChildByParent(Long id) {
-    return dictDao.findChildByParent(id);
+  public List<CoreDict> findChildByParent(Long parentId, String type) {
+    if (StrUtil.isBlank(type) && parentId == null) {
+      return null;
+    }
+    LambdaQuery<CoreDict> lambdaQuery = dictDao.getSQLManager().lambdaQuery(CoreDict.class);
+    if (parentId != null) {
+      lambdaQuery.andEq(CoreDict::getParent, parentId);
+    }
+    if (StrUtil.isNotBlank(type)) {
+      lambdaQuery.andEq(CoreDict::getType, type);
+    }
+    List<CoreDict> coreDictList = lambdaQuery.orderBy(CoreDict::getSort).select();
+    return coreDictList;
   }
 
   @Cacheable(value = CorePlatformService.DICT_CACHE_VALUE)
@@ -98,7 +113,7 @@ public class CoreDictService extends CoreBaseService<CoreDict> {
       if (dict.getValue().equals(value)) {
         return list;
       } else {
-        List<CoreDict> children = findChildByParent(dict.getId());
+        List<CoreDict> children = findChildByParent(dict.getId(), null);
         if (children.isEmpty()) {
           continue;
         } else {

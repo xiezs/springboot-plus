@@ -48,11 +48,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConverterMethodProcessor;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
-/**
- * 切勿在此配置类中向SpringMVC中添加bean。
- * 也就是不要 @Bean这类方法。
- * 会出现无法ServletContext注入null，因为父接口的原因
- * */
+/** 切勿在此配置类中向SpringMVC中添加bean。 也就是不要 @Bean这类方法。 会出现无法ServletContext注入null，因为父接口的原因 */
 @Configuration
 public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBean {
 
@@ -81,8 +77,11 @@ public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBea
    */
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(new SessionInterceptor(userService)).addPathPatterns("/**");
-    // super.addInterceptors(registry);
+    registry.addInterceptor(new HttpRequestInterceptor()).addPathPatterns("/**");
+    registry
+        .addInterceptor(new SessionInterceptor(userService))
+        .excludePathPatterns("/user/login", "/error", "/user/logout")
+        .addPathPatterns("/**");
   }
 
   /**
@@ -124,6 +123,22 @@ public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBea
   }
 }
 
+class HttpRequestInterceptor implements HandlerInterceptor {
+
+  @Override
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
+    HttpRequestLocal.set(request);
+    return true;
+  }
+
+  @Override
+  public void afterCompletion(
+      HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+    HttpRequestLocal.destory();
+  }
+}
+
 class SessionInterceptor implements HandlerInterceptor {
 
   CoreUserService userService;
@@ -135,38 +150,20 @@ class SessionInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(
       HttpServletRequest request, HttpServletResponse response, Object handler) {
-    HttpRequestLocal.set(request);
-    if (StrUtil.containsAny(request.getRequestURI(), "/login", "/error", "/logout")) {
-      return true;
-    }
-
     String token = HttpRequestLocal.getAuthorization();
-    Map<String, Object> payload = JoseJwtUtil.parsePayload(token);
-    if (payload.isEmpty()) {
+    boolean isExpiration = JoseJwtUtil.verifyJwtJson(token);
+    if (isExpiration) {
       /*验证失败，无效jwt*/
       return false;
+    } else {
+      token = JoseJwtUtil.refreshIssuedAtTime(token);
+      response.setHeader(HttpHeaders.AUTHORIZATION, token);
     }
-
     return true;
-  }
-
-  @Override
-  public void postHandle(
-      HttpServletRequest request,
-      HttpServletResponse response,
-      Object handler,
-      ModelAndView modelAndView) {
-    /* do nothing */
-  }
-
-  @Override
-  public void afterCompletion(
-      HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-    /* do nothing */
   }
 }
 
-/** 自定义SpringMVC的controller参数注解 {@link RequestBodyPlus} 的注入解析，用json path 的方式注入json请求的参数 */
+/** 自定义SpringMVC的controller方法的参数注解 {@link RequestBodyPlus} 的注入解析， 用json path 的方式注入json请求的参数 */
 class RequestBodyPlusProcessor extends AbstractMessageConverterMethodProcessor {
 
   private static final ThreadLocal<String> bodyLocal = ThreadLocal.withInitial(() -> "{}");

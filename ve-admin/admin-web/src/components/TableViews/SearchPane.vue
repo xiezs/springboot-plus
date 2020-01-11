@@ -1,20 +1,22 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-12-17 14:41:14
- * @LastEditors: 一日看尽长安花
+ * @LastEditTime : 2020-01-09 23:16:28
+ * @LastEditors  : 一日看尽长安花
  * @Description:
  -->
 <template>
   <div class="filter-container">
+    <!-- 取消表单的提交动作 -->
     <el-form
       ref="filterForm"
       :size="size"
       :model="filterData"
       @submit.native.prevent
     >
+      <!-- 循环元数据构建搜索面板：除了下拉框 -->
       <div
-        v-for="(val, key) in metedata"
+        v-for="(val, key) in metadata"
         :key="key"
         class="filter-item-container"
       >
@@ -45,17 +47,9 @@
             >
             </el-date-picker>
           </div>
-
-          <el-select
-            v-else-if="judgeType(val.type, 'dict')"
-            :placeholder="val.name"
-            :clearable="true"
-            class="filter-item"
-          >
-            <el-option />
-          </el-select>
         </el-form-item>
       </div>
+      <!-- 用于面板中的自定义表单，例如级联选择器，并通过作用域插槽的方式将数据传递给自定义表单 -->
       <slot name="filter-condition" :filter-data="filterData"> </slot>
       <div class="filter-item-container">
         <el-button
@@ -81,6 +75,7 @@
       >
         添加
       </el-button>
+      <!-- 用于面板中的自定义功能按钮，例如导入导出按钮等，并通过作用域插槽的方式将数据传递给自定义表单 -->
       <slot name="operation-btn-group" :filter-data="filterData"> </slot>
     </div>
   </div>
@@ -92,7 +87,7 @@ import { equalsIgnoreCase } from '@/utils/str-util';
 export default {
   name: 'SearchPane',
   props: {
-    metedata: {
+    metadata: {
       type: Object,
       default() {
         return {};
@@ -129,16 +124,3 @@ export default {
   }
 };
 </script>
-<style>
-.filter-container {
-  margin-top: 1rem;
-}
-
-.filter-item-container {
-  display: inline-block;
-  margin: 0.15em;
-}
-.filter-btn-group {
-  margin: 0.15em;
-}
-</style>

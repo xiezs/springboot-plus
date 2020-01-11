@@ -2,13 +2,13 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime: 2019-10-27 23:12:07
- * @LastEditors: 一日看尽长安花
+ * @LastEditTime : 2020-01-11 23:24:40
+ * @LastEditors  : 一日看尽长安花
  */
 import axios from 'axios';
 import { MessageBox, Message } from 'element-ui';
 import store from '@/store';
-import { getToken } from '@/utils/auth';
+import { getToken, setToken } from '@/utils/auth';
 
 // create an axios instance
 const service = axios.create({
@@ -21,7 +21,6 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
     if (store.getters.token) {
       // let each request carry token
       // ['Authorization'] see to MDN explain about "HTTP Authorization"
@@ -49,9 +48,8 @@ service.interceptors.response.use(
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
-  response => {
+  (response, b, c, d) => {
     const res = response.data;
-
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 200) {
       Message({
@@ -79,6 +77,8 @@ service.interceptors.response.use(
       }
       return Promise.reject(new Error(res.message || 'Error'));
     } else {
+      const authorization = response.headers['authorization'];
+      setToken(authorization);
       return res;
     }
   },

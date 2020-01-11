@@ -1,6 +1,7 @@
 package com.ibeetl.admin.console.web;
 
 import com.ibeetl.admin.console.util.VOUtil;
+import com.ibeetl.admin.console.web.query.CoreUserElQuery;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.web.JsonResult;
@@ -14,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
-public class UserElController {
+public class CoreUserElController {
 
   @Autowired private CoreUserService coreUserService;
 
-  @GetMapping("/users/metedata")
+  @GetMapping("/users/metadata")
   public JsonResult<Map> usersMetedata() {
-    return JsonResult.success(VOUtil.resolveElColumn(CoreUser.class));
+    return JsonResult.success(VOUtil.resolveElColumn(CoreUserElQuery.class));
   }
 
   @GetMapping("/users")

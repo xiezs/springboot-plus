@@ -1,15 +1,16 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-11-30 22:23:06
- * @LastEditors: 一日看尽长安花
+ * @LastEditTime : 2020-01-08 22:51:466
+ * @LastEditors  : 一日看尽长安花安花
  * @Description: 后台管理页面的自动生成，
- * 主要暴露了分页方法、过滤表格（单纯前端过滤）、条件查询、增删改方法
+ * 主要暴露了分页方法、数据表格搜索方法、条件查询方法、增删改方法
+ * 以及 查询面板插槽，功能按钮组插槽，编辑对话框插槽
  -->
 <template>
   <div>
     <search-pane
-      :metedata="metedata"
+      :metadata="metadata"
       @filter-search="filterSearch"
       @handle-create="handleCreate"
     >
@@ -22,7 +23,7 @@
     </search-pane>
     <data-table
       :loading="loading"
-      :metedata="metedata"
+      :metadata="metadata"
       :tabledata="tabledata"
       :search-method="searchMethod"
       @update:tabledata="$emit('update:tabledata', $event)"
@@ -31,7 +32,7 @@
       @delete-data="$emit('delete-data')"
     ></data-table>
     <edit-dialog
-      :metedata="metedata"
+      :metadata="metadata"
       :dialog-visible.sync="dialogVisible"
       :dialog-title="dialogTitle"
       :operation-type="operationType"
@@ -39,6 +40,8 @@
       @create-data="$emit('create-data')"
       @update-data="$emit('update-data')"
     >
+      <!-- #dialog-form-item等价v-slot:dialog-form-item 语法
+      详情参照 解构插槽 Prop 章节 -->
       <template #dialog-form-item="{dialogData:dialogData}">
         <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
       </template>
@@ -56,7 +59,7 @@ export default {
   components: { SearchPane, DataTable, EditDialog },
   props: {
     // 表格元数据
-    metedata: {
+    metadata: {
       type: Object,
       default() {
         return {};
@@ -72,7 +75,6 @@ export default {
         };
       }
     },
-
     // 加载中的遮罩层
     loading: {
       type: Boolean,
@@ -121,3 +123,21 @@ export default {
   }
 };
 </script>
+<style>
+.filter-container {
+  margin-top: 1rem;
+}
+
+.filter-item-container {
+  display: inline-block;
+  margin: 0.15em;
+}
+
+.filter-item-container .el-cascader {
+  top: -4px;
+}
+
+.filter-btn-group {
+  margin: 0.15em;
+}
+</style>

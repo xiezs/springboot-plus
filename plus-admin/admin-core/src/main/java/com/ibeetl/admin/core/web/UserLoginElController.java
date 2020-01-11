@@ -12,7 +12,6 @@ import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.util.HttpRequestLocal;
 import com.ibeetl.admin.core.util.JoseJwtUtil;
 import com.ibeetl.admin.core.util.PlatformException;
-import com.ibeetl.admin.core.web.JsonResult;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class CoreUserElController {
+public class UserLoginElController {
 
   @Autowired private RoleRoutesElService roleRoutesService;
 
@@ -67,7 +66,7 @@ public class CoreUserElController {
     HttpRequestLocal.setLoginerInfo(info.getUser(), info.getCurrentOrg(), info.getOrgs());
     Map<String, Object> resultMap =
         MapUtil.<String, Object>builder()
-            .put("token", JoseJwtUtil.generateJwtJson(String.valueOf(user.getId())))
+            .put("token", JoseJwtUtil.generateJwtToken(String.valueOf(user.getId())))
             .build();
     return JsonResult.success(resultMap);
   }

@@ -23,7 +23,7 @@
       <el-table-column :key="Math.random()" type="index"></el-table-column>
 
       <el-table-column
-        v-for="(val, key) in metedata"
+        v-for="(val, key) in metadata"
         :key="key"
         :prop="val.type === 'dict' ? key + '.name' : key"
         :label="val.name"
@@ -76,7 +76,7 @@ export default {
   components: { Pagination },
   props: {
     // 表格元数据
-    metedata: {
+    metadata: {
       type: Object,
       default() {
         return {};
@@ -92,6 +92,7 @@ export default {
         };
       }
     },
+    // 搜索数据表格中数据的方法
     searchMethod: {
       type: Function,
       default() {
@@ -114,12 +115,17 @@ export default {
     };
   },
   updated() {
-    console.log(this.metedata);
+    console.log('以下是元数据和结果数据');
+    console.log(this.metadata);
     console.log(this.tabledata);
   },
   methods: {
     searchTable() {
-      // 要用一个临时数据将当前页面的数据保存下来，不然 $emit 会将原数据修改
+      /*
+      要用一个临时数据将当前页面的数据保存下来。
+      不然 $emit 会将原数据修改，
+      会造成第二次搜索是基于第一次搜索的结果数据进行搜索的
+      */
       this.cloneTableData = !this.cloneTableData
         ? Object.assign({}, this.tabledata)
         : this.cloneTableData;
@@ -134,6 +140,7 @@ export default {
       this.cloneTable = null;
     },
     handleEdit(index, row) {
+      /* index 行号；row 行数据 */
       this.$emit('handle-edit', index, row);
     },
     handleDelete(index, row) {

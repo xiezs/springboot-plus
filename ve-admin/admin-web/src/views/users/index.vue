@@ -1,14 +1,14 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2019-12-17 20:56:50
- * @LastEditors: 一日看尽长安花
+ * @LastEditTime : 2020-01-11 21:15:32
+ * @LastEditors  : 一日看尽长安花
  * @Description:
  -->
 <template>
   <div>
     <table-views
-      :metedata="metedata"
+      :metadata="metadata"
       :tabledata.sync="tabledata"
       :loading="loading"
       :search-method="searchMethod"
@@ -18,19 +18,13 @@
       @delete-data="deleteData"
       @update-data="updateData"
     >
-      <!-- fixed 待解决的问题：样式问题。猜测原因：应该是样式穿透问题，不能是scope -->
       <!-- 往搜索栏中添加搜索条件 -->
       <template #filter-condition="{filterData:filterData}">
         <div class="filter-item-container">
-          <el-form-item>
-            <el-input
-              v-model="filterData['test']"
-              placeholder="test"
-              :clearable="true"
-              style="width: 200px;"
-              class="filter-item"
-            />
-          </el-form-item>
+          <el-cascader
+            v-model="filterData['jobType']"
+            :props="jobTypeCascaderProps"
+          ></el-cascader>
         </div>
       </template>
       <!-- 往操作按钮组中添加自定义操作按钮 -->
@@ -62,35 +56,58 @@
 
 <script>
 import TableViews from '@/components/TableViews';
-import { users, usersMetedata } from '@/api/user';
+import { users, usersMetadata } from '@/api/user';
+import { getDictsByParent } from '@/api/dict';
 
 export default {
-  name: 'CoreUsers',
+  name: 'CoreUsersView',
   components: { TableViews },
   props: {},
   data() {
     return {
       // 整个页面的数据
-      metedata: {},
+      metadata: {},
       tabledata: {
         data: [],
         total: 0
       },
-      loading: true
+      loading: true,
+      jobTypeCascaderProps: {
+        checkStrictly: true,
+        lazy: true,
+        lazyLoad(node, resolve) {
+          const { root, data } = node;
+          const { id } = data || {};
+          let datas = [],
+            type;
+          if (root) {
+            type = 'job_type';
+          }
+          let reqParam = {
+            parentId: id,
+            type: type
+          };
+          getDictsByParent(reqParam).then(result => {
+            const { code, data } = { ...result };
+            // 通过调用resolve将子节点数据返回，通知组件数据加载完成
+            resolve(data);
+          });
+        }
+      }
     };
   },
   computed: {},
   mounted() {
-    this.obtainMetedata();
+    this.obtainMetadata();
     this.obtainData({ page: 1, limit: 10 });
   },
   methods: {
-    obtainMetedata() {
+    obtainMetadata() {
       this.loading = true;
-      usersMetedata()
+      usersMetadata()
         .then(result => {
           const { code, data } = { ...result };
-          this.metedata = Object.assign({}, data);
+          this.metadata = Object.assign({}, data);
         })
         .catch(err => {})
         .finally(() => {

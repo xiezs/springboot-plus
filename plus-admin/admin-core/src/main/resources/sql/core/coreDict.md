@@ -32,7 +32,6 @@ findChildByParent
     WHERE
     parent = #id# and del_flag = 0 order by sort DESC
 
-
 bathDelByValue
 ===
     update core_dict set del_flag =1 where value in in ( #join(values)#)
