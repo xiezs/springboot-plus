@@ -185,6 +185,7 @@ public class CorePlatformService {
             return root;
         }
         OrgItem current = getCurrentOrgItem();
+        //搞不懂，忘记了
         OrgItem item= dataAccessFactory.getUserOrgTree(current);
        
         return item;

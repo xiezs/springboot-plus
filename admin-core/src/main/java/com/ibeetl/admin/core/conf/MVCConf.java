@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.format.Formatter;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -38,9 +39,9 @@ import com.ibeetl.admin.core.util.HttpRequestLocal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Configuration
 public class MVCConf implements WebMvcConfigurer, InitializingBean {
@@ -91,8 +92,8 @@ public class MVCConf implements WebMvcConfigurer, InitializingBean {
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-        registry.addFormatter(new DateFormatter("yyyy-MM-dd HH:mm:ss"));
-        registry.addFormatter(new DateFormatter("yyyy-MM-dd"));
+        registry.addFormatter(new MyDateFormatter());
+//        registry.addFormatter(new DateFormatter("yyyy-MM-dd"));
     }
 
 
@@ -118,6 +119,36 @@ public class MVCConf implements WebMvcConfigurer, InitializingBean {
     }
 
 
+}
+
+class MyDateFormatter implements Formatter<Date>{
+
+    @Override
+    public Date parse(String text, Locale locale) throws ParseException {
+        if(text==null){
+            return null;
+        }
+        if(text.trim().length()==0){
+            return null;
+        }
+        if(text.length()<=10){
+            String format = "yyyy-MM-dd";
+            SimpleDateFormat sdf = new SimpleDateFormat(format,locale);
+            return sdf.parse(text);
+        }else{
+            String format = "yyyy-MM-dd HH:mm:ss";
+            SimpleDateFormat sdf = new SimpleDateFormat(format,locale);
+            return sdf.parse(text);
+        }
+
+    }
+
+    @Override
+    public String print(Date object, Locale locale) {
+        String format = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(format,locale);
+        return sdf.format((Date)object);
+    }
 }
 
 class SessionInterceptor implements HandlerInterceptor {
