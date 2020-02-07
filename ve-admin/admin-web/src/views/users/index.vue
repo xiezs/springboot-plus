@@ -1,13 +1,13 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime : 2020-01-11 21:15:32
+ * @LastEditTime : 2020-02-04 16:15:14
  * @LastEditors  : 一日看尽长安花
  * @Description:
  -->
 <template>
   <div>
-    <table-views
+    <general-page
       :metadata="metadata"
       :tabledata.sync="tabledata"
       :loading="loading"
@@ -22,8 +22,27 @@
       <template #filter-condition="{filterData:filterData}">
         <div class="filter-item-container">
           <el-cascader
+            v-model="filterData['orgId']"
+            :props="orgIdCascaderProps"
+            :show-all-levels="false"
+            clearable
+            placeholder="部门"
+          ></el-cascader>
+        </div>
+        <div class="filter-item-container">
+          <el-cascader
             v-model="filterData['jobType']"
             :props="jobTypeCascaderProps"
+            clearable
+            placeholder="岗位/职务"
+          ></el-cascader>
+        </div>
+        <div class="filter-item-container">
+          <el-cascader
+            v-model="filterData['state']"
+            :props="stateCascaderProps"
+            clearable
+            placeholder="状态"
           ></el-cascader>
         </div>
       </template>
@@ -50,18 +69,19 @@
           />
         </el-form-item>
       </template>
-    </table-views>
+    </general-page>
   </div>
 </template>
 
 <script>
-import TableViews from '@/components/TableViews';
+import GeneralPage from '@/components/GeneralPage';
 import { users, usersMetadata } from '@/api/user';
-import { getDictsByParent } from '@/api/dict';
+import { loadDictCascaderData, handleDictCascaderValue } from '@/services/dict';
+import { loadOrgCascaderData, handleOrgCascaderValue } from '@/services/org';
 
 export default {
   name: 'CoreUsersView',
-  components: { TableViews },
+  components: { GeneralPage },
   props: {},
   data() {
     return {
@@ -72,26 +92,25 @@ export default {
         total: 0
       },
       loading: true,
+      orgIdCascaderProps: {
+        checkStrictly: true,
+        lazy: true,
+        lazyLoad(node, resolve) {
+          loadOrgCascaderData(node, resolve);
+        }
+      },
       jobTypeCascaderProps: {
         checkStrictly: true,
         lazy: true,
         lazyLoad(node, resolve) {
-          const { root, data } = node;
-          const { id } = data || {};
-          let datas = [],
-            type;
-          if (root) {
-            type = 'job_type';
-          }
-          let reqParam = {
-            parentId: id,
-            type: type
-          };
-          getDictsByParent(reqParam).then(result => {
-            const { code, data } = { ...result };
-            // 通过调用resolve将子节点数据返回，通知组件数据加载完成
-            resolve(data);
-          });
+          loadDictCascaderData(node, resolve, 'job_type');
+        }
+      },
+      stateCascaderProps: {
+        checkStrictly: true,
+        lazy: true,
+        lazyLoad(node, resolve) {
+          loadDictCascaderData(node, resolve, 'user_state');
         }
       }
     };
@@ -116,6 +135,12 @@ export default {
     },
     obtainData(queryParams) {
       this.loading = true;
+      queryParams = handleOrgCascaderValue(queryParams, 'orgId', 'org_id');
+      queryParams = handleDictCascaderValue(queryParams, 'jobType', [
+        'jobType0',
+        'jobType1'
+      ]);
+      queryParams = handleDictCascaderValue(queryParams, 'state', ['state']);
       users(queryParams)
         .then(result => {
           const { code, data } = { ...result };

@@ -23,6 +23,14 @@ public class PageParam {
     this.page = page;
   }
 
+  public Integer getLimit() {
+    return limit;
+  }
+
+  public void setLimit(Integer limit) {
+    this.limit = limit;
+  }
+
   @JsonIgnore
   public PageQuery getPageQuery() {
     Field[] fs = this.getClass().getDeclaredFields();
@@ -54,11 +62,14 @@ public class PageParam {
     return query;
   }
 
-  public Integer getLimit() {
-    return limit;
-  }
-
-  public void setLimit(Integer limit) {
-    this.limit = limit;
+  @JsonIgnore
+  public PageQuery createPageQuery() {
+    PageQuery query = new PageQuery();
+    query.setParas(this);
+    if (page != null) {
+      query.setPageNumber(page);
+      query.setPageSize(limit);
+    }
+    return query;
   }
 }

@@ -1,43 +1,36 @@
-
 queryByCondtion
 ===
 
-    select 
-    @pageTag(){
-    u.*,o.name org_name
-    @}
-    from core_user u left join core_org o on u.org_id=o.id where 1=1 and u.del_flag = 0 
-    @//数据权限，该sql语句功能点  
-    and #function("user.query")#
-    @if(!isEmpty(orgId)){
-        and  u.org_id =#orgId#
-    @}
-     @if(!isEmpty(orgId)){
-        and  u.org_id =#orgId#
-    @}
-    @if(!isEmpty(code)){
-        and  u.code like #"%"+code+"%"#
-    @}
-    @if(!isEmpty(name)){
-        and  u.name like #"%"+name+"%"#
-    @}
-    @if(!isEmpty(state)){
-        and  u.state = #state#
-    @}
-    @if(!isEmpty(jobType0)){
-        and  u.job_type0= #jobType0#
-    @}
-    @if(!isEmpty(jobType1)){
-        and  u.job_type1= #jobType1#
-    @}
-    @if(!isEmpty(createDateMin)){
-        and  u.create_time>= #createDateMin#
-    @}
-    @if(!isEmpty(createDateMax)){
-        and  u.create_time< #nextDay(createDateMax)#
-    @}
-    
-    
+```sql
+select 
+@pageTag(){
+u.*,o.name org_name
+@}
+from core_user u left join core_org o on u.org_id=o.id where 1=1 and u.del_flag = 0 
+@//数据权限，该sql语句功能点  
+and #function("user.query")#
+ @if(!isEmpty(orgId)){
+    and  u.org_id =#orgId#
+@}
+@if(!isEmpty(code)){
+    and  u.code like #"%"+code+"%"#
+@}
+@if(!isEmpty(name)){
+    and  u.name like #"%"+name+"%"#
+@}
+@if(!isEmpty(state)){
+    and  u.state = #state#
+@}
+@if(!isEmpty(jobType0)){
+    and  u.job_type0= #jobType0#
+@}
+@if(!isEmpty(createTimeStart)){
+    and  u.create_time>= #createTimeStart#
+@}
+@if(!isEmpty(createTimeEnd)){
+    and  u.create_time< #nextDay(createTimeEnd)#
+@}
+```
 
 batchDelUserByIds
 ===
@@ -68,4 +61,29 @@ where u.id=#id#
 @if(isNotEmpty(roleId)){
     and role.id=#roleId#
 @}
+```
+
+UsersMapping
+===
+```
+    var user_mapping_var={
+                      "id": "core_route_map",
+                      "mapping": {
+                          "resultType": "com.ibeetl.admin.core.entity.CoreRoute",
+                          "id": "id",
+                          "createTime": "create_time",
+                          "code": "code",
+                          "name": "name",
+                          "state": "state",
+                          "jobType0": "job_type0",
+                          "jobType1": "job_type1",
+                          "updateTime": "update_time",
+                          "attachmentId": "attachment_id",
+                          "org": {
+                              "resultType": "com.ibeetl.admin.core.entity.CoreOrg",
+                              "id": "org_id",
+                              "name": "org_name"
+                          }
+                      }
+                  };
 ```

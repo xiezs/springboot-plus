@@ -1,9 +1,10 @@
-package com.ibeetl.admin.core.web;
+package com.ibeetl.admin.console.web;
 
 import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.entity.CoreDict;
 import com.ibeetl.admin.core.entity.ElCascaderData;
 import com.ibeetl.admin.core.service.CoreDictService;
+import com.ibeetl.admin.core.web.JsonResult;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class DictCascaderElController {
    * @param type of type String 子级字典列表type
    * @return JsonResult<List < ElCascaderData>>
    */
-  @GetMapping
+  @GetMapping("/tree")
   public JsonResult<List<ElCascaderData>> obtainDcitsByCascader(Long parentId, String type) {
     if (StrUtil.isBlank(type) && parentId == null) {
       return JsonResult.failMessage("parentId and type should have at least one.");

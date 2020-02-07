@@ -1,17 +1,5 @@
 package com.ibeetl.admin.console.service;
 
-import com.ibeetl.admin.core.entity.DictType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
-import org.beetl.sql.core.engine.PageQuery;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ibeetl.admin.console.dao.UserConsoleDao;
 import com.ibeetl.admin.console.exception.DeletedException;
 import com.ibeetl.admin.console.exception.NoResourceException;
@@ -19,6 +7,7 @@ import com.ibeetl.admin.console.web.dto.UserExcelExportData;
 import com.ibeetl.admin.console.web.query.UserRoleQuery;
 import com.ibeetl.admin.core.conf.PasswordConfig.PasswordEncryptService;
 import com.ibeetl.admin.core.entity.CoreDict;
+import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.entity.CoreUserRole;
 import com.ibeetl.admin.core.file.FileService;
@@ -26,10 +15,21 @@ import com.ibeetl.admin.core.rbac.tree.OrgItem;
 import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CoreDictService;
 import com.ibeetl.admin.core.service.CorePlatformService;
+import com.ibeetl.admin.core.service.param.CoreUserParam;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.CoreDictType;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
+import com.ibeetl.admin.core.util.enums.JobTypeEnum;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
+import org.beetl.sql.core.engine.PageQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -54,6 +54,17 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
   }
 
   /**
+   * 提供用户管理列表页数据
+   *
+   * @param coreUserParam
+   */
+  public PageQuery<CoreUser> getUsersByComplexSelect(CoreUserParam coreUserParam) {
+    PageQuery<CoreUser> resultList =
+        userConsoleDao.queryByCondtion(coreUserParam.createPageQuery());
+    return resultList;
+  }
+
+  /**
    * 插入一条用户数据
    *
    * @param user
@@ -66,14 +77,12 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
       throw new PlatformException("保存用户信息失败,用户已经存在");
     }
     user.setCreateTime(new Date());
-    user.setState(GeneralStateEnum.ENABLE.getValue());
     user.setPassword(passwordEncryptService.password(user.getPassword()));
     user.setDelFlag(DelFlagEnum.NORMAL.getValue());
     userConsoleDao.insert(user, true);
     if (StringUtils.isNotEmpty(user.getAttachmentId())) {
       // 更新附件详细信息,关联到这个用户
-      fileService.updateFile(
-          user.getAttachmentId(), user.getName(), String.valueOf(user.getId()));
+      fileService.updateFile(user.getAttachmentId(), user.getName(), String.valueOf(user.getId()));
     }
   }
 
@@ -185,16 +194,17 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
       userItem.setCode(user.getCode());
       userItem.setId(user.getId());
       userItem.setName(user.getName());
-      CoreDict dict = dictService.findCoreDict(CoreDictType.USER_STATE, user.getState());
+      CoreDict dict = dictService.findCoreDict(CoreDictType.USER_STATE, user.getState().getValue());
       userItem.setStateText(dict.getName());
 
-      String dictValue = Optional.ofNullable(user.getJobType1()).map(DictType::getValue).orElse(null);
+      String dictValue =
+          Optional.ofNullable(user.getJobType1()).map(JobTypeEnum::getValue).orElse(null);
       if (StringUtils.isNotEmpty(dictValue)) {
         dict = dictService.findCoreDict(CoreDictType.JOB_TYPE, dictValue);
         userItem.setJobType1Text(dict.getName());
       }
-
-      String orgName = orgRoot.findChild(user.getOrgId()).getName();
+      Long orgId = user.getOrgId();
+      String orgName = orgRoot.findChild(orgId).getName();
       userItem.setOrgText(orgName);
       items.add(userItem);
     }

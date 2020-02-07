@@ -1,22 +1,30 @@
 package com.ibeetl.admin.core.conf;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.EnumUtil;
+import cn.hutool.core.util.ReflectUtil;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.NumberType;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.WritableTypeId;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.ibeetl.admin.core.util.enums.DictTypeEnum;
 import com.ibeetl.admin.core.web.JsonResult;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -26,9 +34,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author 一日看尽长安花
- */
+/** @author 一日看尽长安花 */
 @Configuration
 public class JasonConfig {
   @Bean
@@ -36,13 +42,22 @@ public class JasonConfig {
   public ObjectMapper getObjectMapper() {
     ObjectMapper objectMapper = new ObjectMapper();
 
-    objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    /*objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));*/
+
+    objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+    objectMapper.setSerializationInclusion(Include.NON_NULL);
 
     objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+    /*将date字段序列化为时间戳*/
+    objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+    /*map中date的也序列化为时间戳*/
+    objectMapper.configure(SerializationFeature.WRITE_DATE_KEYS_AS_TIMESTAMPS, true);
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     SimpleModule simpleModule = new SimpleModule("SimpleModule", Version.unknownVersion());
 
     simpleModule.addSerializer(JsonResult.class, new CustomJsonResultSerializer());
+    simpleModule.addSerializer(DictTypeEnum.class, new DictTypeEnumSerializer());
 
     CustomLongSerializer longSerializer = new CustomLongSerializer();
     simpleModule.addSerializer(Long.class, longSerializer);
@@ -50,6 +65,21 @@ public class JasonConfig {
 
     objectMapper.registerModule(simpleModule);
     return objectMapper;
+  }
+}
+
+class DictTypeEnumSerializer extends JsonSerializer<DictTypeEnum> {
+
+  @Override
+  public void serialize(DictTypeEnum value, JsonGenerator gen, SerializerProvider serializers)
+      throws IOException {
+    gen.writeStartObject();
+    if (value instanceof Enum) {
+      gen.writeObjectField("name", ReflectUtil.getFieldValue(value, "name"));
+      gen.writeObjectField("value", ReflectUtil.getFieldValue(value, "value"));
+      gen.writeObjectField("type", ReflectUtil.getFieldValue(value, "type"));
+    }
+    gen.writeEndObject();
   }
 }
 
@@ -100,9 +130,7 @@ class CustomJsonResultSerializer extends JsonSerializer<JsonResult> {
 
   CustomJsonResultSerializer() {}
 
-  /**
-   * 处理 JsonResult 返回结果。自动分离分页信息，不需要手动在controller中分离
-   */
+  /** 处理 JsonResult 返回结果。自动分离分页信息，不需要手动在controller中分离 */
   @Override
   public void serialize(JsonResult value, JsonGenerator gen, SerializerProvider serializers)
       throws IOException {

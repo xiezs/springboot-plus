@@ -7,12 +7,16 @@ import com.ibeetl.admin.core.dao.SQLManagerBaseDao;
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.rbac.UserLoginInfo;
+import com.ibeetl.admin.core.service.param.CoreUserParam;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
+import com.ibeetl.admin.core.util.enums.StateTypeEnum;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import org.beetl.sql.core.engine.PageQuery;
+import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +33,6 @@ public class CoreUserService extends CoreBaseService {
   @Autowired SQLManagerBaseDao sqlManagerBaseDao;
 
   public UserLoginInfo login(String userName, String password) {
-    CoreUser query = new CoreUser();
-    query.setCode(userName);
-    query.setPassword(passwordEncryptService.password(password));
-    query.setState(GeneralStateEnum.ENABLE.getValue());
     CoreUser user =
         userDao
             .createLambdaQuery()
@@ -42,14 +42,14 @@ public class CoreUserService extends CoreBaseService {
     if (user == null) {
       throw new PlatformException("用户" + userName + "不存在或者密码错误");
     }
-    if (!user.getState().equals(GeneralStateEnum.ENABLE.getValue())) {
+    if (!user.getState().equals(StateTypeEnum.S1)) {
       throw new PlatformException("用户" + userName + "已经失效");
     }
     if (user.getDelFlag() == DelFlagEnum.DELETED.getValue()) {
       throw new PlatformException("用户" + userName + "已经删除");
     }
-
-    List<CoreOrg> orgs = getUserOrg(user.getId(), user.getOrgId());
+    Long orgId = user.getOrgId();
+    List<CoreOrg> orgs = getUserOrg(user.getId(), orgId);
     UserLoginInfo loginInfo = new UserLoginInfo();
     loginInfo.setOrgs(orgs);
     loginInfo.setUser(user);
@@ -71,12 +71,19 @@ public class CoreUserService extends CoreBaseService {
     return userDao.getUserByRole(role);
   }
 
-  public PageQuery<CoreUser> getAllUsers(@NotNull Integer page, @NotNull Integer limit) {
-    PageQuery<CoreUser> pageQuery = sqlManagerBaseDao
-        .getSQLManager()
-        .lambdaQuery(CoreUser.class)
-        .page(page, limit);
-    super.processObjectsDictField(pageQuery);
+  public PageQuery<CoreUser> getAllUsers(CoreUserParam coreUserParam) {
+    PageQuery<CoreUser> pageQuery =
+        sqlManagerBaseDao
+            .getSQLManager()
+            .lambdaQuery(CoreUser.class)
+            .andGreatEq(
+                CoreUser::getCreateTime, Query.filterNull(coreUserParam.getCreateTimeStart()))
+            .andLessEq(CoreUser::getCreateTime, Query.filterNull(coreUserParam.getCreateTimeEnd()))
+            .andLike(CoreUser::getName, Query.filterEmpty(coreUserParam.getName()))
+            .andEq(CoreUser::getJobType0, Query.filterNull(coreUserParam.getJobType0()))
+            .andEq(CoreUser::getJobType1, Query.filterNull(coreUserParam.getJobType1()))
+            .andEq(CoreUser::getState, Query.filterNull(coreUserParam.getState()))
+            .page(coreUserParam.getPage(), coreUserParam.getLimit());
     return pageQuery;
   }
 

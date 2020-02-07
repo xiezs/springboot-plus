@@ -1,7 +1,11 @@
+import cn.hutool.core.util.EnumUtil;
 import com.ibeetl.admin.ConsoleApplication;
 import com.ibeetl.admin.core.dao.CoreFunctionDao;
 import com.ibeetl.admin.core.entity.CoreRoute;
+import entity.CmsBlog;
+import entity.CmsBlogTypeEnum;
 import java.util.List;
+import org.beetl.sql.core.SQLManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +25,15 @@ public class CustomBeanProcessorTest {
   }
 
   @Test
-  public void test() {}
+  public void test() {
+    SQLManager sqlManager = coreFunctionDao.getSQLManager();
+    List<CmsBlog> cmsBlogList = sqlManager.lambdaQuery(CmsBlog.class).select();
+    System.out.println(cmsBlogList);
+    CmsBlog blog = new CmsBlog();
+    blog.setTitle("test title");
+    blog.setContent("test content");
+    blog.setType(CmsBlogTypeEnum.FN1);
+    blog.setCreateUserId(1L);
+    sqlManager.lambdaQuery(CmsBlog.class).insert(blog);
+  }
 }

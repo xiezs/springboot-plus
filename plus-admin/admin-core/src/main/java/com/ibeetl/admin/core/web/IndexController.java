@@ -13,6 +13,7 @@ import com.ibeetl.admin.core.util.JoseJwtUtil;
 import com.ibeetl.admin.core.util.PlatformException;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,8 @@ public class IndexController {
     CoreUser user = info.getUser();
     CoreOrg currentOrg = info.getOrgs().get(0);
     for (CoreOrg org : info.getOrgs()) {
-      if (org.getId() == user.getOrgId()) {
+      Long orgId = user.getOrgId();
+      if (org.getId().equals(orgId)) {
         currentOrg = org;
         break;
       }

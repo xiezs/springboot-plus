@@ -1,8 +1,8 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2019-12-17 14:07:33
- * @LastEditors: 一日看尽长安花
+ * @LastEditTime : 2020-02-06 11:32:07
+ * @LastEditors  : 一日看尽长安花
  * @Description:
  -->
 <template>
@@ -23,13 +23,16 @@
       <el-table-column :key="Math.random()" type="index"></el-table-column>
 
       <el-table-column
-        v-for="(val, key) in metadata"
+        v-for="(val, key) in visibleMetadata"
         :key="key"
-        :prop="val.type === 'dict' ? key + '.name' : key"
+        :prop="val.json_path"
         :label="val.name"
         :sortable="val.sortable"
         :show-overflow-tooltip="true"
       >
+        <template v-slot="scope">
+          {{ handleTableSlot(scope) }}
+        </template>
       </el-table-column>
 
       <el-table-column :key="Math.random()" width="170" align="right">
@@ -70,6 +73,7 @@
 
 <script>
 import Pagination from './Pagination';
+import { parseTime, formatTime } from '@/utils';
 
 export default {
   name: 'DataTable',
@@ -114,12 +118,35 @@ export default {
       cloneTableData: null
     };
   },
+  computed: {
+    // 计算属性的 getter
+    visibleMetadata: function() {
+      // `this` 指向 vm 实例
+      let _metadata = {};
+      for (let dict in this.metadata) {
+        const t = this.metadata[dict];
+        if (t.is_show_table_panel) {
+          _metadata[dict] = t;
+        }
+      }
+      return _metadata;
+    }
+  },
   updated() {
-    console.log('以下是元数据和结果数据');
-    console.log(this.metadata);
-    console.log(this.tabledata);
+    // console.log('以下是元数据和结果数据');
+    // console.log(this.metadata);
+    // console.log(this.tabledata);
   },
   methods: {
+    handleTableSlot(scope) {
+      let val = this.$lodash.get(scope.row, scope.column.property);
+      const isTimestamp =
+        scope.column.property.endsWith('_time') && typeof val === 'number';
+      if (isTimestamp) {
+        val = parseTime(val / 1000, '{y}-{m}-{d} {h}:{i}:{s}');
+      }
+      return val;
+    },
     searchTable() {
       /*
       要用一个临时数据将当前页面的数据保存下来。

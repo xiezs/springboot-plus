@@ -17,19 +17,27 @@ import lombok.Data;
 @Data
 public class CoreUserElQuery {
 
-  @ElColumn(name = "ID", type = STRING)
+  @ElColumn(
+      name = "ID",
+      type = STRING,
+      isShowSearchPanel = false,
+      isShowTablePanel = false,
+      isShowEditorPanel = false)
   protected Long id;
 
   @ElColumn(name = "创建时间", type = DATE)
   protected Date createTime;
 
-  @ElColumn(name = "用户名", type = STRING)
+  @ElColumn(name = "用户名", type = STRING, isShowSearchPanel = false)
   private String code;
 
   @ElColumn(name = "姓名", type = STRING)
   private String name;
 
-  @ElColumn(name = "状态", type = STRING)
+  @ElColumn(name = "机构", type = STRING)
+  private Long orgId;
+
+  @ElColumn(name = "状态", type = DICT)
   private String state;
 
   @ElColumn(name = "职务", type = DICT)

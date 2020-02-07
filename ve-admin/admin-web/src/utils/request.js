@@ -2,24 +2,35 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime : 2020-01-11 23:24:40
+ * @LastEditTime : 2020-02-04 13:19:39
  * @LastEditors  : 一日看尽长安花
  */
 import axios from 'axios';
 import { MessageBox, Message } from 'element-ui';
 import store from '@/store';
 import { getToken, setToken } from '@/utils/auth';
+import { toCamelCaseDeep } from '@/utils/object-util';
 
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  timeout: 50000 // request timeout
 });
 
 // request interceptor
 service.interceptors.request.use(
   config => {
+    const method = config.method;
+    const params = config.params || config.data || null;
+    if (params) {
+      const changedKeyParams = toCamelCaseDeep(params);
+      if (method === 'get') {
+        config.params = changedKeyParams;
+      } else {
+        config.data = changedKeyParams;
+      }
+    }
     // do something before request is sent
     if (store.getters.token) {
       // let each request carry token

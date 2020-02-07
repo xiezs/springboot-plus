@@ -155,7 +155,7 @@ public class CorePlatformService {
     return menu;
   }
 
-  public OrgItem getUserOrgTree() {
+  public OrgItem  getUserOrgTree() {
     if (this.isCurrentSupperAdmin()) {
       OrgItem root = self.buildOrg();
       return root;

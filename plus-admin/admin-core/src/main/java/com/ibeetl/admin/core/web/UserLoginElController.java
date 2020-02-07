@@ -14,6 +14,7 @@ import com.ibeetl.admin.core.util.JoseJwtUtil;
 import com.ibeetl.admin.core.util.PlatformException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,7 +56,8 @@ public class UserLoginElController {
     CoreOrg currentOrg = info.getOrgs().stream().findFirst().orElse(null);
 
     for (CoreOrg org : info.getOrgs()) {
-      if (org.getId().equals(user.getOrgId())) {
+      Long orgId = user.getOrgId();
+      if (org.getId().equals(orgId)) {
         currentOrg = org;
         break;
       }

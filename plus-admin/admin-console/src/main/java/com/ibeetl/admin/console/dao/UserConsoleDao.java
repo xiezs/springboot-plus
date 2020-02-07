@@ -1,5 +1,6 @@
 package com.ibeetl.admin.console.dao;
 
+import com.ibeetl.admin.core.service.param.CoreUserParam;
 import org.beetl.sql.core.annotatoin.Param;
 import org.beetl.sql.core.annotatoin.SqlResource;
 import org.beetl.sql.core.engine.PageQuery;

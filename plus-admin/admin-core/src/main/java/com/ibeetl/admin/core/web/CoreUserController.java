@@ -19,6 +19,7 @@ import com.ibeetl.admin.core.web.dto.SystemMenuView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,8 @@ public class CoreUserController {
     CoreUser user = info.getUser();
     CoreOrg currentOrg = info.getOrgs().get(0);
     for (CoreOrg org : info.getOrgs()) {
-      if (org.getId() == user.getOrgId()) {
+      Long orgId = user.getOrgId();
+      if (org.getId().equals(orgId)) {
         currentOrg = org;
         break;
       }

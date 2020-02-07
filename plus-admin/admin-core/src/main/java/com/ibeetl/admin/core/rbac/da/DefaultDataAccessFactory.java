@@ -65,15 +65,12 @@ public class DefaultDataAccessFactory implements DataAccessFactory {
 
   @Override
   public OrgItem getUserOrgTree(OrgItem item) {
-    while (item != null) {
-      String orgType = item.getOrg().getType();
-      if (orgType.equals(COMPANY_TYPE)
-          || orgType.equals(PARENT_CORP_TYPE)
-          || orgType.equals(GROUP_TYPE)) {
-        return item;
-      }
+    String orgType = item.getOrg().getType();
+    if (orgType.equals(COMPANY_TYPE)
+        || orgType.equals(PARENT_CORP_TYPE)
+        || orgType.equals(GROUP_TYPE)) {
+      return item;
     }
-
     return null;
   }
 }

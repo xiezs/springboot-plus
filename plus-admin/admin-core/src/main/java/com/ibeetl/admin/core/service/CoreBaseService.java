@@ -31,8 +31,7 @@ public class CoreBaseService<T> {
 
   @Autowired protected CoreDictService dictUtil;
 
-  @Autowired
-  protected SQLManagerBaseDao sqlManager;
+  @Autowired protected SQLManagerBaseDao sqlManager;
 
   /**
    * 根据id查询对象，如果主键ID不存在
@@ -91,7 +90,8 @@ public class CoreBaseService<T> {
 
       list.add(map);
     }
-    int[] count = sqlManager.getSQLManager().updateBatchTemplateById(getCurrentEntityClassz(), list);
+    int[] count =
+        sqlManager.getSQLManager().updateBatchTemplateById(getCurrentEntityClassz(), list);
     int successCount = 0;
     for (int successFlag : count) {
       successCount += successFlag;
@@ -200,11 +200,11 @@ public class CoreBaseService<T> {
     } while (c != TailBean.class);
   }
 
-  public void processObjectsDictField(PageQuery pageQuery){
+  public void processObjectsDictField(PageQuery pageQuery) {
     this.processObjectsDictField(pageQuery.getList());
   }
 
-  public void processObjectsDictField(Collection collection){
+  public void processObjectsDictField(Collection collection) {
     for (Object o : collection) {
       this.processDictField(o);
     }

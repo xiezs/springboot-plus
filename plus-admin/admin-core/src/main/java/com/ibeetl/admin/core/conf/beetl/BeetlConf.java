@@ -1,5 +1,7 @@
 package com.ibeetl.admin.core.conf.beetl;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.CharsetUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibeetl.admin.core.conf.JasonConfig;
@@ -27,6 +29,7 @@ import com.ibeetl.starter.BeetlSqlMutipleSourceCustomize;
 import com.ibeetl.starter.BeetlTemplateCustomize;
 import com.ibeetl.starter.ObjectMapperJsonUtil;
 import java.io.UnsupportedEncodingException;
+import java.sql.JDBCType;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,8 @@ import org.beetl.core.Function;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.simulate.WebSimulate;
 import org.beetl.sql.core.Interceptor;
+import org.beetl.sql.core.InterceptorContext;
+import org.beetl.sql.core.engine.SQLParameter;
 import org.beetl.sql.core.engine.SQLPlaceholderST;
 import org.beetl.sql.core.mapping.type.JavaSqlTypeHandler;
 import org.beetl.sql.ext.DebugInterceptor;
@@ -108,7 +113,8 @@ public class BeetlConf {
       typeHandlerMap.put(ZonedDateTime.class, new ZonedDateTimeTypeHandler());
       typeHandlerMap.put(DictType.class, new DictTypeHandler());
       /*拦截器*/
-      manager.setInters(new Interceptor[] {new StarterDebugInterceptor()});
+      manager.setInters(
+          new Interceptor[] {new StarterDebugInterceptor(), new TypeHandlerInterceptor()});
     };
   }
 
@@ -197,10 +203,31 @@ public class BeetlConf {
         return false;
       }
     }
+  }
+}
 
-    @Override
-    protected void println(String str) {
-      logger.info(System.lineSeparator() + str);
+/**
+ * Class TypeHandlerInterceptor : <br>
+ * 描述：预计做类型处理工厂拦截器
+ *
+ * @author 一日看尽长安花 Created on 2020/2/3
+ */
+class TypeHandlerInterceptor implements Interceptor {
+
+  @Override
+  public void before(InterceptorContext ctx) {
+    List<SQLParameter> paras = ctx.getParas();
+    for (SQLParameter para : paras) {
+      if (para.value instanceof Date) {
+        para.value = ((Date) para.value).getTime();
+        para.setJdbcType(JDBCType.BIGINT.getVendorTypeNumber());
+      }
     }
   }
+
+  @Override
+  public void after(InterceptorContext ctx) {}
+
+  @Override
+  public void exception(InterceptorContext ctx, Exception ex) {}
 }

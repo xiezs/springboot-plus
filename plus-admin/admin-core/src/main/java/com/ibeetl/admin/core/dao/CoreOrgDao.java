@@ -15,6 +15,6 @@ public interface CoreOrgDao extends BaseMapper<CoreOrg> {
 
   List<String> queryAllOrgCode(List<Long> orgIds);
 
-  @Sql("select * from core_org where parent_org_id is null")
+  @Sql("select * from core_org where parent_org_id=0")
   CoreOrg getRoot();
 }

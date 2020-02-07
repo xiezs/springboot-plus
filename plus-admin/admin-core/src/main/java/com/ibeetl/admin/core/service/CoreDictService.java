@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.beetl.sql.core.mapper.internal.LambdaQueryAmi;
 import org.beetl.sql.core.query.LambdaQuery;
+import org.beetl.sql.core.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,14 +72,14 @@ public class CoreDictService extends CoreBaseService<CoreDict> {
     if (StrUtil.isBlank(type) && parentId == null) {
       return null;
     }
-    LambdaQuery<CoreDict> lambdaQuery = dictDao.getSQLManager().lambdaQuery(CoreDict.class);
-    if (parentId != null) {
-      lambdaQuery.andEq(CoreDict::getParent, parentId);
-    }
-    if (StrUtil.isNotBlank(type)) {
-      lambdaQuery.andEq(CoreDict::getType, type);
-    }
-    List<CoreDict> coreDictList = lambdaQuery.orderBy(CoreDict::getSort).select();
+    List<CoreDict> coreDictList =
+        dictDao
+            .createLambdaQuery()
+            .andEq(CoreDict::getParent, Query.filterNull(parentId))
+            .andEq(CoreDict::getType, Query.filterEmpty(type))
+            .andEq(CoreDict::getDelFlag, DelFlagEnum.NORMAL)
+            .orderBy(CoreDict::getSort)
+            .select();
     return coreDictList;
   }
 

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ElCascaderData {
-  private Long id;
+  private Object id;
   private String label;
-  private String value;
+  private Object value;
 }

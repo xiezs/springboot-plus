@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime : 2020-01-09 23:16:28
+ * @LastEditTime : 2020-02-03 16:21:23
  * @LastEditors  : 一日看尽长安花
  * @Description:
  -->
@@ -16,7 +16,7 @@
     >
       <!-- 循环元数据构建搜索面板：除了下拉框 -->
       <div
-        v-for="(val, key) in metadata"
+        v-for="(val, key) in visibleMetadata"
         :key="key"
         class="filter-item-container"
       >
@@ -34,15 +34,17 @@
             style="display: inline-block;position: relative;top: -0.3rem;"
           >
             <el-date-picker
-              v-model="filterData[key + 'Start']"
+              v-model="filterData[key + '_start']"
               type="datetime"
+              value-format="timestamp"
               :placeholder="val.name + '开始时间'"
             >
             </el-date-picker>
 
             <el-date-picker
-              v-model="filterData[key + 'End']"
+              v-model="filterData[key + '_end']"
               type="datetime"
+              value-format="timestamp"
               :placeholder="val.name + '结束时间'"
             >
             </el-date-picker>
@@ -99,6 +101,21 @@ export default {
       size: 'mini',
       filterData: {}
     };
+  },
+  computed: {
+    // 计算属性的 getter
+    visibleMetadata: function() {
+      // `this` 指向 vm 实例
+      let _metadata = {};
+      let allowTypes = ['string', 'date'];
+      for (let dict in this.metadata) {
+        const t = this.metadata[dict];
+        if (t.is_show_search_panel && allowTypes.includes(t.type)) {
+          _metadata[dict] = t;
+        }
+      }
+      return _metadata;
+    }
   },
   methods: {
     judgeType(str1, type) {

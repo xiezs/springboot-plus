@@ -31,7 +31,7 @@
       @handle-edit="handleEdit"
       @delete-data="$emit('delete-data')"
     ></data-table>
-    <edit-dialog
+    <detail-page
       :metadata="metadata"
       :dialog-visible.sync="dialogVisible"
       :dialog-title="dialogTitle"
@@ -45,18 +45,18 @@
       <template #dialog-form-item="{dialogData:dialogData}">
         <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
       </template>
-    </edit-dialog>
+    </detail-page>
   </div>
 </template>
 
 <script>
 import SearchPane from './SearchPane';
 import DataTable from './DataTable';
-import EditDialog from './EditDialog';
+import DetailPage from './components/DetailPage';
 
 export default {
-  name: 'TableViews',
-  components: { SearchPane, DataTable, EditDialog },
+  name: 'GeneralPage',
+  components: { SearchPane, DataTable, DetailPage },
   props: {
     // 表格元数据
     metadata: {
