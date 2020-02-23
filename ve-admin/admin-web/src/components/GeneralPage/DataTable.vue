@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime : 2020-02-06 11:32:07
+ * @LastEditTime : 2020-02-22 17:32:45
  * @LastEditors  : 一日看尽长安花
  * @Description:
  -->
@@ -25,7 +25,7 @@
       <el-table-column
         v-for="(val, key) in visibleMetadata"
         :key="key"
-        :prop="val.json_path"
+        :prop="val.json_path + '$' + val.type"
         :label="val.name"
         :sortable="val.sortable"
         :show-overflow-tooltip="true"
@@ -139,11 +139,13 @@ export default {
   },
   methods: {
     handleTableSlot(scope) {
-      let val = this.$lodash.get(scope.row, scope.column.property);
-      const isTimestamp =
-        scope.column.property.endsWith('_time') && typeof val === 'number';
-      if (isTimestamp) {
+      const splitProps = scope.column.property.split('$');
+      const valType = splitProps[1];
+      let val = this.$lodash.get(scope.row, splitProps[0]);
+      if (valType === 'date') {
         val = parseTime(val / 1000, '{y}-{m}-{d} {h}:{i}:{s}');
+      } else if (valType === 'dict') {
+        val = val.name;
       }
       return val;
     },

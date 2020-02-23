@@ -1,27 +1,28 @@
 package com.ibeetl.admin.core.conf.beetl.processor;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
-import com.ibeetl.admin.core.conf.beetl.resultmap.GridColumn;
+import com.ibeetl.admin.core.conf.beetl.resultmap.DBColumnProperty;
+import com.ibeetl.admin.core.conf.beetl.resultmap.GridCell;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridHeader;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridMapping;
-import com.ibeetl.admin.core.conf.beetl.resultmap.GridRow;
+import com.ibeetl.admin.core.conf.beetl.resultmap.JavaFieldProperty;
 import com.ibeetl.admin.core.util.cache.CacheUtil;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.sql.JDBCType;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.db.DBStyle;
@@ -99,11 +100,11 @@ public class JsonBeanProcessor extends BeanProcessor {
     } else {
       /*复杂结果集映射，取消TailBean的便利性*/
       rs.absolute(0);
-      mapping.setNestedRows(null);
-      fillMappingRow(sqlId, rs, mapping);
-      results = convertMapping(mapping, type);
+      mapping.getVirtualCell().getNestedCells().clear();
+      fillMappingNestedCells(sqlId, rs, mapping);
+      results = parserMappingNestedCells(mapping);
     }
-    return CollUtil.getFirst(results);
+    return CollUtil.isNotEmpty(results) ? CollUtil.getFirst(results) : null;
   }
 
   /**
@@ -136,136 +137,174 @@ public class JsonBeanProcessor extends BeanProcessor {
     } else {
       /*复杂结果集映射，取消TailBean的便利性*/
       rs.absolute(0);
-      mapping.getNestedRows().clear();
-      fillMappingRow(sqlId, rs, mapping);
-      results = convertMapping(mapping, type);
+      mapping.getVirtualCell().getNestedCells().clear();
+      fillMappingNestedCells(sqlId, rs, mapping);
+      results = parserMappingNestedCells(mapping);
     }
     return results;
   }
 
   /**
-   * 循环转换整个网格映射
+   * 循环转换整个网格映射为最终的映射类型
    *
-   * @param mapping
-   * @param objType
-   * @param <T>
+   * @param mapping 预先处理好的网格映射
    * @return
    */
-  public <T> List<T> convertMapping(GridMapping mapping, Class<T> objType) throws SQLException {
-    List<T> results = new ArrayList<T>();
-    List<GridRow> mappingNestedRows = mapping.getNestedRows();
-    for (GridRow mappingNestedRow : mappingNestedRows) {
-      T obj = convertRow(mappingNestedRow, objType);
-      results.add(obj);
-    }
+  public List parserMappingNestedCells(GridMapping mapping) throws SQLException {
+    List results = parserRealContainerCell(mapping.getVirtualCell());
     return results;
   }
 
   /**
-   * 递归转换整个网格行
+   * 递归转换整个网格
    *
-   * @param row
-   * @param objType
-   * @param <T>
+   * @param virtualCell
    * @return
    */
-  public <T> T convertRow(GridRow row, Class<T> objType) throws SQLException {
-    T obj = super.newInstance(objType);
-
-    List<GridColumn> nestedColumns = row.getNestedColumns();
-    GridColumn curObjCol = nestedColumns.get(0);
-
-    for (int i = 1; i < nestedColumns.size(); i++) {
-      GridColumn nestedColumn = nestedColumns.get(i);
-      GridHeader mappingHeader = nestedColumn.getMappingHeader();
-      String resultType = mappingHeader.getResultType();
-
-      List<GridRow> nestedRows = nestedColumn.getNestedRows();
-      for (GridRow nestedRow : nestedRows) {
-        if (StrUtil.isNotBlank(resultType)) {
-          /*在映射中标明类型，表示是复杂类型*/
-          Class nestedPropType = ClassUtil.loadClass(resultType);
-          String nestedPropName = mappingHeader.getNestedPropName();
-          boolean isCollection = mappingHeader.getIsCollection();
-          Object resultObj = BeanUtil.getFieldValue(obj, nestedPropName);
-          Object nestedPropObj = convertRow(nestedRow, nestedPropType);
-          if (isCollection) {
-            ((Collection) resultObj).add(nestedPropObj);
-            resultObj = CollUtil.removeNull(((Collection) resultObj));
-          } else {
-            resultObj = nestedPropObj;
-          }
-          BeanUtil.setFieldValue(obj, nestedPropName, resultObj);
+  public List parserRealContainerCell(GridCell virtualCell) throws SQLException {
+    /*判断是单个对象还是集合*/
+    GridHeader relationGridHeader = virtualCell.getRelationGridHeader();
+    JavaFieldProperty firstLevelBelongNestedField = relationGridHeader.getBelongNestedField();
+    List objList = new ArrayList();
+    List<GridCell> realCellList = virtualCell.getNestedCells();
+    for (GridCell realContainerCell : realCellList) {
+      List<GridCell> virtualCellList = realContainerCell.getNestedCells();
+      GridCell contentCell = virtualCellList.get(0);
+      Object obj = this.createObjectFromResultSetMap(contentCell);
+      for (int i = 1; i < virtualCellList.size(); i++) {
+        GridCell tempVirtualCell = virtualCellList.get(i);
+        JavaFieldProperty twoLevelBelongNestedField =
+            tempVirtualCell.getRelationGridHeader().getBelongNestedField();
+        Boolean isList =
+            Optional.ofNullable(twoLevelBelongNestedField)
+                .map(JavaFieldProperty::isList)
+                .orElse(true);
+        List beanList = parserRealContainerCell(tempVirtualCell);
+        Object val;
+        if (isList) {
+          val = beanList.isEmpty() ? null : beanList;
         } else {
-          /*在映射中没有标明类型，表示是基本类型*/
-          String nestedPropName = mappingHeader.getNestedPropName();
-          boolean isCollection = mappingHeader.getIsCollection();
-          Object resultObj = BeanUtil.getFieldValue(obj, nestedPropName);
-          Map<String, Object> beanMap = nestedRow.getNestedColumns().get(0).getBeanMap();
-          /*无法递归，表明是基本类型集合*/
-          Object nestedPropObj = CollUtil.getFirst(beanMap.values());
-          if (isCollection) {
-            ((Collection) resultObj).add(nestedPropObj);
-            resultObj = CollUtil.removeNull(((Collection) resultObj));
-          } else {
-            resultObj = nestedPropObj;
-          }
-          BeanUtil.setFieldValue(obj, nestedPropName, resultObj);
+          val = beanList.isEmpty() ? null : beanList.get(0);
         }
+        super.callSetter(
+            obj,
+            twoLevelBelongNestedField.getPropertyDescriptor(),
+            val,
+            twoLevelBelongNestedField.getField().getType());
       }
+      objList.add(obj);
     }
-    BeanUtil.fillBeanWithMap(curObjCol.getBeanMap(), obj, true, true);
-    return obj;
+    return objList;
+  }
+
+  private Object createObjectFromResultSetMap(GridCell contentCell) throws SQLException {
+    Object bean;
+    Map<String, Object> valueMap = contentCell.getBeanMap();
+    GridHeader relationGridHeader = contentCell.getRelationGridHeader();
+    Class resultType = relationGridHeader.getResultType();
+    if (resultType == null) {
+      /*无对应类，说明是一个基本类型或者包装类*/
+      JavaFieldProperty belongNestedField = relationGridHeader.getBelongNestedField();
+      Object tv = valueMap.values().stream().findFirst().orElse(null);
+      Object convertVal;
+      if (belongNestedField.isList()) {
+        Type listElementType = belongNestedField.getListElementType();
+        convertVal = Convert.convert(listElementType, tv);
+      } else {
+        Class<?> type = belongNestedField.getField().getType();
+        convertVal = Convert.convert(type, tv);
+      }
+      return convertVal;
+    }
+    bean = super.newInstance(resultType);
+    Map<JavaFieldProperty, DBColumnProperty> fieldToColumnMap =
+        relationGridHeader.getFieldToColumnMap();
+    Set<Entry<JavaFieldProperty, DBColumnProperty>> entrySet = fieldToColumnMap.entrySet();
+    for (Entry<JavaFieldProperty, DBColumnProperty> entry : entrySet) {
+      JavaFieldProperty javaFieldProperty = entry.getKey();
+      Field field = javaFieldProperty.getField();
+      Object value = valueMap.get(field.getName());
+      super.callSetter(bean, javaFieldProperty.getPropertyDescriptor(), value, field.getType());
+    }
+    return bean;
   }
   /**
-   * 填充整个网格映射mapping数据结构：通过网格头映射生成一个个网格行
+   * 填充整个网格映射mapping数据结构：通过网格头映射生成一个个网格单元。<br>
+   * 并没有对大数据量结果集做处理。而且递归有深度限制，列数映射过多可能会出现递归堆栈溢出，不过应该极少出现。
    *
    * @param resultSet
    * @param mapping
    * @throws SQLException
    */
-  protected void fillMappingRow(String sqlId, ResultSet resultSet, GridMapping mapping)
+  protected void fillMappingNestedCells(String sqlId, ResultSet resultSet, GridMapping mapping)
       throws SQLException {
+    if (!resultSet.next()) return;
     GridHeader header = mapping.getHeader();
-    GridColumn column = new GridColumn();
-    while (resultSet.next()) {
-      List<GridRow> mappingNestedRows = mapping.getNestedRows();
-      GridRow row = fillRowColumn(sqlId, resultSet, header, column);
-      if (!mappingNestedRows.contains(row)) {
-        mappingNestedRows.add(row);
-      }
-    }
+    processJdbcColumn(header, resultSet);
+    /*必须给一个虚假容器，为了实现递归*/
+    do {
+      fillNestedGridCell(sqlId, resultSet, header, mapping.getVirtualCell());
+    } while (resultSet.next());
   }
-  /**
-   * 填充网格行中的单元格映射结构。
-   *
-   * <p>网格行中存在一个个网格列，也对应着相应的网格头结构
-   */
-  protected GridRow fillRowColumn(
-      String sqlId, ResultSet resultSet, GridHeader header, GridColumn column) throws SQLException {
-    /*搜寻已经存在的row，如果没有，则插入一个*/
+  /** 填充网格映射中的单元格映射结构。 */
+  protected void fillNestedGridCell(
+      String sqlId, ResultSet resultSet, GridHeader header, GridCell virtualCell) {
+    /*通过当前header获取对应的结果集列*/
     Map<String, Object> beanMap = extractMapFromRs(sqlId, resultSet, header);
-    Integer calculateKey = GridColumn.calculateKey(beanMap);
-    GridRow row = column.findRowByKey(calculateKey);
-    /*这里可能出现一个问题，始终第0个行是空白的*/
-    if (ObjectUtil.isNull(row)) {
-      /*生成一个新的*/
-      row = GridRow.generateRowByHeader(header);
-      column.getNestedRows().add(row);
-      row.setBelongColumn(column);
-    }
-
+    GridCell realContainerCell = virtualCell.addOrCreateNestedCell(header, beanMap);
     List<GridHeader> nestedHeaders = header.getNestedHeaders();
     for (GridHeader nestedHeader : nestedHeaders) {
-      GridColumn nestedColumn = row.findColumnByHeader(nestedHeader);
-      List<GridRow> nestedRows = nestedColumn.getNestedRows();
-      GridRow nestedRow = fillRowColumn(sqlId, resultSet, nestedHeader, nestedColumn);
-      if (!nestedRows.contains(nestedRow)) {
-        nestedRows.add(nestedRow);
-      }
+      /*在 realContainerCell 中找到对应header的虚拟cell*/
+      GridCell nestedVirtualCell = realContainerCell.findVirtualCell(nestedHeader);
+      fillNestedGridCell(sqlId, resultSet, nestedHeader, nestedVirtualCell);
     }
-    row.getNestedColumns().get(0).setBeanMap(beanMap);
-    return row;
+  }
+
+  /**
+   * Method processJdbcColumn ...<br>
+   * 根据当前sql语句的resultset 处理gridheader中的fieldToColumnMap。
+   *
+   * @param header of type GridHeader
+   * @param resultSet of type ResultSet
+   */
+  private void processJdbcColumn(GridHeader header, ResultSet resultSet) {
+    List<GridHeader> nestedHeaders = header.getNestedHeaders();
+    for (GridHeader nestedHeader : nestedHeaders) {
+      processJdbcColumn(nestedHeader, resultSet);
+    }
+    try {
+      ResultSetMetaData metaData = resultSet.getMetaData();
+      int columnCount = metaData.getColumnCount();
+      List<String> effectiveColumnLabelList = new ArrayList<String>();
+      for (int i = 1; i <= columnCount; i++) {
+        effectiveColumnLabelList.add(metaData.getColumnLabel(i).toLowerCase());
+      }
+      Map<JavaFieldProperty, DBColumnProperty> fieldToColumnMap = header.getFieldToColumnMap();
+      Set<Entry<JavaFieldProperty, DBColumnProperty>> entrySet = fieldToColumnMap.entrySet();
+      for (Entry<JavaFieldProperty, DBColumnProperty> entry : entrySet) {
+        DBColumnProperty dbColumnProperty = entry.getValue();
+        String columnLabel = dbColumnProperty.getColumnLabel();
+        boolean contains = effectiveColumnLabelList.contains(columnLabel.toLowerCase());
+        if (!contains) {
+          dbColumnProperty.setHasEffective(false);
+          continue;
+        }
+        boolean isSpecialDbRn =
+            (super.dbType == DBStyle.DB_ORACLE || super.dbType == DBStyle.DB_SQLSERVER)
+                && columnLabel.equalsIgnoreCase("beetl_rn");
+        if (isSpecialDbRn) {
+          dbColumnProperty.setHasEffective(false);
+          // sql server 特殊处理，sql'server的翻页使用了额外列作为翻页参数，需要过滤
+          continue;
+        }
+        int columnIndex = resultSet.findColumn(columnLabel);
+        dbColumnProperty.setHasEffective(true);
+        dbColumnProperty.setColumnIndex(columnIndex);
+        dbColumnProperty.setJdbcType(JDBCType.valueOf(metaData.getColumnType(columnIndex)));
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -275,64 +314,46 @@ public class JsonBeanProcessor extends BeanProcessor {
    * @param header
    * @return
    */
-  private Map<String, Object> extractMapFromRs(String sqlId, ResultSet resultSet, GridHeader header)
-      throws SQLException {
+  private Map<String, Object> extractMapFromRs(
+      String sqlId, ResultSet resultSet, GridHeader header) {
     Map<String, Object> tempBeanMap = MapUtil.newHashMap();
-    /*保存着结果集的列标签与索引的映射关系*/
-    Map<String, Integer> columnLableToIndexMap = MapUtil.newHashMap();
-    ResultSetMetaData metaData = resultSet.getMetaData();
-    for (int i = 1; i <= metaData.getColumnCount(); i++) {
-      String key = metaData.getColumnLabel(i);
-      boolean isSpecialDbRn =
-          (super.dbType == DBStyle.DB_ORACLE || super.dbType == DBStyle.DB_SQLSERVER)
-              && key.equalsIgnoreCase("beetl_rn");
-      if (isSpecialDbRn) {
-        // sql server 特殊处理，sql'server的翻页使用了额外列作为翻页参数，需要过滤
-        continue;
-      }
-      columnLableToIndexMap.putIfAbsent(key, i);
-    }
     /*处理每个头部映射的bean类型与结果集的列的类型转换*/
-    String resultType = header.getResultType();
-    Class objectClass =
-        StrUtil.isNotBlank(resultType) ? ClassUtil.loadClass(resultType, false) : null;
-
-    Map<String, String> javaToJdbcMap = header.getJavaToJdbcMap();
-    Set<Entry<String, String>> entrySet = javaToJdbcMap.entrySet();
-    for (Entry<String, String> entry : entrySet) {
+    Map<JavaFieldProperty, DBColumnProperty> fieldToColumnMap = header.getFieldToColumnMap();
+    Set<Entry<JavaFieldProperty, DBColumnProperty>> entrySet = fieldToColumnMap.entrySet();
+    for (Entry<JavaFieldProperty, DBColumnProperty> entry : entrySet) {
       try {
-        if (objectClass == null) {
-          tempBeanMap.put(entry.getKey(), resultSet.getObject(entry.getValue()));
+        JavaFieldProperty javaFieldProperty = entry.getKey();
+        DBColumnProperty dbColumnProperty = entry.getValue();
+        if (!dbColumnProperty.isHasEffective()) {
           continue;
         }
 
-        Field declaredField = ClassUtil.getDeclaredField(objectClass, entry.getKey());
-        Class fieldType = declaredField != null ? declaredField.getType() : null;
-
-        /*忽视列标签的大小写问题*/
-        Integer columnIndex = columnLableToIndexMap.getOrDefault(entry.getValue(), -1);
-        columnIndex =
-            columnIndex != -1
-                ? columnIndex
-                : columnLableToIndexMap.getOrDefault(entry.getValue().toUpperCase(), -1);
-        columnIndex =
-            columnIndex != -1
-                ? columnIndex
-                : columnLableToIndexMap.getOrDefault(entry.getValue().toLowerCase(), -1);
-
-        TypeParameter typeParameter =
-            new TypeParameter(sqlId, super.dbName, fieldType, resultSet, metaData, columnIndex);
+        Class fieldType =
+            Optional.ofNullable(javaFieldProperty)
+                .map(JavaFieldProperty::getField)
+                .map(Field::getType)
+                .orElse(null);
 
         JavaSqlTypeHandler handler = super.getHandlers().get(fieldType);
         if (handler == null) {
           handler = super.getDefaultHandler();
         }
 
-        tempBeanMap.put(entry.getKey(), handler.getValue(typeParameter));
+        TypeParameter typeParameter =
+            new TypeParameter(
+                sqlId,
+                super.dbName,
+                fieldType,
+                resultSet,
+                resultSet.getMetaData(),
+                dbColumnProperty.getColumnIndex());
+
+        tempBeanMap.put(javaFieldProperty.getKey(), handler.getValue(typeParameter));
       } catch (SQLException e) {
-        /*大部分错误：从resultset中获取一个不存在的列，但可以忽视*/
+        e.printStackTrace();
       }
     }
+    tempBeanMap.values().remove(null);
     return tempBeanMap;
   }
 

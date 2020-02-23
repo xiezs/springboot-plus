@@ -23,25 +23,25 @@ RouteMapping
 ===
 ```javascript
     var route_mapping_var={
+                      "id": "core_route_map",
                       "mapping": {
+                          "resultType": "com.ibeetl.admin.core.entity.CoreRoute",
                           "path": "path",
+                          "name": "name",
+                          "id": "id",
+                          "parentId": "parent_id",
+                          "seq": "seq",
                           "meta": {
+                              "resultType": "com.ibeetl.admin.core.entity.CoreRouteMeta",
+                              "icon": "icon",
+                              "title": "title",
                               "roles": [
                                   {
                                       "id": "role_id"
                                   }
-                              ],
-                              "icon": "icon",
-                              "title": "title",
-                              "resultType": "com.ibeetl.admin.core.entity.CoreRouteMeta"
-                          },
-                          "name": "name",
-                          "id": "id",
-                          "resultType": "com.ibeetl.admin.core.entity.CoreRoute",
-                          "parentId": "parent_id",
-                          "seq": "seq"
-                      },
-                      "id": "core_route_map"
+                              ]
+                          }
+                      }
                   };
 ```
 

@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-/** 网格映射数据结构： 包含一个网格头 {@link GridHeader}和多个网格行{@link GridRow} */
+/** 网格映射数据结构： 包含一个网格头 {@link GridHeader}和一个虚拟网格单元格 */
 public class GridMapping implements Serializable {
   /** 映射id */
   String mappingId;
@@ -22,7 +22,7 @@ public class GridMapping implements Serializable {
   /** 网格头 */
   GridHeader header;
 
-  List<GridRow> nestedRows = CollUtil.newArrayList();
+  GridCell virtualCell;
 
   public GridMapping(Map<String, Object> resultMapping) {
     JSON parse = JSONUtil.parse(resultMapping);
@@ -32,7 +32,10 @@ public class GridMapping implements Serializable {
     Assert.notBlank(resultType, "result mapping must have [resultType].");
     this.mappingId = id;
     this.resultType = resultType;
-    this.header = new GridHeader((Map<String, Object>) parse.getByPath("mapping"));
+    this.setHeader(new GridHeader((Map<String, Object>) parse.getByPath("mapping"), this));
+    this.virtualCell=new GridCell();
+    this.virtualCell.setHasContainer(true);
+    this.virtualCell.setRelationGridHeader(this.getHeader());
   }
 
   public GridHeader getHeader() {
@@ -60,20 +63,11 @@ public class GridMapping implements Serializable {
     this.resultType = resultType;
   }
 
-  public List<GridRow> getNestedRows() {
-    return nestedRows;
+  public GridCell getVirtualCell() {
+    return virtualCell;
   }
 
-  public void setNestedRows(List<GridRow> nestedRows) {
-    this.nestedRows = nestedRows;
-  }
-
-  public GridRow nextRow(GridColumn column){
-    GridRow row = GridRow.generateRowByHeader(this.header);
-    /*给最外层的row设置一个空的列，为了后面的算法便利。可以理解成仅仅只是一个容器而已*/
-    column.getNestedRows().add(row);
-    row.setBelongColumn(column);
-    this.nestedRows.add(row);
-    return row;
+  public void setVirtualCell(GridCell virtualCell) {
+    this.virtualCell = virtualCell;
   }
 }

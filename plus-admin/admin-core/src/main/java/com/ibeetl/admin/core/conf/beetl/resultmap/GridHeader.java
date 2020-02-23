@@ -7,11 +7,15 @@ import static java.util.Optional.ofNullable;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ClassUtil;
+import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.core.util.StrUtil;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -21,10 +25,10 @@ import java.util.Set;
 public class GridHeader implements Serializable {
 
   /** java属性名与数据库列名的对应。顺序：prop:column */
-  Map<String, String> javaToJdbcMap;
+  Map<JavaFieldProperty, DBColumnProperty> fieldToColumnMap = new HashMap<>();
 
-  /** 映射java类型,如果该值为空，代表为基础类型，并且忽视javaToJdbcMap中的key，因为此刻是基本类型的List， */
-  String resultType;
+  /** 当前网格头对应映射java类型，只有嵌套的是非基本类型和string才有值 */
+  Class resultType;
 
   /** 嵌套类型的网格头 */
   List<GridHeader> nestedHeaders = CollUtil.<GridHeader>newArrayList();
@@ -32,33 +36,30 @@ public class GridHeader implements Serializable {
   /** 嵌套类型的网格头 */
   GridHeader parentHeader;
 
-  /** 嵌套字段属性名 */
-  String nestedPropName;
-
-  /** 嵌套类型是否是一个集合 */
-  boolean isCollection = false;
+  /** 当前header所属上级的嵌套字段名。如果是第一级就说明没有嵌套，为null */
+  JavaFieldProperty belongNestedField;
 
   /** 网格头所属的网格映射 */
   GridMapping belongMapping;
 
-  public GridHeader(Map<String, Object> resultMapping) {
-    javaToJdbcMap = new HashMap<String, String>();
+  public GridHeader(Map<String, Object> resultMapping, GridMapping belongMapping) {
+    this.belongMapping = belongMapping;
     processResultMapping(resultMapping);
   }
 
-  public Map<String, String> getJavaToJdbcMap() {
-    return javaToJdbcMap;
+  public Map<JavaFieldProperty, DBColumnProperty> getFieldToColumnMap() {
+    return fieldToColumnMap;
   }
 
-  public void setJavaToJdbcMap(Map<String, String> javaToJdbcMap) {
-    this.javaToJdbcMap = javaToJdbcMap;
+  public void setFieldToColumnMap(Map<JavaFieldProperty, DBColumnProperty> fieldToColumnMap) {
+    this.fieldToColumnMap = fieldToColumnMap;
   }
 
-  public String getResultType() {
+  public Class getResultType() {
     return resultType;
   }
 
-  public void setResultType(String resultType) {
+  public void setResultType(Class resultType) {
     this.resultType = resultType;
   }
 
@@ -78,20 +79,12 @@ public class GridHeader implements Serializable {
     this.parentHeader = parentHeader;
   }
 
-  public String getNestedPropName() {
-    return nestedPropName;
+  public JavaFieldProperty getBelongNestedField() {
+    return belongNestedField;
   }
 
-  public void setNestedPropName(String nestedPropName) {
-    this.nestedPropName = nestedPropName;
-  }
-
-  public boolean getIsCollection() {
-    return isCollection;
-  }
-
-  public void setIsCollection(boolean isCollection) {
-    this.isCollection = isCollection;
+  public void setBelongNestedField(JavaFieldProperty belongNestedField) {
+    this.belongNestedField = belongNestedField;
   }
 
   public GridMapping getBelongMapping() {
@@ -102,35 +95,52 @@ public class GridHeader implements Serializable {
     this.belongMapping = belongMapping;
   }
 
+  /**
+   * Method processResultMapping ...<br>
+   * 根据json格式的映射mapping，转换成gridheader结构
+   *
+   * @param resultMapping of type Map<String, Object>
+   */
   private void processResultMapping(Map<String, Object> resultMapping) {
-    Set<Entry<String, Object>> entrySet = resultMapping.entrySet();
-    this.setResultType(ofNullable(resultMapping.get("resultType")).orElse(EMPTY).toString());
+    String resultType = ofNullable(resultMapping.get("resultType")).orElse("").toString();
+    if (StrUtil.isNotBlank(resultType)) {
+      this.setResultType(ClassUtil.loadClass(resultType));
+    }
     resultMapping.remove("resultType");
+    Set<Entry<String, Object>> entrySet = resultMapping.entrySet();
     for (Entry<String, Object> objectEntry : entrySet) {
+      /*bean的字段名*/
       String key = objectEntry.getKey();
+      /*key字段名对应的数据库列名或者为复杂类型的json object*/
       Object value = objectEntry.getValue();
+      JavaFieldProperty keyField = JavaFieldProperty.UNKOWN;
+      if (StrUtil.isNotBlank(resultType)) {
+        keyField = new JavaFieldProperty(ReflectUtil.getField(this.getResultType(), key));
+      }
+      keyField.setKey(key);
       Class<?> valClass = ClassUtil.getClass(value);
-      if (List.class.isAssignableFrom(valClass)) {
-        /*生成嵌套网格头，此嵌套网格头的类型对应集合字段*/
+      if (Collection.class.isAssignableFrom(valClass)) {
+        /*生成嵌套网格头，此嵌套的类型对应集合字段*/
         Map<String, Object> nestedMapping =
-            (Map<String, Object>) ((List) value).stream().findFirst().orElse(MapUtil.newHashMap(0));
-        GridHeader nestedHeader = new GridHeader(nestedMapping);
-        nestedHeader.setIsCollection(true);
-        nestedHeader.setNestedPropName(key);
-        nestedHeader.setBelongMapping(this.getBelongMapping());
-        this.getNestedHeaders().add(nestedHeader);
+            (Map<String, Object>)
+                ((Collection) value).stream().findFirst().orElse(MapUtil.newHashMap(0));
+        GridHeader nestedHeader = new GridHeader(nestedMapping, this.getBelongMapping());
         nestedHeader.setParentHeader(this);
+        nestedHeader.setBelongNestedField(keyField);
+        this.getNestedHeaders().add(nestedHeader);
       } else if (Map.class.isAssignableFrom(valClass)) {
-        /*生成嵌套网格头，此嵌套网格头的类型对应单个对象字段*/
+        /*生成嵌套网格头，此嵌套的类型对应单个对象字段*/
         Map<String, Object> nestedMapping = (Map<String, Object>) value;
-        GridHeader nestedHeader = new GridHeader(nestedMapping);
-        nestedHeader.setIsCollection(false);
-        nestedHeader.setNestedPropName(key);
-        nestedHeader.setBelongMapping(this.getBelongMapping());
-        this.getNestedHeaders().add(nestedHeader);
+        GridHeader nestedHeader = new GridHeader(nestedMapping, this.getBelongMapping());
         nestedHeader.setParentHeader(this);
-      } else if (isNotBlank(key) || (null != value && isNotBlank(String.valueOf(value)))) {
-        javaToJdbcMap.put(key, String.valueOf(value));
+        nestedHeader.setBelongNestedField(keyField);
+        this.getNestedHeaders().add(nestedHeader);
+      } else if (isNotBlank(key)
+          || (null != value && value instanceof String && isNotBlank(String.valueOf(value)))) {
+        /*非集合，非map类型的字段*/
+        DBColumnProperty columnProperty = new DBColumnProperty(String.valueOf(value));
+        columnProperty.setValue(String.valueOf(value));
+        fieldToColumnMap.put(keyField, columnProperty);
       }
     }
   }
