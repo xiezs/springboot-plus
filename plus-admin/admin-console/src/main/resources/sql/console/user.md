@@ -24,6 +24,9 @@ and #function("user.query")#
 @if(!isEmpty(jobType0)){
     and  u.job_type0= #jobType0#
 @}
+@if(!isEmpty(jobType1)){
+    and  u.job_type1= #jobType1#
+@}
 @if(!isEmpty(createTimeStart)){
     and  u.create_time>= #createTimeStart#
 @}
@@ -31,6 +34,7 @@ and #function("user.query")#
     and  u.create_time< #nextDay(createTimeEnd)#
 @}
 ```
+@ mapping("UsersMapping");
 
 batchDelUserByIds
 ===
@@ -67,9 +71,9 @@ UsersMapping
 ===
 ```
     var user_mapping_var={
-                      "id": "core_route_map",
+                      "id": "core_user_map",
                       "mapping": {
-                          "resultType": "com.ibeetl.admin.core.entity.CoreRoute",
+                          "resultType": "com.ibeetl.admin.core.entity.CoreUser",
                           "id": "id",
                           "createTime": "create_time",
                           "code": "code",

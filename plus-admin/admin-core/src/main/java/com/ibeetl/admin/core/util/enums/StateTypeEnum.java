@@ -1,9 +1,11 @@
 package com.ibeetl.admin.core.util.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.beetl.sql.core.annotatoin.EnumMapping;
 
 @EnumMapping("value")
-public enum StateTypeEnum implements DictTypeEnum {
+public enum StateTypeEnum implements DictTypeEnum<StateTypeEnum> {
   S0("禁用", "S0", "user_state"),
   S1("启用", "S1", "job_type");
 
@@ -25,6 +27,7 @@ public enum StateTypeEnum implements DictTypeEnum {
     this.name = name;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -39,5 +42,17 @@ public enum StateTypeEnum implements DictTypeEnum {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  @JsonCreator
+  @Override
+  public StateTypeEnum findEnum(String value) {
+    StateTypeEnum[] values = values();
+    for (StateTypeEnum typeEnum : values) {
+      if (typeEnum.value.equals(value)) {
+        return typeEnum;
+      }
+    }
+    return null;
   }
 }

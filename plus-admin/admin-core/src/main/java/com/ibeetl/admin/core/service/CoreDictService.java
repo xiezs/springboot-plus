@@ -1,11 +1,17 @@
 package com.ibeetl.admin.core.service;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.web.JsonResult;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
+import javax.validation.constraints.NotBlank;
 import org.beetl.sql.core.mapper.internal.LambdaQueryAmi;
 import org.beetl.sql.core.query.LambdaQuery;
 import org.beetl.sql.core.query.Query;
@@ -19,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ibeetl.admin.core.dao.CoreDictDao;
 import com.ibeetl.admin.core.entity.CoreDict;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
+import org.springframework.validation.annotation.Validated;
 
 /**
  * 描述: 字典 service，包含常规字典和级联字典的操作。
@@ -96,6 +103,82 @@ public class CoreDictService extends CoreBaseService<CoreDict> {
     }
 
     return null;
+  }
+
+  /**
+   * 将数据库中所有字典构建成一个树集。方便前端某些树组件快速获取数据.
+   *
+   * @author 一日看尽长安花
+   * @return List<CoreDict>
+   */
+  @Cacheable(value = CorePlatformService.DICT_CACHE_TREE_LIST)
+  public List<CoreDict> allCoreDictsTree() {
+    List<CoreDict> coreDictList =
+        dictDao.createLambdaQuery().andEq(CoreDict::getDelFlag, DelFlagEnum.NORMAL).select();
+    CoreDict virtualRoot = new CoreDict();
+    virtualRoot.setId(0L);
+    buildListTree(virtualRoot, coreDictList);
+    return virtualRoot.getChildren();
+  }
+
+  private void buildListTree(CoreDict parentDict, List<CoreDict> coreDictList) {
+    long parentId = parentDict.getId();
+    List<CoreDict> currentLevelDict = new ArrayList<>();
+    List<CoreDict> dels = new ArrayList<>();
+    for (CoreDict coreDict : coreDictList) {
+      if (coreDict.getParent() == null || coreDict.getParent() == parentId) {
+        currentLevelDict.add(coreDict);
+        dels.add(coreDict);
+      }
+    }
+    parentDict.setChildren(currentLevelDict);
+    coreDictList.removeAll(dels);
+
+    for (CoreDict nextLevelParent : currentLevelDict) {
+      buildListTree(nextLevelParent, coreDictList);
+    }
+  }
+
+  /**
+   * Method findChildrenNodes sets the ${FIELD_NAME} of this CoreDictService object.
+   *
+   * <p>在一个完整的字典树里，找到指定的字典子树
+   *
+   * @param parentId 要搜寻字典列表的父id，根级的父id为null或者0
+   * @param type 要搜寻的字典类型
+   * @author 一日看尽长安花
+   * @return List<CoreDict>
+   */
+  @Validated
+  @Cacheable(value = CorePlatformService.DICT_CACHE_TREE_CHILDREN)
+  public List<CoreDict> findChildrenNodes(Long parentId, @NotBlank String type) {
+    parentId = parentId == null ? 0L : parentId;
+    List<CoreDict> allDictTreeList = self.allCoreDictsTree();
+    return breadthSearchChildrenNodes(allDictTreeList, parentId, type);
+  }
+
+  private List<CoreDict> breadthSearchChildrenNodes(
+      List<CoreDict> searchDicts, Long parentId, @NotBlank String type) {
+    List<CoreDict> _resultDicts = new ArrayList<>();
+    for (CoreDict dict : searchDicts) {
+      String dictType = dict.getType();
+      Long parent = Optional.ofNullable(dict.getParent()).orElse(0L);
+      if (parentId.equals(parent) && type.equals(dictType)) {
+        _resultDicts.add(dict);
+      }
+    }
+
+    if (_resultDicts.isEmpty()) {
+      for (CoreDict dict : searchDicts) {
+        List<CoreDict> dictChildren = dict.getChildren();
+        _resultDicts = breadthSearchChildrenNodes(dictChildren, parentId, type);
+        if (!_resultDicts.isEmpty()) {
+          break;
+        }
+      }
+    }
+
+    return _resultDicts;
   }
 
   /*通过名字反向查找数据字典，通常用于excel导入*/

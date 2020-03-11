@@ -52,12 +52,17 @@ public class CorePlatformService {
   // 菜单树，组织机构树，功能树缓存标记
   public static final String MENU_TREE_CACHE = "cache:core:menuTree";
   public static final String ORG_TREE_CACHE = "cache:core:orgTree";
+  public static final String ORG_CACHE_TREE_CHILDREN = "cache:core:orgTreeChildrens";
+  public static final String ORG_CACHE_TREE_LIST = "cache:core:orgTreeList";
   public static final String FUNCTION_TREE_CACHE = "cache:core:functionTree";
   // 字典列表
+  public static final String DICT_CACHE_TREE_CHILDREN = "cache:core:dictTreeChildrens";
+  public static final String DICT_CACHE_TREE_LIST = "cache:core:dictTreeList";
   public static final String DICT_CACHE_TYPE = "cache:core:dictType";
   public static final String DICT_CACHE_VALUE = "cache:core:dictValue";
   public static final String DICT_CACHE_SAME_LEVEL = "cache:core:ditcSameLevel";
   public static final String DICT_CACHE_CHILDREN = "cache:core:dictChildren";
+
   public static final String USER_FUNCTION_ACCESS_CACHE = "cache:core:userFunctionAccess";
   public static final String USER_FUNCTION_CHIDREN_CACHE = "ccache:core:functionChildren";
   public static final String FUNCTION_CACHE = "cache:core:function";

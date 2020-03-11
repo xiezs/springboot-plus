@@ -7,13 +7,15 @@ import java.net.URLEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,16 +28,27 @@ import com.ibeetl.admin.core.file.FileService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.FileUtil;
 
+/**
+ * Class FileSystemContorller : <br/>
+ * 描述：业务中有关文件的上传，下载。<br/>
+ * TODO 待改动计划：
+ *  改成加上MD5验证，减少重复文件的io
+ *  补上文件表中有关文件属性（大小，类型，）的信息
+ *  补上文件上传的临时状态，避免上传文件却中断业务逻辑，产生无用数据以及文件
+ * @author 一日看尽长安花
+ * Updated on 2020/3/8
+ */
+@Slf4j
 @Controller
+@RequestMapping("/core/file")
 public class FileSystemContorller {
-  private final Log log = LogFactory.getLog(this.getClass());
 
   @Autowired CorePlatformService platformService;
 
-  private static final String MODEL = "/core/file";
+  @Autowired FileService fileService;
 
   /*附件类操作*/
-  @PostMapping(MODEL + "/uploadAttachment.json")
+  @PostMapping("/uploadAttachment.json")
   @ResponseBody
   public JsonResult uploadFile(
       @RequestParam("file") MultipartFile file, String batchFileUUID, String bizType, String bizId)
@@ -59,14 +72,14 @@ public class FileSystemContorller {
     return JsonResult.success(fileItem);
   }
 
-  @PostMapping(MODEL + "/deleteAttachment.json")
+  @PostMapping("/deleteAttachment.json")
   @ResponseBody
   public JsonResult deleteFile(Long fileId, String batchFileUUID) throws IOException {
     fileService.removeFile(fileId, batchFileUUID);
     return JsonResult.success();
   }
 
-  @GetMapping(MODEL + "/download/{fileId}/{batchFileUUID}/{name}")
+  @GetMapping("/download/{fileId}/{batchFileUUID}/{name}")
   public ModelAndView download(
       HttpServletResponse response, @PathVariable Long fileId, @PathVariable String batchFileUUID)
       throws IOException {
@@ -80,9 +93,7 @@ public class FileSystemContorller {
 
   /*execl 导入导出*/
 
-  @Autowired FileService fileService;
-
-  @GetMapping(MODEL + "/get.do")
+  @GetMapping("/get.do")
   public ModelAndView index(HttpServletResponse response, String id) throws IOException {
     String path = id;
     response.setContentType("text/html; charset = UTF-8");
@@ -97,7 +108,7 @@ public class FileSystemContorller {
     return null;
   }
 
-  @GetMapping(MODEL + "/downloadTemplate.do")
+  @GetMapping("/downloadTemplate.do")
   public ModelAndView dowloadTemplate(HttpServletResponse response, String path)
       throws IOException {
     response.setContentType("text/html; charset = UTF-8");
@@ -117,7 +128,7 @@ public class FileSystemContorller {
     return null;
   }
 
-  @GetMapping(MODEL + "/simpleUpload.do")
+  @GetMapping("/simpleUpload.do")
   public ModelAndView simpleUploadPage(String uploadUrl, String templatePath, String fileType)
       throws IOException {
     ModelAndView view = new ModelAndView("/common/simpleUpload.html");

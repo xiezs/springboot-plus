@@ -25,6 +25,35 @@ public class DictCascaderElController {
 
   @Autowired CoreDictService coreDictService;
 
+  @GetMapping("/immediateLoad")
+  public JsonResult<List<ElCascaderData>> immediateLoadCascaderDict(Long parentId, String type) {
+    if (StrUtil.isBlank(type) && parentId == null) {
+      return JsonResult.failMessage("parentId and type should have at least one.");
+    }
+    List<CoreDict> childDictList = coreDictService.findChildrenNodes(parentId, type);
+    return JsonResult.success(coreDictToElCascaderData(childDictList));
+  }
+
+  /**
+   * .将字典树转成element级联器组件的格式
+   *
+   * @author 一日看尽长安花
+   * @return List<ElCascaderData>
+   */
+  private List<ElCascaderData> coreDictToElCascaderData(List<CoreDict> coreDicts) {
+    List<ElCascaderData> elCascaderDatas = new ArrayList<ElCascaderData>(coreDicts.size());
+    for (CoreDict dict : coreDicts) {
+      ElCascaderData data = new ElCascaderData();
+      data.setId(dict.getId());
+      data.setLabel(dict.getName());
+      data.setValue(dict.getValue());
+      List<ElCascaderData> children = coreDictToElCascaderData(dict.getChildren());
+      data.setChildren(children);
+      elCascaderDatas.add(data);
+    }
+    return elCascaderDatas.isEmpty() ? null : elCascaderDatas;
+  }
+
   /**
    * Method obtainDcitsByCascader ... 获取子级字典列表。如果不传父级id，只获取type指定的列表而已。
    *
@@ -32,8 +61,8 @@ public class DictCascaderElController {
    * @param type of type String 子级字典列表type
    * @return JsonResult<List < ElCascaderData>>
    */
-  @GetMapping("/tree")
-  public JsonResult<List<ElCascaderData>> obtainDcitsByCascader(Long parentId, String type) {
+  @GetMapping("/layzyLoad")
+  public JsonResult<List<ElCascaderData>> layzyLoadCascaderDict(Long parentId, String type) {
     if (StrUtil.isBlank(type) && parentId == null) {
       return JsonResult.failMessage("parentId and type should have at least one.");
     }

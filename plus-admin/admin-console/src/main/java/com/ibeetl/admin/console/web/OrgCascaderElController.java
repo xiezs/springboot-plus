@@ -3,6 +3,7 @@ package com.ibeetl.admin.console.web;
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.ElCascaderData;
 import com.ibeetl.admin.console.service.CoreOrgConsoleElService;
+import com.ibeetl.admin.core.service.CoreOrgService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.web.JsonResult;
 import java.util.ArrayList;
@@ -25,8 +26,35 @@ public class OrgCascaderElController {
 
   @Autowired CorePlatformService corePlatformService;
 
-  @Autowired
-  CoreOrgConsoleElService coreOrgService;
+  @Autowired CoreOrgConsoleElService coreOrgConsoleElService;
+
+  @Autowired CoreOrgService coreOrgService;
+
+  @GetMapping("/immediateLoad")
+  public JsonResult<List<ElCascaderData>> immediateLoadCascaderDict(Long parentId) {
+    List<CoreOrg> childDictList = coreOrgService.findChildrenNodes(parentId);
+    return JsonResult.success(coreOrgToElCascaderData(childDictList));
+  }
+
+  /**
+   * .将字典树转成element级联器组件的格式
+   *
+   * @author 一日看尽长安花
+   * @return List<ElCascaderData>
+   */
+  private List<ElCascaderData> coreOrgToElCascaderData(List<CoreOrg> coreDicts) {
+    List<ElCascaderData> elCascaderDatas = new ArrayList<ElCascaderData>(coreDicts.size());
+    for (CoreOrg org : coreDicts) {
+      ElCascaderData data = new ElCascaderData();
+      data.setId(org.getId());
+      data.setLabel(org.getName());
+      data.setValue(org.getId());
+      List<ElCascaderData> children = coreOrgToElCascaderData(org.getChidren());
+      data.setChildren(children);
+      elCascaderDatas.add(data);
+    }
+    return elCascaderDatas.isEmpty() ? null : elCascaderDatas;
+  }
 
   /**
    * Method obtainDcitsByCascader ...<br>
@@ -36,9 +64,9 @@ public class OrgCascaderElController {
    * @param parentId of type Long 父级id
    * @return JsonResult<List < ElCascaderData>>
    */
-  @GetMapping("/tree")
+  @GetMapping("/layzyLoad")
   public JsonResult<List<ElCascaderData>> obtainOrgsByCascader(Long parentId) {
-    List<CoreOrg> coreOrgList = coreOrgService.getOrgListByParent(parentId);
+    List<CoreOrg> coreOrgList = coreOrgConsoleElService.getOrgListByParent(parentId);
     return JsonResult.success(convertToCascaderData(coreOrgList));
   }
 

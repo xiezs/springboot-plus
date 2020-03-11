@@ -25,7 +25,7 @@ public class CoreUserElQuery {
       isShowEditorPanel = false)
   protected Long id;
 
-  @ElColumn(name = "创建时间", type = DATE)
+  @ElColumn(name = "创建时间", type = DATE, isShowEditorPanel = false)
   protected Date createTime;
 
   @ElColumn(name = "用户名", type = STRING, isShowSearchPanel = false)
@@ -34,15 +34,20 @@ public class CoreUserElQuery {
   @ElColumn(name = "姓名", type = STRING)
   private String name;
 
-  @ElColumn(name = "机构", type = STRING)
+  @ElColumn(
+      name = "机构",
+      type = STRING,
+      jsonPath = "org.name",
+      isShowSearchPanel = false,
+      isShowEditorPanel = false)
   private Long orgId;
 
-  @ElColumn(name = "状态", type = DICT)
+  @ElColumn(name = "状态", type = DICT, isShowEditorPanel = false)
   private String state;
 
-  @ElColumn(name = "职务", type = DICT)
+  @ElColumn(name = "职务", type = DICT, isShowEditorPanel = false)
   private String jobType0;
 
-  @ElColumn(name = "岗位", type = DICT)
+  @ElColumn(name = "岗位", type = DICT, isShowEditorPanel = false)
   private String jobType1;
 }

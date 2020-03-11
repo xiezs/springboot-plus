@@ -1,10 +1,8 @@
 package com.ibeetl.admin.core.conf.beetl;
 
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.CharsetUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ibeetl.admin.core.conf.JasonConfig;
+import com.ibeetl.admin.core.conf.JacksonConfig;
 import com.ibeetl.admin.core.conf.beetl.handler.DateTypeHandler;
 import com.ibeetl.admin.core.conf.beetl.handler.DictTypeHandler;
 import com.ibeetl.admin.core.conf.beetl.handler.ZonedDateTimeTypeHandler;
@@ -55,7 +53,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 @Configuration
-@AutoConfigureAfter(JasonConfig.class)
+@AutoConfigureAfter(JacksonConfig.class)
 public class BeetlConf {
   @Autowired Environment env;
   @Autowired CorePlatformService platFormService;

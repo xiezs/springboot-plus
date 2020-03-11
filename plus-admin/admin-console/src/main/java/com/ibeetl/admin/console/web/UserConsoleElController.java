@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,7 +49,7 @@ public class UserConsoleElController {
 
   @Function("user.add")
   @PostMapping
-  public JsonResult<Long> addUser(@Validated(ValidateConfig.ADD.class) CoreUser user) {
+  public JsonResult<Long> addUser(@Validated(ValidateConfig.ADD.class) @RequestBody CoreUser user) {
     if (!platformService.isAllowUserName(user.getCode())) {
       return JsonResult.failMessage("不允许的注册名字 " + user.getCode());
     }
@@ -58,7 +59,7 @@ public class UserConsoleElController {
 
   @Function("user.update")
   @PutMapping
-  public JsonResult update(@Validated(ValidateConfig.UPDATE.class) CoreUser user) {
+  public JsonResult update(@Validated(ValidateConfig.UPDATE.class) @RequestBody CoreUser user) {
     boolean success = userConsoleService.updateTemplate(user);
     if (success) {
       this.platformService.clearFunctionCache();

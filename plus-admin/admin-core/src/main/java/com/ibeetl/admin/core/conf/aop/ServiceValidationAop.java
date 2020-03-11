@@ -19,6 +19,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
+/**
+ * Class ServiceValidationAop : <br/>
+ * 描述：使用java validation规范对service层方法进行参数校验
+ * @author 一日看尽长安花
+ * Created on 2020/3/3
+ */
 @Aspect
 @Component
 public class ServiceValidationAop {

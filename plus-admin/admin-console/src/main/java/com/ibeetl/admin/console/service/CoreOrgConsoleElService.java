@@ -6,7 +6,6 @@ import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 import java.util.List;
-import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

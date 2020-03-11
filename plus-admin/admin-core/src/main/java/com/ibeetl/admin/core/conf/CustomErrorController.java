@@ -189,7 +189,7 @@ public class CustomErrorController extends AbstractErrorController {
         .append(SystemUtil.get(LINE_SEPRATOR))
         .append(StrUtil.format("┣━━━━ error fileds: <{}> ━━━━", errors))
         .append(SystemUtil.get(LINE_SEPRATOR))
-        .append(StrUtil.format("┗━━━━ error cause: <{}> ━━━━", cause))
+        .append(StrUtil.format("┣━━━━ error cause: <{}> ━━━━", cause))
         .append(SystemUtil.get(LINE_SEPRATOR))
         .append(StrUtil.format("┗━━━━ request path <{}> error log.━━━━", path));
     logger.error(log.toString());

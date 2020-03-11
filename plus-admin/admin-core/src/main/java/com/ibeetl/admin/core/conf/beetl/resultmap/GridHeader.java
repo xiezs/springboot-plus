@@ -1,6 +1,5 @@
 package com.ibeetl.admin.core.conf.beetl.resultmap;
 
-import static cn.hutool.core.util.StrUtil.EMPTY;
 import static cn.hutool.core.util.StrUtil.isNotBlank;
 import static java.util.Optional.ofNullable;
 
@@ -15,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 
 /**
