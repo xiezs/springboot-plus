@@ -1,8 +1,8 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime : 2020-01-08 22:51:466
- * @LastEditors  : 一日看尽长安花安花
+ * @LastEditTime: 2020-03-06 16:02:51
+ * @LastEditors: 一日看尽长安花
  * @Description: 后台管理页面的自动生成，
  * 主要暴露了分页方法、数据表格搜索方法、条件查询方法、增删改方法
  * 以及 查询面板插槽，功能按钮组插槽，编辑对话框插槽
@@ -29,7 +29,7 @@
       @update:tabledata="$emit('update:tabledata', $event)"
       @pagination="pagination"
       @handle-edit="handleEdit"
-      @delete-data="$emit('delete-data')"
+      @delete-data="$emit('delete-data', $event)"
     ></data-table>
     <detail-page
       :metadata="metadata"
@@ -37,8 +37,8 @@
       :dialog-title="dialogTitle"
       :operation-type="operationType"
       :dialog-data="dialogData"
-      @create-data="$emit('create-data')"
-      @update-data="$emit('update-data')"
+      @create-data="$emit('create-data', $event)"
+      @update-data="$emit('update-data', $event)"
     >
       <!-- #dialog-form-item等价v-slot:dialog-form-item 语法
       详情参照 解构插槽 Prop 章节 -->

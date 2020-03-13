@@ -44,3 +44,19 @@ export function usersMetadata() {
     method: 'get'
   });
 }
+
+export function saveUserData(data) {
+  return request({
+    url: '/users',
+    method: 'post',
+    data
+  });
+}
+
+export function updateUserData(data) {
+  return request({
+    url: '/users',
+    method: 'put',
+    data
+  });
+}

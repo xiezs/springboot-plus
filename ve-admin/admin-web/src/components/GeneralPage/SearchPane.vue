@@ -1,8 +1,8 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime : 2020-02-03 16:21:23
- * @LastEditors  : 一日看尽长安花
+ * @LastEditTime: 2020-03-09 14:28:00
+ * @LastEditors: 一日看尽长安花
  * @Description:
  -->
 <template>
@@ -55,6 +55,7 @@
       <slot name="filter-condition" :filter-data="filterData"> </slot>
       <div class="filter-item-container">
         <el-button
+          ref="searchButton"
           :size="size"
           class="filter-item"
           type="primary"

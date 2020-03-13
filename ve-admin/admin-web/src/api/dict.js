@@ -7,9 +7,17 @@
  */
 import request from '@/utils/request';
 
-export function getDictsByParent(params) {
+export function layzyLoadDicts(params) {
   return request({
-    url: '/core/dicts/tree',
+    url: '/core/dicts/layzyLoad',
+    method: 'get',
+    params: params
+  });
+}
+
+export function immaditeLoadDicts(params) {
+  return request({
+    url: '/core/dicts/immediateLoad',
     method: 'get',
     params: params
   });

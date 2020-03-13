@@ -2,8 +2,8 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime : 2020-02-04 13:19:39
- * @LastEditors  : 一日看尽长安花
+ * @LastEditTime: 2020-03-08 15:59:43
+ * @LastEditors: 一日看尽长安花
  */
 import axios from 'axios';
 import { MessageBox, Message } from 'element-ui';
@@ -22,9 +22,16 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     const method = config.method;
+    /**get方法为params，post、put、delete为data */
     const params = config.params || config.data || null;
+    /**下划线转为驼峰 */
     if (params) {
-      const changedKeyParams = toCamelCaseDeep(params);
+      const sourceParams = Object.assign({}, params);
+      const changedKeyParams = Object.assign(
+        {},
+        toCamelCaseDeep(params),
+        sourceParams
+      );
       if (method === 'get') {
         config.params = changedKeyParams;
       } else {
@@ -86,8 +93,10 @@ service.interceptors.response.use(
           });
         });
       }
+      /**将code非200返回码的情况转成错误传出去 */
       return Promise.reject(new Error(res.message || 'Error'));
     } else {
+      /** 每次请求成功都要将授权码存放在cookie中，只要五分钟无动作登录授权便失效 */
       const authorization = response.headers['authorization'];
       setToken(authorization);
       return res;
