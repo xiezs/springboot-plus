@@ -33,6 +33,7 @@ public class CoreFile extends BaseEntity {
   private Long orgId;
   private String bizType;
 
+  /*文件批次id，用于其它业务表记录*/
   private String fileBatchId;
 
   public CoreFile() {}

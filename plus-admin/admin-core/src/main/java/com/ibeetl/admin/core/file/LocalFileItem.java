@@ -1,19 +1,18 @@
 package com.ibeetl.admin.core.file;
 
+import com.ibeetl.admin.core.util.PlatformException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import com.ibeetl.admin.core.util.PlatformException;
 /**
  * 本地文件系统
  *
  * @author xiandafu
  */
-class LocalFileItem extends PersistFileItem {
-  String root = null;
+public class LocalFileItem extends PersistFileItem {
+  String root;
 
   public LocalFileItem(String root) {
     this.root = root;
@@ -28,7 +27,7 @@ class LocalFileItem extends PersistFileItem {
       FileOutputStream fos = new FileOutputStream(file);
       return fos;
     } catch (IOException e) {
-      throw new PlatformException("Open stream error " + path);
+      throw new PlatformException("Open file [" + path + "] output stream error ");
     }
   }
 
@@ -45,7 +44,7 @@ class LocalFileItem extends PersistFileItem {
       }
 
     } catch (Exception ex) {
-      throw new PlatformException("下载文件失败" + ex);
+      throw new PlatformException("下载/复制文件失败" + ex);
     } finally {
       try {
         input.close();
@@ -56,7 +55,7 @@ class LocalFileItem extends PersistFileItem {
       }
     }
 
-    if (path.startsWith("temp")) {
+    if (isTemp) {
       this.delete();
     }
   }

@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-03-11 15:30:15
+ * @LastEditTime: 2020-03-17 18:11:53
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -104,11 +104,20 @@
         </el-form-item>
 
         <el-form-item key="fileKey" label="上传文档" prop="file">
-          <file-upload>
+          <file-upload
+            ref="fileUpload"
+            :file-batch-id="dialogData.attachment_id"
+            :on-success="onUploadSuccess"
+          >
             <el-button slot="trigger" size="small" type="primary">
               选取文件
             </el-button>
-            <el-button style="margin-left: 10px;" size="small" type="success">
+            <el-button
+              style="margin-left: 10px;"
+              size="small"
+              type="success"
+              @click="submitUpload"
+            >
               上传到服务器
             </el-button>
             <div slot="tip" class="el-upload__tip">
@@ -125,7 +134,13 @@
 import GeneralPage from '@/components/GeneralPage';
 import FileUpload from '@/components/Upload/FileUpload';
 
-import { users, usersMetadata, saveUserData, updateUserData } from '@/api/user';
+import {
+  users,
+  usersMetadata,
+  saveUserData,
+  updateUserData,
+  deleteUserData
+} from '@/api/user';
 import { immaditeLoadDicts } from '@/api/dict';
 import { immaditeLoadOrgs } from '@/api/org';
 import { layzyLoadDictTree, handleCascaderValue } from '@/services/dict';
@@ -205,6 +220,7 @@ export default {
         'job_type1'
       ]);
       queryParams = handleCascaderValue(queryParams, 'state', ['state']);
+      const _lodash = this.$lodash;
       users(queryParams)
         .then(result => {
           const { code, data } = { ...result };
@@ -213,15 +229,14 @@ export default {
            * 所以将其处理为一级节点
            */
           for (let i in result.data) {
-            result.data[i]['org_id_value'] = result.data[i]['org']['id'];
-            result.data[i]['state_value'] = result.data[i]['state']['value'];
-            if (result.data[i]['job_type0']) {
-              result.data[i]['job_type_value'] =
-                result.data[i]['job_type0']['value'];
+            let item = result.data[i];
+            item['org_id_value'] = _lodash.get(item, 'org.id');
+            item['state_value'] = _lodash.get(item, 'state.value');
+            if (item['job_type0']) {
+              item['job_type_value'] = _lodash.get(item, 'job_type0.value');
             }
-            if (result.data[i]['job_type1']) {
-              result.data[i]['job_type_value'] =
-                result.data[i]['job_type1']['value'];
+            if (item['job_type1']) {
+              item['job_type_value'] = _lodash.get(item, 'job_type1.value');
             }
           }
           this.tabledata = Object.assign({}, result);
@@ -243,18 +258,20 @@ export default {
       this.obtainData(Object.assign({ page: 1, limit: 10 }, queryParams));
     },
     createData(dialogData) {
-      this.handleEditorDataObject(dialogData, 'org_id_value', {
+      dialogData = this.handleEditorDataObject(dialogData, 'org_id_value', {
         org_id: 'org.id'
       });
-      this.handleEditorDataObject(dialogData, 'state_value', {
+      dialogData = this.handleEditorDataObject(dialogData, 'state_value', {
         state: 'state.value'
       });
-      this.handleEditorDataObject(dialogData, 'job_type_value', {
+      dialogData = this.handleEditorDataObject(dialogData, 'job_type_value', {
         job_type0: 'job_type0.value',
         job_type1: 'job_type1.value'
       });
+      const Vue = this;
       saveUserData(dialogData)
         .then(result => {
+          Vue.$children[0].$refs.searchPaneGP.$refs.searchButton.$emit('click');
           this.$nextTick(() => {
             this.$notify({
               title: '成功',
@@ -276,23 +293,29 @@ export default {
         });
     },
     updateData(dialogData) {
-      this.handleEditorDataObject(dialogData, 'org_id_value', {
+      dialogData = this.handleEditorDataObject(dialogData, 'org_id_value', {
         org_id: 'org.id'
       });
-      this.handleEditorDataObject(dialogData, 'state_value', {
+      dialogData = this.handleEditorDataObject(dialogData, 'state_value', {
         state: 'state.value'
       });
-      this.handleEditorDataObject(dialogData, 'job_type_value', {
+      dialogData = this.handleEditorDataObject(dialogData, 'job_type_value', {
         job_type0: 'job_type0.value',
         job_type1: 'job_type1.value'
       });
+      const Vue = this;
       updateUserData(dialogData)
         .then(result => {
-          this.$refs['searchButton'].click();
+          /** 刷新数据表格数据，懒得重新写个方法挂载在组件上了 */
+          Vue.$children[0].$refs.searchPaneGP.$refs.searchButton.$emit('click');
+          /**
+           *  将回调延迟到下次 DOM 更新循环之后执行。
+           * 而数据更新就代表dom更新，所以如果创建成功，数据就会更新
+           */
           this.$nextTick(() => {
             this.$notify({
               title: '成功',
-              message: '修改成功',
+              message: '修改成功1',
               type: 'success',
               duration: 2000
             });
@@ -302,7 +325,7 @@ export default {
           this.$nextTick(() => {
             this.$notify({
               title: '失败',
-              message: '修改失败',
+              message: '修改用户失败',
               type: 'error',
               duration: 2000
             });
@@ -322,16 +345,43 @@ export default {
           dialogData[key] = this.$lodash.get(dialogData, keyPathMap[key]);
         }
       }
+      return dialogData;
     },
     deleteData(index, row) {
-      this.$nextTick(() => {
-        this.$notify({
-          title: '成功',
-          message: '删除成功',
-          type: 'success',
-          duration: 2000
+      deleteUserData({ ids: [row.id] })
+        .then(result => {
+          /** 刷新数据表格数据，懒得重新写个方法挂载在组件上了 */
+          Vue.$children[0].$refs.searchPaneGP.$refs.searchButton.$emit('click');
+          /**
+           *  将回调延迟到下次 DOM 更新循环之后执行。
+           * 而数据更新就代表dom更新，所以如果创建成功，数据就会更新
+           */
+          this.$nextTick(() => {
+            this.$notify({
+              title: '成功',
+              message: '删除用户成功',
+              type: 'success',
+              duration: 2000
+            });
+          });
+        })
+        .catch(err => {
+          this.$nextTick(() => {
+            this.$notify({
+              title: '失败',
+              message: '删除用户失败',
+              type: 'error',
+              duration: 2000
+            });
+          });
         });
-      });
+    },
+    submitUpload() {
+      debugger;
+      this.$refs.fileUpload.$refs.upload.submit();
+    },
+    onUploadSuccess(response, file, fileList) {
+      debugger;
     }
   }
 };

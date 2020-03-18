@@ -1,13 +1,13 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-03-08 11:03:14
- * @LastEditTime: 2020-03-08 15:32:26
+ * @LastEditTime: 2020-03-17 20:54:30
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
 <template>
   <el-upload
-    :ref="refs"
+    ref="upload"
     :headers="headers"
     :multiple="multiple"
     :data="data"
@@ -26,12 +26,12 @@
     :before-remove="beforeRemove"
     :list-type="listType"
     :auto-upload="autoUpload"
-    :file-list="fileList"
-    :http-request="httpRequest"
+    :file-list="fileList_d"
+    :http-request="updateFiles"
     :disabled="disabled"
     :limit="limit"
     :on-exceed="onExceed"
-    action="https://jsonplaceholder.typicode.com/posts/"
+    action="/core/file/uploadAttachment"
   >
     <template v-slot:default>
       <slot name="default"> </slot>
@@ -45,13 +45,23 @@
   </el-upload>
 </template>
 <script>
+import { getFileList } from '@/api/file';
+
 export default {
   name: 'FileUpload',
   components: {},
   props: {
-    refs: {
+    fileBatchId: {
       type: String,
-      default: 'fileUpload'
+      default: null
+    },
+    bizType: {
+      type: String,
+      default: null
+    },
+    bizId: {
+      type: String,
+      default: null
     },
     headers: {
       type: Object,
@@ -66,7 +76,11 @@ export default {
     data: {
       type: Object,
       default() {
-        return undefined;
+        return {
+          fileBatchId: this.fileBatchId,
+          bizType: this.bizType,
+          bizId: this.bizId
+        };
       }
     },
     name: {
@@ -143,17 +157,41 @@ export default {
       type: Function,
       default: undefined
     },
-    httpRequest: {
-      type: Function,
-      default: undefined
-    },
     onExceed: {
       type: Function,
       default: undefined
     }
   },
   data() {
-    return {};
+    return {
+      fileList_d: this.fileList
+    };
+  },
+  watch: {
+    fileBatchId: {
+      immediate: true,
+      deep: true,
+      handler: function(newVal, oldVal) {
+        /** 只有当文件操作批次id与上一次不一样时进入 */
+        this.loadFilelItems();
+      }
+    }
+  },
+  methods: {
+    loadFilelItems() {
+      if (!this.fileBatchId || this.fileBatchId.trim().length <= 0) {
+        this.fileList_d = [];
+        return;
+      }
+      getFileList({ fileBatchId: this.fileBatchId }).then(res => {
+        const { code, data } = { ...res };
+        this.fileList_d = data || [];
+      });
+    },
+    updateFiles(params) {
+      debugger;
+      console.log(params);
+    }
   }
 };
 </script>

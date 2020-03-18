@@ -1,28 +1,25 @@
 package com.ibeetl.admin.core.file;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-
 import com.ibeetl.admin.core.dao.CoreFileDao;
 import com.ibeetl.admin.core.entity.CoreFile;
 import com.ibeetl.admin.core.util.DateUtil;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.UUIDUtil;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationContext;
 /**
  * 一个本地文件系统，管理临时文件和用户文件
  *
  * @author xiandafu
  */
+@Slf4j
 public class LocalFileService implements FileService {
-  Log log = LogFactory.getLog(this.getClass());
   DBIndexHelper dbHelper = null;
-  String root = null;
+  String root;
 
   public LocalFileService(ApplicationContext ctx, String root) {
     this.root = root;
@@ -104,7 +101,6 @@ public class LocalFileService implements FileService {
     item.setBizType(file.getBizType());
     item.setId(file.getId());
     item.setOrgId(file.getOrgId());
-    item.setId(file.getId());
     return item;
   }
 
@@ -146,7 +142,7 @@ public class LocalFileService implements FileService {
     FileItem item = this.getFileItem(file);
     boolean success = item.delete();
     if (!success) {
-      log.warn("删除文件失败 " + file.getName() + ",id=" + file.getId() + " path=" + file.getPath());
+      log.warn("删除文件[" + file.getName() + "]失败,id=" + file.getId() + " path=" + file.getPath());
       throw new PlatformException("删除文件失败 " + file.getName());
     }
     dbHelper.fileDao.deleteById(id);

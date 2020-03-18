@@ -1,8 +1,8 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime : 2020-02-22 17:32:45
- * @LastEditors  : 一日看尽长安花
+ * @LastEditTime: 2020-03-16 16:01:20
+ * @LastEditors: 一日看尽长安花
  * @Description:
  -->
 <template>
@@ -145,7 +145,7 @@ export default {
       if (valType === 'date') {
         val = parseTime(val / 1000, '{y}-{m}-{d} {h}:{i}:{s}');
       } else if (valType === 'dict') {
-        val = val.name;
+        val = this.$lodash.get(val, 'name');
       }
       return val;
     },

@@ -4,15 +4,13 @@ import com.ibeetl.admin.console.service.UserConsoleService;
 import com.ibeetl.admin.console.util.VOUtil;
 import com.ibeetl.admin.console.web.query.CoreUserElQuery;
 import com.ibeetl.admin.core.annotation.Function;
+import com.ibeetl.admin.core.annotation.RequestBodyPlus;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.service.CorePlatformService;
-import com.ibeetl.admin.core.service.CoreUserService;
 import com.ibeetl.admin.core.service.param.CoreUserParam;
-import com.ibeetl.admin.core.util.ConvertUtil;
 import com.ibeetl.admin.core.util.ValidateConfig;
 import com.ibeetl.admin.core.web.JsonResult;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +69,7 @@ public class UserConsoleElController {
 
   @Function("user.delete")
   @DeleteMapping
-  public JsonResult delete(Long[] ids) {
+  public JsonResult delete(@RequestBodyPlus("ids") Long[] ids) {
     userConsoleService.batchDelSysUser(Arrays.asList(ids));
     return JsonResult.success();
   }

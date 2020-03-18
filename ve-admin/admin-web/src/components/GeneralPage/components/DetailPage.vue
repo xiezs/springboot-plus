@@ -1,8 +1,8 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime : 2020-02-05 17:00:21
- * @LastEditors  : 一日看尽长安花
+ * @LastEditTime: 2020-03-17 15:46:23
+ * @LastEditors: 一日看尽长安花
  * @Description:
  -->
 <template>
@@ -12,7 +12,8 @@
   <el-dialog
     :fullscreen="true"
     :center="true"
-    :destroy-on-close="true"
+    :destroy-on-close="false"
+    :show-close="false"
     :title="dialogTitle"
     :visible="dialogVisible"
     :close-on-click-modal="false"
@@ -134,17 +135,7 @@ export default {
       this.$refs['editForm'].validate(valid => {
         if (valid) {
           this.$emit('create-data', this.dialogData);
-          /* 将回调延迟到下次 DOM 更新循环之后执行。
-          而数据更新就代表dom更新，所以如果创建成功，数据就会更新 */
-          this.$nextTick(() => {
-            this.$emit('update:dialogVisible', false);
-            this.$notify({
-              title: '成功',
-              message: '添加成功',
-              type: 'success',
-              duration: 2000
-            });
-          });
+          this.$emit('update:dialogVisible', false);
         } else {
           this.$notify({
             title: '失败',
@@ -159,15 +150,7 @@ export default {
       this.$refs['editForm'].validate(valid => {
         if (valid) {
           this.$emit('update-data', this.dialogData);
-          this.$nextTick(() => {
-            this.$emit('update:dialogVisible', false);
-            this.$notify({
-              title: '成功',
-              message: '修改成功',
-              type: 'success',
-              duration: 2000
-            });
-          });
+          this.$emit('update:dialogVisible', false);
         } else {
           this.$notify({
             title: '失败',

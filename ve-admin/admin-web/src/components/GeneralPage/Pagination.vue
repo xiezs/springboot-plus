@@ -1,13 +1,14 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-09-09 12:16:28
- * @LastEditTime: 2019-10-27 00:01:53
+ * @LastEditTime: 2020-03-13 16:38:34
  * @LastEditors: 一日看尽长安花
  * @Description: 这个分页是直接从组件复制的，为了保证以后修改逻辑不影响其它的页面使用公共的分页。
  -->
 <template>
   <div :class="{ hidden: hidden }" class="pagination-container">
     <el-pagination
+      ref="paginationGP"
       :background="background"
       :current-page.sync="currentPage"
       :page-size.sync="pageSize"

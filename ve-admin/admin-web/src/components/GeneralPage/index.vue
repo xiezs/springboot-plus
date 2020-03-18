@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-03-06 16:02:51
+ * @LastEditTime: 2020-03-15 16:36:57
  * @LastEditors: 一日看尽长安花
  * @Description: 后台管理页面的自动生成，
  * 主要暴露了分页方法、数据表格搜索方法、条件查询方法、增删改方法
@@ -10,6 +10,7 @@
 <template>
   <div>
     <search-pane
+      ref="searchPaneGP"
       :metadata="metadata"
       @filter-search="filterSearch"
       @handle-create="handleCreate"
@@ -22,6 +23,7 @@
       </template>
     </search-pane>
     <data-table
+      ref="dataTableGP"
       :loading="loading"
       :metadata="metadata"
       :tabledata="tabledata"
@@ -29,9 +31,10 @@
       @update:tabledata="$emit('update:tabledata', $event)"
       @pagination="pagination"
       @handle-edit="handleEdit"
-      @delete-data="$emit('delete-data', $event)"
+      @delete-data="deleteData"
     ></data-table>
     <detail-page
+      ref="detailPageGP"
       :metadata="metadata"
       :dialog-visible.sync="dialogVisible"
       :dialog-title="dialogTitle"
@@ -119,6 +122,9 @@ export default {
       this.dialogTitle = '修改';
       this.dialogVisible = true;
       this.dialogData = Object.assign({}, row);
+    },
+    deleteData(index, row) {
+      this.$emit('delete-data', index, row);
     }
   }
 };
