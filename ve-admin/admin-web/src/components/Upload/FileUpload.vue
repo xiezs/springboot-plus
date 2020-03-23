@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-03-08 11:03:14
- * @LastEditTime: 2020-03-17 20:54:30
+ * @LastEditTime: 2020-03-23 21:36:23
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -27,11 +27,11 @@
     :list-type="listType"
     :auto-upload="autoUpload"
     :file-list="fileList_d"
-    :http-request="updateFiles"
+    :http-request="httpRequest"
     :disabled="disabled"
     :limit="limit"
     :on-exceed="onExceed"
-    action="/core/file/uploadAttachment"
+    :action="action"
   >
     <template v-slot:default>
       <slot name="default"> </slot>
@@ -45,6 +45,8 @@
   </el-upload>
 </template>
 <script>
+import { v4 as uuidv4 } from 'uuid';
+import request from '@/utils/request';
 import { getFileList } from '@/api/file';
 
 export default {
@@ -62,6 +64,10 @@ export default {
     bizId: {
       type: String,
       default: null
+    },
+    action: {
+      type: String,
+      default: '/core/file/uploadAttachment'
     },
     headers: {
       type: Object,
@@ -164,7 +170,8 @@ export default {
   },
   data() {
     return {
-      fileList_d: this.fileList
+      fileList_d: this.fileList,
+      fileBatchId_d: this.fileBatchId
     };
   },
   watch: {
@@ -179,18 +186,43 @@ export default {
   },
   methods: {
     loadFilelItems() {
-      if (!this.fileBatchId || this.fileBatchId.trim().length <= 0) {
+      if (!this.fileBatchId_d || this.fileBatchId_d.trim().length <= 0) {
         this.fileList_d = [];
+        this.fileBatchId_d = uuidv4();
         return;
       }
-      getFileList({ fileBatchId: this.fileBatchId }).then(res => {
+      getFileList({ fileBatchId: this.fileBatchId_d }).then(res => {
         const { code, data } = { ...res };
         this.fileList_d = data || [];
       });
     },
-    updateFiles(params) {
-      debugger;
-      console.log(params);
+    httpRequest(uploadComponentParams) {
+      const options = uploadComponentParams;
+      let formData = new FormData();
+      if (options.data) {
+        Object.keys(options.data).forEach(key => {
+          formData.append(key, options.data[key]);
+        });
+      }
+      formData.append(options.filename, options.file, options.file.name);
+      formData.set('file-batch-id', this.fileBatchId_d);
+      formData.set('biz-id', this.data.bizId);
+      formData.set('biz-type', this.data.bizType);
+      formData.append('file-type', options.file.type);
+      return request({
+        url: options.action,
+        method: 'post',
+        timeout: undefined,
+        headers: {
+          'Content-Type': 'multipart/form-data;charset=utf-8'
+        },
+        data: formData,
+        onUploadProgress: progressEvent => {
+          const complete =
+            ((progressEvent.loaded / progressEvent.total) * 100) | 0;
+          options.onProgress({ percent: complete });
+        }
+      }).then(options.onSuccess, options.onError);
     }
   }
 };

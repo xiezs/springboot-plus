@@ -2,14 +2,31 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime: 2020-03-08 15:59:43
+ * @LastEditTime: 2020-03-22 15:18:48
  * @LastEditors: 一日看尽长安花
  */
 import axios from 'axios';
+import lodash from 'lodash';
 import { MessageBox, Message } from 'element-ui';
 import store from '@/store';
 import { getToken, setToken } from '@/utils/auth';
 import { toCamelCaseDeep } from '@/utils/object-util';
+
+const defaultTransformRequest = axios.defaults.transformRequest[0];
+
+axios.defaults.transformRequest = [
+  function(data, config) {
+    if (
+      config['Content-Type'] &&
+      lodash.startsWith(
+        config['Content-Type'].toLowerCase(),
+        'multipart/form-data'
+      )
+    )
+      return data;
+    return defaultTransformRequest(data, config);
+  }
+];
 
 // create an axios instance
 const service = axios.create({
@@ -25,7 +42,10 @@ service.interceptors.request.use(
     /**get方法为params，post、put、delete为data */
     const params = config.params || config.data || null;
     /**下划线转为驼峰 */
-    if (params) {
+    if (
+      params &&
+      Object.prototype.toString.call(params) !== '[object FormData]'
+    ) {
       const sourceParams = Object.assign({}, params);
       const changedKeyParams = Object.assign(
         {},
@@ -37,9 +57,34 @@ service.interceptors.request.use(
       } else {
         config.data = changedKeyParams;
       }
+    } else if (
+      params &&
+      Object.prototype.toString.call(params) === '[object FormData]'
+    ) {
+      /**文件上传时使用formdata对象 */
+      const keys = [];
+      for (const k of params.keys()) {
+        keys.push(k);
+      }
+      for (const i in keys) {
+        const key = keys[i];
+        /*todo 可能的问题：参数未对数组做处理 */
+        const val = params.get(key);
+        if (!val || val === 'null' || val === 'undefined') {
+          params.delete(key);
+          continue;
+        }
+        if (Object.prototype.toString.call(val) === '[object File]') {
+          /**这里应该在补充一个blob对象的判断 */
+          params.set(lodash.camelCase(key), val, val.name);
+        } else {
+          params.set(lodash.camelCase(key), val);
+        }
+      }
+      config.data = params;
     }
-    // do something before request is sent
     if (store.getters.token) {
+      // do something before request is sent
       // let each request carry token
       // ['Authorization'] see to MDN explain about "HTTP Authorization"
       // please modify it according to the actual situation

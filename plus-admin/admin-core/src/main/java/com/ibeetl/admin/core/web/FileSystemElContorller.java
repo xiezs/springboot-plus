@@ -1,6 +1,5 @@
 package com.ibeetl.admin.core.web;
 
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.entity.CoreOrg;
 import com.ibeetl.admin.core.entity.CoreUser;
@@ -14,6 +13,7 @@ import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -52,13 +52,13 @@ public class FileSystemElContorller {
   @PostMapping("/uploadAttachment")
   @ResponseBody
   public JsonResult<String> uploadFile(
-      @RequestParam("file") MultipartFile file, String fileBatchId, String bizType, String bizId)
+      @RequestParam("file") MultipartFile file,
+      @NotBlank String fileBatchId,
+      String bizType,
+      String bizId)
       throws IOException {
     if (file.isEmpty()) {
       return JsonResult.fail();
-    }
-    if (StrUtil.isBlank(fileBatchId)) {
-      fileBatchId = IdUtil.fastUUID();
     }
     CoreUser user = platformService.getCurrentUser();
     CoreOrg org = platformService.getCurrentOrg();
@@ -78,7 +78,7 @@ public class FileSystemElContorller {
 
   @PostMapping("/deleteAttachment")
   @ResponseBody
-  public JsonResult deleteFile(Long fileId, String batchFileUUID) throws IOException {
+  public JsonResult deleteFile(Long fileId, String batchFileUUID) {
     fileService.removeFile(fileId, batchFileUUID);
     return JsonResult.success();
   }

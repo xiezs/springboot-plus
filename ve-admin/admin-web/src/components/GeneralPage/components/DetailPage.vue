@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2020-03-17 15:46:23
+ * @LastEditTime: 2020-03-23 14:24:32
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -22,7 +22,7 @@
   >
     <div class="dialog-container">
       <el-form
-        ref="editForm"
+        ref="editFormGP"
         :rules="rules"
         :model="dialogData"
         label-position="right"
@@ -132,7 +132,7 @@ export default {
       return equalsIgnoreCase(str1, type);
     },
     createData() {
-      this.$refs['editForm'].validate(valid => {
+      this.$refs['editFormGP'].validate(valid => {
         if (valid) {
           this.$emit('create-data', this.dialogData);
           this.$emit('update:dialogVisible', false);
@@ -147,7 +147,7 @@ export default {
       });
     },
     updateData() {
-      this.$refs['editForm'].validate(valid => {
+      this.$refs['editFormGP'].validate(valid => {
         if (valid) {
           this.$emit('update-data', this.dialogData);
           this.$emit('update:dialogVisible', false);

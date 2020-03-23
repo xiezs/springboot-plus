@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-03-17 18:11:53
+ * @LastEditTime: 2020-03-23 14:27:26
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -377,11 +377,14 @@ export default {
         });
     },
     submitUpload() {
-      debugger;
       this.$refs.fileUpload.$refs.upload.submit();
     },
     onUploadSuccess(response, file, fileList) {
-      debugger;
+      const { code, message, data } = { ...response };
+      if (data) {
+        this.$children[0].$refs.detailPageGP.$props.dialogData.attachment_id =
+          response.data;
+      }
     }
   }
 };
