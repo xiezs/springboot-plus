@@ -68,3 +68,19 @@ export function deleteUserData(data) {
     data
   });
 }
+
+export function exportExcelUserData(data) {
+  return request({
+    url: '/users/excel/export',
+    method: 'post',
+    data
+  });
+}
+
+export function getUserRoles(params) {
+  return request({
+    url: '/users/roles',
+    method: 'get',
+    params
+  });
+}

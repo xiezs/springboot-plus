@@ -2,13 +2,9 @@ package com.ibeetl.admin.core.service;
 
 import com.ibeetl.admin.core.dao.CoreRoleDao;
 import com.ibeetl.admin.core.entity.CoreRole;
-import com.ibeetl.admin.core.entity.CoreUserRole;
 import java.util.List;
-import java.util.stream.Collectors;
-import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +21,17 @@ public class CoreRoleService extends CoreBaseService<CoreRole> {
 
   @Autowired private CoreRoleDao roleDao;
 
+  /**
+   *
+   * @param type ： R0 操作角色；R1 是工作流角色
+   *
+   * @author 一日看尽长安花
+   */
   public List<CoreRole> getAllRoles(String type) {
-    CoreRole template = new CoreRole();
-    template.setType(type);
-    return roleDao.template(template);
+    return roleDao
+        .getSQLManager()
+        .lambdaQuery(CoreRole.class)
+        .andEq(CoreRole::getType, Query.filterEmpty(type))
+        .select();
   }
 }

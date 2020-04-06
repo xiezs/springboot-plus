@@ -5,15 +5,16 @@ import java.sql.JDBCType;
 public class DBColumnProperty {
   /** json映射中value */
   String value;
-  /** SQL select 中as 别名 */
+  /** SQL select 中 as 别名 */
   String columnLabel;
 
-  /** 对应列索引位置，从1开始 */
+  /** 对应resultset列索引位置，从1开始 */
   int columnIndex;
 
   /** 对应的jdbc类型 */
   JDBCType jdbcType;
 
+  /**当前resultset是否存在对应的列，不存在就不需要获取，避免报错*/
   boolean hasEffective;
 
   public DBColumnProperty(String columnLabel) {

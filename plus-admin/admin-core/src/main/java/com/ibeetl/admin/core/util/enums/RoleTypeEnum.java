@@ -1,14 +1,16 @@
 package com.ibeetl.admin.core.util.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.beetl.sql.core.annotatoin.EnumMapping;
 
 /**
- * 描述: 工作流角色
+ * 描述: 角色字典枚举
  *
  * @author : Administrator
  */
 @EnumMapping("value")
-public enum RoleTypeEnum {
+public enum RoleTypeEnum implements DictTypeEnum<RoleTypeEnum> {
 
   /** 操作角色 */
   ACCESS("R0"),
@@ -21,6 +23,7 @@ public enum RoleTypeEnum {
     this.value = value;
   }
 
+  @JsonValue
   public String getValue() {
     return value;
   }
@@ -29,17 +32,15 @@ public enum RoleTypeEnum {
     this.value = value;
   }
 
-  public static RoleTypeEnum getEnum(String value) {
-    for (RoleTypeEnum stateEnum : RoleTypeEnum.values()) {
-      if (stateEnum.value == value) {
-        return stateEnum;
+  @JsonCreator
+  @Override
+  public RoleTypeEnum findEnum(String value) {
+    RoleTypeEnum[] values = values();
+    for (RoleTypeEnum typeEnum : values) {
+      if (typeEnum.value.equals(value)) {
+        return typeEnum;
       }
     }
     return null;
-  }
-
-  @Override
-  public String toString() {
-    return String.valueOf(this.value);
   }
 }

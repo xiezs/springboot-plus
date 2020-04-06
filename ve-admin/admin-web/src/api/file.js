@@ -1,12 +1,12 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2020-03-16 11:16:52
- * @LastEditTime: 2020-03-19 21:04:54
+ * @LastEditTime: 2020-03-27 20:49:27
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
 import request from '@/utils/request';
-
+import fileDownload from 'js-file-download';
 /**
  * 一些常量
  */
@@ -42,10 +42,18 @@ export function downloadMutipleFile(params) {
  * @param {object} params 包含的参数：path
  */
 export function download(params) {
+  const _fileDownload = fileDownload;
   return request({
     url: '/core/file/download',
     method: 'get',
+    responseType: 'blob',
+    timeout: undefined,
     params
+  }).then((response, b, c, d) => {
+    const matchs = /filename=(.*)/gi.exec(
+      response.headers['content-disposition']
+    );
+    _fileDownload(response.data, matchs[1]);
   });
 }
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-03-15 16:36:57
+ * @LastEditTime: 2020-03-31 16:55:00
  * @LastEditors: 一日看尽长安花
  * @Description: 后台管理页面的自动生成，
  * 主要暴露了分页方法、数据表格搜索方法、条件查询方法、增删改方法
@@ -136,7 +136,7 @@ export default {
 
 .filter-item-container {
   display: inline-block;
-  margin: 0.15em;
+  margin-left: 0.5em;
 }
 
 .filter-item-container .el-cascader {
@@ -145,5 +145,12 @@ export default {
 
 .filter-btn-group {
   margin: 0.15em;
+}
+/* 搜索按钮的div容器 */
+.sp-search-btn-container {
+  margin-top: -1em;
+}
+.sp-search-btn-container .sp-search-btn-item {
+  margin-left: 100em;
 }
 </style>

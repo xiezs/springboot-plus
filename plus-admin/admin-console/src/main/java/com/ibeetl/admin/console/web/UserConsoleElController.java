@@ -1,18 +1,34 @@
 package com.ibeetl.admin.console.web;
 
+import cn.hutool.core.convert.Convert;
 import com.ibeetl.admin.console.service.UserConsoleService;
 import com.ibeetl.admin.console.util.VOUtil;
+import com.ibeetl.admin.console.web.dto.UserExcelExportData;
 import com.ibeetl.admin.console.web.query.CoreUserElQuery;
+import com.ibeetl.admin.console.web.query.UserRoleQuery;
 import com.ibeetl.admin.core.annotation.Function;
 import com.ibeetl.admin.core.annotation.RequestBodyPlus;
 import com.ibeetl.admin.core.entity.CoreUser;
+import com.ibeetl.admin.core.entity.CoreUserRole;
+import com.ibeetl.admin.core.file.FileItem;
+import com.ibeetl.admin.core.file.FileService;
 import com.ibeetl.admin.core.service.CorePlatformService;
 import com.ibeetl.admin.core.service.param.CoreUserParam;
+import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.ValidateConfig;
 import com.ibeetl.admin.core.web.JsonResult;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.beetl.sql.core.engine.PageQuery;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,6 +37,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
@@ -31,6 +48,8 @@ public class UserConsoleElController {
   @Autowired private UserConsoleService userConsoleService;
 
   @Autowired private CorePlatformService platformService;
+
+  @Autowired FileService fileService;
 
   @Function("user.query")
   @GetMapping("/metadata")
@@ -72,5 +91,70 @@ public class UserConsoleElController {
   public JsonResult delete(@RequestBodyPlus("ids") Long[] ids) {
     userConsoleService.batchDelSysUser(Arrays.asList(ids));
     return JsonResult.success();
+  }
+  /** 用户所有授权角色列表 */
+  @GetMapping("/roles")
+  @Function("user.role")
+  @ResponseBody
+  public JsonResult<List<CoreUserRole>> getRoleList(UserRoleQuery roleQuery) {
+    List<CoreUserRole> list = userConsoleService.getUserRoles(roleQuery);
+    return JsonResult.success(list);
+  }
+
+  /**
+   * 用户添加授权角色页
+   *
+   * @return
+   */
+  @PostMapping("/roles")
+  @Function("user.role")
+  @ResponseBody
+  public JsonResult saveUserRole(@Validated CoreUserRole userRole) {
+    userRole.setCreateTime(new Date());
+    this.userConsoleService.saveUserRole(userRole);
+    this.platformService.clearFunctionCache();
+    return JsonResult.success(userRole.getId());
+  }
+
+  /**
+   * 删除用户角色授权
+   *
+   * @return
+   */
+  @DeleteMapping("/roles")
+  @Function("user.role")
+  @ResponseBody
+  public JsonResult delUserRole(String[] ids) {
+    List<Long> dels =
+        Arrays.stream(ids)
+            .map(id -> Convert.toLong(id, null))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+    userConsoleService.deleteUserRoles(dels);
+    this.platformService.clearFunctionCache();
+    return JsonResult.success();
+  }
+
+  @PostMapping("/excel/export")
+  @Function("user.export")
+  public JsonResult<String> export(@RequestBody CoreUserParam coreUserParam) {
+    String excelTemplate = "excelTemplates/admin/user/user_collection_template.xls";
+    List<UserExcelExportData> users = userConsoleService.queryExcel(coreUserParam);
+    try (InputStream is =
+        Thread.currentThread().getContextClassLoader().getResourceAsStream(excelTemplate)) {
+      if (is == null) {
+        throw new PlatformException("模板资源不存在：" + excelTemplate);
+      }
+      FileItem item = fileService.createFileTemp("user_collection.xls");
+      OutputStream os = item.openOutpuStream();
+      Context context = new Context();
+      context.putVar("users", users);
+      JxlsHelper.getInstance().processTemplate(is, os, context);
+      // 下载参考FileSystemContorller
+      return JsonResult.success(item.getPath());
+    } catch (IOException e) {
+      throw new PlatformException(e.getMessage());
+    }
   }
 }

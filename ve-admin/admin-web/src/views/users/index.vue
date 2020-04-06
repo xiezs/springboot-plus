@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-03-23 14:27:26
+ * @LastEditTime: 2020-04-03 20:52:21
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -61,10 +61,21 @@
           class="filter-item"
           style="margin-left: 10px;"
           type="primary"
+          size="mini"
+          icon="el-icon-edit"
+          @click="editUserRoles"
+        >
+          操作角色
+        </el-button>
+        <el-button
+          class="filter-item"
+          style="margin-left: 10px;"
+          type="primary"
           icon="el-icon-edit"
           size="mini"
+          @click="exportUserExcel"
         >
-          测试
+          导出Excel
         </el-button>
       </template>
       <!-- 编辑弹窗的插槽 -->
@@ -139,8 +150,10 @@ import {
   usersMetadata,
   saveUserData,
   updateUserData,
-  deleteUserData
+  deleteUserData,
+  exportExcelUserData
 } from '@/api/user';
+import { download } from '@/api/file';
 import { immaditeLoadDicts } from '@/api/dict';
 import { immaditeLoadOrgs } from '@/api/org';
 import { layzyLoadDictTree, handleCascaderValue } from '@/services/dict';
@@ -348,6 +361,8 @@ export default {
       return dialogData;
     },
     deleteData(index, row) {
+      /**todo  补上对话框 */
+      const Vue = this;
       deleteUserData({ ids: [row.id] })
         .then(result => {
           /** 刷新数据表格数据，懒得重新写个方法挂载在组件上了 */
@@ -385,6 +400,31 @@ export default {
         this.$children[0].$refs.detailPageGP.$props.dialogData.attachment_id =
           response.data;
       }
+    },
+    exportUserExcel() {
+      let queryParams = this.$lodash.mapValues(
+        this.$children[0].$refs.searchPaneGP.$data.filterData
+      );
+      queryParams = handleCascaderValue(queryParams, 'orgId', ['org_id']);
+      queryParams = handleCascaderValue(queryParams, 'jobType', [
+        'job_type0',
+        'job_type1'
+      ]);
+      queryParams = handleCascaderValue(queryParams, 'state', ['state']);
+      /**
+       * 导出Excel文件的两步：
+       * 1、通过查询条件由后台生成Excel临时文件，返回临时文件path
+       * 2、通过path去下载该文件
+       */
+      exportExcelUserData(queryParams).then(res => {
+        const { code, data, message } = { ...res };
+        console.log(`...download path is ${data}`);
+        download({ path: data });
+      });
+    },
+    editUserRoles() {
+      const _router = this.$router;
+      _router.push({ name: 'ManagerUserRole', params: { id: 1 } });
     }
   }
 };

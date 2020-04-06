@@ -1,30 +1,5 @@
 package com.ibeetl.admin.console.web;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.beetl.sql.core.engine.PageQuery;
-import org.jxls.common.Context;
-import org.jxls.util.JxlsHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.ibeetl.admin.console.service.OrgConsoleService;
 import com.ibeetl.admin.console.service.RoleConsoleService;
 import com.ibeetl.admin.console.service.UserConsoleService;
@@ -38,12 +13,32 @@ import com.ibeetl.admin.core.entity.CoreUserRole;
 import com.ibeetl.admin.core.file.FileItem;
 import com.ibeetl.admin.core.file.FileService;
 import com.ibeetl.admin.core.service.CorePlatformService;
+import com.ibeetl.admin.core.service.param.CoreUserParam;
 import com.ibeetl.admin.core.util.AnnotationUtil;
 import com.ibeetl.admin.core.util.ConvertUtil;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.ValidateConfig;
 import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
 import com.ibeetl.admin.core.web.JsonResult;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.beetl.sql.core.engine.PageQuery;
+import org.jxls.common.Context;
+import org.jxls.util.JxlsHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 用户管理接口
@@ -223,12 +218,7 @@ public class UserConsoleController {
     return new JsonResult().success();
   }
 
-  /**
-   * 用户所有授权角色列表
-   *
-   * @param id 用户id
-   * @return
-   */
+  /** 用户所有授权角色列表 */
   @PostMapping(MODEL + "/role/list.json")
   @Function("user.role")
   @ResponseBody
@@ -271,14 +261,9 @@ public class UserConsoleController {
   @PostMapping(MODEL + "/excel/export.json")
   @Function("user.export")
   @ResponseBody
-  public JsonResult<String> export(HttpServletResponse response, UserQuery condtion) {
+  public JsonResult<String> export(HttpServletResponse response, CoreUserParam coreUserParam) {
     String excelTemplate = "excelTemplates/admin/user/user_collection_template.xls";
-    PageQuery<CoreUser> page = condtion.getPageQuery();
-    // 取出全部符合条件的
-    page.setPageSize(Integer.MAX_VALUE);
-    page.setPageNumber(1);
-    page.setTotalRow(Integer.MAX_VALUE);
-    List<UserExcelExportData> users = userConsoleService.queryExcel(page);
+    List<UserExcelExportData> users = userConsoleService.queryExcel(coreUserParam);
     try (InputStream is =
         Thread.currentThread().getContextClassLoader().getResourceAsStream(excelTemplate)) {
       if (is == null) {

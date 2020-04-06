@@ -31,6 +31,11 @@ public class PageParam {
     this.limit = limit;
   }
 
+  /**
+   * 以当前类中被{@link Query} 注解的字段为SQL参数
+   * @author 一日看尽长安花
+   * Created on  2020/3/26
+   */
   @JsonIgnore
   public PageQuery getPageQuery() {
     Field[] fs = this.getClass().getDeclaredFields();
@@ -62,6 +67,11 @@ public class PageParam {
     return query;
   }
 
+  /**
+   * 以当前类所有字段为SQL 参数
+   *
+   * @author 一日看尽长安花
+   */
   @JsonIgnore
   public PageQuery createPageQuery() {
     PageQuery query = new PageQuery();

@@ -17,27 +17,33 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * 网格头，保存了属性与列的映射关系，以及映射的java类型。<br>
- * 内嵌的网格头，内嵌网格头的映射java类型，是否是映射至List集合字段
+ * 节点，保存了属性与列的映射关系，以及映射的java类型。<br>
+ * 内嵌的节点，内嵌节点的映射java类型，是否是映射至List集合字段
  */
 public class GridHeader implements Serializable {
 
   /** java属性名与数据库列名的对应。顺序：prop:column */
   Map<JavaFieldProperty, DBColumnProperty> fieldToColumnMap = new HashMap<>();
 
-  /** 当前网格头对应映射java类型，只有嵌套的是非基本类型和string才有值 */
+  /** 当前节点对应映射java类型，只有嵌套的是非基本类型和string才有值(也可以将包装类型赋值，为了简单处理，我并没有做) */
   Class resultType;
 
-  /** 嵌套类型的网格头 */
+  /** 嵌套类型的子节点，可以改为map存储field：gridheader */
   List<GridHeader> nestedHeaders = CollUtil.<GridHeader>newArrayList();
 
-  /** 嵌套类型的网格头 */
+  /** 嵌套类型的父节点 */
   GridHeader parentHeader;
 
-  /** 当前header所属上级的嵌套字段名。如果是第一级就说明没有嵌套，为null */
+  /**
+   * 当前header所属上级的嵌套字段名。如果是第一级就说明没有嵌套，为null。
+   * 保存这个信息，是为了在处理当前节点转换为pojo时，有个是否为数组的判断
+   *  */
   JavaFieldProperty belongNestedField;
 
-  /** 网格头所属的网格映射 */
+  /**
+   * 节点所属的Gridmapping
+   * 只是尽可能的保留上下文而已，可以设法用其它的外部信息类保持，不过也没有使用到它
+   *  */
   GridMapping belongMapping;
 
   public GridHeader(Map<String, Object> resultMapping, GridMapping belongMapping) {
@@ -118,7 +124,7 @@ public class GridHeader implements Serializable {
       keyField.setKey(key);
       Class<?> valClass = ClassUtil.getClass(value);
       if (Collection.class.isAssignableFrom(valClass)) {
-        /*生成嵌套网格头，此嵌套的类型对应集合字段*/
+        /*生成嵌套节点，此嵌套的类型对应集合字段*/
         Map<String, Object> nestedMapping =
             (Map<String, Object>)
                 ((Collection) value).stream().findFirst().orElse(MapUtil.newHashMap(0));
@@ -127,7 +133,7 @@ public class GridHeader implements Serializable {
         nestedHeader.setBelongNestedField(keyField);
         this.getNestedHeaders().add(nestedHeader);
       } else if (Map.class.isAssignableFrom(valClass)) {
-        /*生成嵌套网格头，此嵌套的类型对应单个对象字段*/
+        /*生成嵌套节点，此嵌套的类型对应单个对象字段*/
         Map<String, Object> nestedMapping = (Map<String, Object>) value;
         GridHeader nestedHeader = new GridHeader(nestedMapping, this.getBelongMapping());
         nestedHeader.setParentHeader(this);

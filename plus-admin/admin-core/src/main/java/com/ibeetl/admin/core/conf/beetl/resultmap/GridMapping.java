@@ -19,9 +19,10 @@ public class GridMapping implements Serializable {
   /** 当前映射配置对应的class类型 */
   String resultType;
 
-  /** 网格头 */
+  /** root节点 */
   GridHeader header;
 
+  /** 虚拟root节点，为了递归算法需要一个虚拟root节点*/
   GridCell virtualCell;
 
   public GridMapping(Map<String, Object> resultMapping) {

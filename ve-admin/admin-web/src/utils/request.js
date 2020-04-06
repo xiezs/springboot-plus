@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime: 2020-03-22 15:18:48
+ * @LastEditTime: 2020-03-27 20:23:38
  * @LastEditors: 一日看尽长安花
  */
 import axios from 'axios';
@@ -111,10 +111,12 @@ service.interceptors.response.use(
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
-  (response, b, c, d) => {
-    const res = response.data;
+  response => {
+    let res = response.data;
+    /** 有可能返回的是文件流 */
+    const custom_code = res.code || 200;
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 200) {
+    if (custom_code !== 200) {
       Message({
         message: res.message || 'Error',
         type: 'error',
@@ -144,6 +146,9 @@ service.interceptors.response.use(
       /** 每次请求成功都要将授权码存放在cookie中，只要五分钟无动作登录授权便失效 */
       const authorization = response.headers['authorization'];
       setToken(authorization);
+      if (Object.prototype.toString.call(response.data) === '[object Blob]') {
+        res = response;
+      }
       return res;
     }
   },

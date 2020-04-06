@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -113,15 +114,11 @@ public class FileSystemElContorller {
    */
   @GetMapping("/download")
   public void downloadFileByPath(HttpServletResponse response, String path) throws IOException {
-    response.setContentType("text/html; charset = UTF-8");
     FileItem fileItem = fileService.loadFileItemByPath(path);
     response.setHeader(
-        "Content-Disposition",
+        HttpHeaders.CONTENT_DISPOSITION,
         "attachment; filename=" + java.net.URLEncoder.encode(fileItem.getName(), "UTF-8"));
     fileItem.copy(response.getOutputStream());
-    if (fileItem.isTemp()) {
-      fileItem.delete();
-    }
   }
 
   @GetMapping("/downloadTemplate")

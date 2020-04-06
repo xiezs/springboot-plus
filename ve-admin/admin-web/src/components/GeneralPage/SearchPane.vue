@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2020-03-09 14:28:00
+ * @LastEditTime: 2020-03-31 16:31:49
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -53,11 +53,11 @@
       </div>
       <!-- 用于面板中的自定义表单，例如级联选择器，并通过作用域插槽的方式将数据传递给自定义表单 -->
       <slot name="filter-condition" :filter-data="filterData"> </slot>
-      <div class="filter-item-container">
+      <div class="sp-search-btn-container">
         <el-button
           ref="searchButton"
           :size="size"
-          class="filter-item"
+          class="sp-search-btn-item"
           type="primary"
           icon="el-icon-search"
           @click="filterSearch"

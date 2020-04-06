@@ -1,13 +1,14 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-09-09 12:16:28
- * @LastEditTime: 2019-09-09 12:16:28
+ * @LastEditTime: 2020-04-02 14:30:00
  * @LastEditors: 一日看尽长安花
- * @Description: 
+ * @Description: 这个分页是直接从组件复制的，为了保证以后修改逻辑不影响其它的页面使用公共的分页。
  -->
 <template>
   <div :class="{ hidden: hidden }" class="pagination-container">
     <el-pagination
+      ref="paginationGP"
       :background="background"
       :current-page.sync="currentPage"
       :page-size.sync="pageSize"
@@ -28,8 +29,8 @@ export default {
   name: 'Pagination',
   props: {
     total: {
-      required: true,
-      type: Number
+      type: Number,
+      default: 0
     },
     page: {
       type: Number,
@@ -37,12 +38,12 @@ export default {
     },
     limit: {
       type: Number,
-      default: 20
+      default: 10
     },
     pageSizes: {
       type: Array,
       default() {
-        return [10, 20, 30, 50];
+        return [10, 20, 30, 50, 100];
       }
     },
     layout: {
@@ -63,7 +64,7 @@ export default {
     }
   },
   computed: {
-    currentPagge: {
+    currentPage: {
       get() {
         return this.page;
       },

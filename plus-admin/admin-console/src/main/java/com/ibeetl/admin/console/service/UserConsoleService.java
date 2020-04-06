@@ -184,7 +184,12 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
     sqlManager.insert(userRole);
   }
 
-  public List<UserExcelExportData> queryExcel(PageQuery<CoreUser> query) {
+  public List<UserExcelExportData> queryExcel(CoreUserParam coreUserParam) {
+    PageQuery<CoreUser> query = coreUserParam.createPageQuery();
+    // 取出全部符合条件的
+    //    page.setPageSize(Integer.MAX_VALUE);
+    //    page.setPageNumber(1);
+    //    page.setTotalRow(Integer.MAX_VALUE);
     PageQuery<CoreUser> ret = userConsoleDao.queryByCondtion(query);
     List<CoreUser> list = ret.getList();
     OrgItem orgRoot = platformService.buildOrg();
@@ -203,7 +208,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
         dict = dictService.findCoreDict(CoreDictType.JOB_TYPE, dictValue);
         userItem.setJobType1Text(dict.getName());
       }
-      Long orgId = user.getOrgId();
+      Long orgId = Optional.ofNullable(user.getOrg()).map(CoreOrg::getId).orElse(1L);
       String orgName = orgRoot.findChild(orgId).getName();
       userItem.setOrgText(orgName);
       items.add(userItem);

@@ -3,7 +3,6 @@ package com.ibeetl.admin.core.conf.beetl.processor;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.ClassUtil;
 import com.ibeetl.admin.core.conf.beetl.resultmap.DBColumnProperty;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridCell;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridHeader;
@@ -251,7 +250,7 @@ public class JsonBeanProcessor extends BeanProcessor {
       String sqlId, ResultSet resultSet, GridHeader header, GridCell virtualCell) {
     /*通过当前header获取对应的结果集列*/
     Map<String, Object> beanMap = extractMapFromRs(sqlId, resultSet, header);
-    GridCell realContainerCell = virtualCell.addOrCreateNestedCell(header, beanMap);
+    GridCell realContainerCell = virtualCell.findOrCreateNestedCell(header, beanMap);
     List<GridHeader> nestedHeaders = header.getNestedHeaders();
     for (GridHeader nestedHeader : nestedHeaders) {
       /*在 realContainerCell 中找到对应header的虚拟cell*/

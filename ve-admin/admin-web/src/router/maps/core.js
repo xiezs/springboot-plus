@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-15 15:22:58
- * @LastEditTime: 2019-10-29 22:25:59
+ * @LastEditTime: 2020-03-29 16:00:28
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -36,6 +36,13 @@ const coreRouter = [
         path: '/admin/user/index.do',
         name: '用户管理',
         component: () => import('@/views/users/index'),
+        meta: {}
+      },
+      {
+        path: '/admin/user/:id/role',
+        name: 'ManagerUserRole',
+        hidden: true,
+        component: () => import('@/views/users/roles'),
         meta: {}
       },
       {

@@ -18,24 +18,28 @@ import java.util.Set;
  */
 public class GridCell implements Serializable {
 
-  /** 对应的属性与数据库中值的映射，用于map to Bean 转换 */
+  /** 对应的pojo字段与数据库中值的映射，用于map to Bean 转换 */
   Map<String, Object> beanMap = MapUtil.newHashMap();
 
-  /** 映射类型 */
+  /** 当前节点的映射类型 */
   Class resultType;
 
-  /** 一个单元格包含一个对象中的所有数据列，通过对这些数据列进行hash得到数据列的唯一性 */
+  /** 一个节点包含一个对象中的所有数据列，通过对这些数据列进行hash得到数据列的唯一性 */
   Integer hashKey;
 
   /** 包含的网格单元格 */
   List<GridCell> nestedCell = CollUtil.<GridCell>newArrayList();
 
-  /** 归属的网格单元格 */
+  /** 父节点 */
   GridCell parentCell;
 
+  /**对应的gridheader节点，在to bean时，需要json映射规则的信息*/
   GridHeader relationGridHeader;
 
-  /** 是否是作为容器 */
+  /**
+   * 是否是作为容器
+   * 并没有用到
+   * */
   boolean hasContainer;
 
   public Map<String, Object> getBeanMap() {
@@ -108,7 +112,7 @@ public class GridCell implements Serializable {
     return this.relationGridHeader;
   }
 
-  public GridCell addOrCreateNestedCell(GridHeader header, Map<String, Object> beanMap) {
+  public GridCell findOrCreateNestedCell(GridHeader header, Map<String, Object> beanMap) {
     GridCell contentCell = new GridCell();
     contentCell.setHasContainer(false);
     contentCell.setRelationGridHeader(header);

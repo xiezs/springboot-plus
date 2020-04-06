@@ -49,14 +49,13 @@ public class LocalFileItem extends PersistFileItem {
       try {
         input.close();
         os.close();
+        if (isTemp) {
+          this.delete();
+        }
       } catch (IOException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }
-    }
-
-    if (isTemp) {
-      this.delete();
     }
   }
 
