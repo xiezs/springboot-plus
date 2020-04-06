@@ -33,18 +33,10 @@
             <el-input v-model="model"></el-input>
           </el-form-item>
           <el-form-item label="选择部门">
-            <el-cascader
-              :options=""
-              v-model=""
-              @change="">
-            </el-cascader>
+            <el-cascader v-model="" :options="" @change=""> </el-cascader>
           </el-form-item>
           <el-form-item label="选择角色">
-            <el-cascader
-              :options=""
-              v-model=""
-              @change="">
-            </el-cascader>
+            <el-cascader v-model="" :options="" @change=""> </el-cascader>
           </el-form-item>
         </el-form>
       </div>
