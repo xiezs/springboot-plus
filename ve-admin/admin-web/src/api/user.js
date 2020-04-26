@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-04 20:55:14
- * @LastEditTime: 2020-03-15 10:59:27
+ * @LastEditTime: 2020-04-25 19:50:39
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -14,7 +14,7 @@ export function login(data) {
     data
   });
 }
-
+/*用于vue-store中使用，获取当前用户的信息*/
 export function getInfo(token) {
   return request({
     url: '/user/info',
@@ -30,11 +30,25 @@ export function logout() {
   });
 }
 
+/**
+ * 用户管理页的数据
+ * @param {*} params
+ */
 export function users(params) {
   return request({
     url: '/users',
     method: 'get',
     params
+  });
+}
+/**
+ * 通过用户id获取指定用户数据
+ * @param {*} params
+ */
+export function getUserById(params) {
+  return request({
+    url: `/users/${params.id}`,
+    method: 'get'
   });
 }
 
@@ -60,7 +74,10 @@ export function updateUserData(data) {
     data
   });
 }
-
+/**
+ * 删除用户管理页面的数据
+ * @param {*} data
+ */
 export function deleteUserData(data) {
   return request({
     url: '/users',
@@ -68,7 +85,10 @@ export function deleteUserData(data) {
     data
   });
 }
-
+/**
+ * 导出用户管理页面中符合当前查询条件的数据Excel表格
+ * @param {*} data
+ */
 export function exportExcelUserData(data) {
   return request({
     url: '/users/excel/export',
@@ -76,11 +96,25 @@ export function exportExcelUserData(data) {
     data
   });
 }
-
+/**
+ * 获取用户管理-操作角色页面的数据
+ * @param {*} params
+ */
 export function getUserRoles(params) {
   return request({
     url: '/users/roles',
     method: 'get',
     params
+  });
+}
+/**
+ * 用户操作角色授权
+ * @param {Object} data
+ */
+export function addUserRoles(data) {
+  return request({
+    url: '/users/roles',
+    method: 'post',
+    data
   });
 }

@@ -1,11 +1,8 @@
 package com.ibeetl.admin.core.entity;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
-
 import javax.validation.constraints.NotNull;
-
+import lombok.Data;
 import org.beetl.sql.core.annotatoin.AutoID;
 import org.beetl.sql.core.annotatoin.SeqID;
 
@@ -13,6 +10,7 @@ import org.beetl.sql.core.annotatoin.SeqID;
  *  用户角色关系
  * gen by beetlsql 2016-11-22
  */
+@Data
 public class CoreUserRole extends BaseEntity {
 
   // 自增id
@@ -30,54 +28,4 @@ public class CoreUserRole extends BaseEntity {
   private Long userId;
 
   protected Date createTime;
-
-  protected ZonedDateTime updateTime;
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Long getOrgId() {
-    return orgId;
-  }
-
-  public void setOrgId(Long orgId) {
-    this.orgId = orgId;
-  }
-
-  public Long getRoleId() {
-    return roleId;
-  }
-
-  public void setRoleId(Long roleId) {
-    this.roleId = roleId;
-  }
-
-  public Long getUserId() {
-    return userId;
-  }
-
-  public void setUserId(Long userId) {
-    this.userId = userId;
-  }
-
-  public Date getCreateTime() {
-    return createTime;
-  }
-
-  public void setCreateTime(Date createTime) {
-    this.createTime = createTime;
-  }
-
-  public ZonedDateTime getUpdateTime() {
-    return updateTime;
-  }
-
-  public void setUpdateTime(ZonedDateTime updateTime) {
-    this.updateTime = updateTime;
-  }
 }

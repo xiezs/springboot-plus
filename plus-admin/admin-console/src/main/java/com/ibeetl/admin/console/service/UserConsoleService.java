@@ -40,6 +40,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
   @Autowired FileService fileService;
 
   @Autowired PasswordEncryptService passwordEncryptService;
+
   @Autowired CoreDictService dictService;
 
   @Autowired CorePlatformService platformService;
@@ -175,9 +176,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
   }
 
   public void saveUserRole(CoreUserRole userRole) {
-
     long queryCount = sqlManager.templateCount(userRole);
-
     if (queryCount > 0) {
       throw new PlatformException("已存在用户角色关系");
     }

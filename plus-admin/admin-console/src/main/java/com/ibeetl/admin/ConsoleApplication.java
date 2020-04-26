@@ -18,7 +18,6 @@ public class ConsoleApplication extends SpringBootServletInitializer {
   }
 
   public static void main(String[] args) {
-
     SpringApplication.run(ConsoleApplication.class, args);
   }
 }

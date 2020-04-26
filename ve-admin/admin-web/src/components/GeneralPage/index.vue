@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-03-31 16:55:00
+ * @LastEditTime: 2020-04-11 19:55:13
  * @LastEditors: 一日看尽长安花
  * @Description: 后台管理页面的自动生成，
  * 主要暴露了分页方法、数据表格搜索方法、条件查询方法、增删改方法
@@ -15,8 +15,8 @@
       @filter-search="filterSearch"
       @handle-create="handleCreate"
     >
-      <template #filter-condition="{filterData:filterData}">
-        <slot name="filter-condition" :filter-data="filterData"> </slot>
+      <template #filter-condition="{filterData:slots}">
+        <slot name="filter-condition" :filter-data="slots"> </slot>
       </template>
       <template #operation-btn-group>
         <slot name="operation-btn-group"> </slot>
@@ -45,8 +45,8 @@
     >
       <!-- #dialog-form-item等价v-slot:dialog-form-item 语法
       详情参照 解构插槽 Prop 章节 -->
-      <template #dialog-form-item="{dialogData:dialogData}">
-        <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
+      <template #dialog-form-item="{dialogData:slots}">
+        <slot :dialog-data="slots" name="dialog-form-item"></slot>
       </template>
     </detail-page>
   </div>
@@ -99,7 +99,8 @@ export default {
       // 对话框标题
       dialogTitle: '创建',
       // 对话框操作类型
-      operationType: 'create'
+      operationType: 'create',
+      testData: {}
     };
   },
   methods: {

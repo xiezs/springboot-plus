@@ -7,28 +7,20 @@ import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpMethod.PUT;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateUtil;
 import com.ibeetl.admin.core.conf.springmvc.convert.DateConditionalGenericConverter;
-import com.ibeetl.admin.core.conf.springmvc.convert.StringToDictTypeEnumConverFactory;
+import com.ibeetl.admin.core.conf.springmvc.convert.StringToDictTypeEnumConverterFactory;
 import com.ibeetl.admin.core.conf.springmvc.interceptor.HttpRequestInterceptor;
 import com.ibeetl.admin.core.conf.springmvc.interceptor.SessionInterceptor;
 import com.ibeetl.admin.core.conf.springmvc.resolve.RequestBodyPlusProcessor;
 import com.ibeetl.admin.core.service.CoreUserService;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import org.beetl.core.GroupTemplate;
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.ResolvableType;
-import org.springframework.core.convert.TypeDescriptor;
-import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.datetime.DateFormatter;
@@ -101,7 +93,7 @@ public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBea
     registry.addFormatter(new DateFormatter("yyyy-MM-dd HH:mm:ss"));
     registry.addFormatter(new DateFormatter("yyyy-MM-dd"));
     /*converter 在json传参时无效*/
-    registry.addConverterFactory(new StringToDictTypeEnumConverFactory());
+    registry.addConverterFactory(new StringToDictTypeEnumConverterFactory());
     registry.addConverter(new DateConditionalGenericConverter());
   }
 

@@ -6,7 +6,13 @@ import java.util.Map;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
 
-public class StringToDictTypeEnumConverFactory implements ConverterFactory<String, DictTypeEnum> {
+/**
+ * 描述：request参数转换分为两种：body传值和非body。这个转换工厂是非body，也就是不加注解{@link
+ * org.springframework.web.bind.annotation.RequestBody}
+ *
+ * @author 一日看尽长安花
+ */
+public class StringToDictTypeEnumConverterFactory implements ConverterFactory<String, DictTypeEnum> {
   private static final Map<Class, Converter> CONVERTERS = MapUtil.newHashMap();
 
   /**

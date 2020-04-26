@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -64,6 +65,13 @@ public class UserConsoleElController {
     return JsonResult.success(allUsers);
   }
 
+  @Function("user.query")
+  @GetMapping("/{id}")
+  public JsonResult<CoreUser> users(@PathVariable("id") Long id) {
+    CoreUser coreUser = userConsoleService.queryUserById(id);
+    return JsonResult.success(coreUser);
+  }
+
   @Function("user.add")
   @PostMapping
   public JsonResult<Long> addUser(@Validated(ValidateConfig.ADD.class) @RequestBody CoreUser user) {
@@ -92,6 +100,7 @@ public class UserConsoleElController {
     userConsoleService.batchDelSysUser(Arrays.asList(ids));
     return JsonResult.success();
   }
+
   /** 用户所有授权角色列表 */
   @GetMapping("/roles")
   @Function("user.role")
@@ -109,8 +118,9 @@ public class UserConsoleElController {
   @PostMapping("/roles")
   @Function("user.role")
   @ResponseBody
-  public JsonResult saveUserRole(@Validated CoreUserRole userRole) {
-    userRole.setCreateTime(new Date());
+  public JsonResult saveUserRole(@Validated @RequestBody CoreUserRole userRole) {
+    Date now = new Date();
+    userRole.setCreateTime(now);
     this.userConsoleService.saveUserRole(userRole);
     this.platformService.clearFunctionCache();
     return JsonResult.success(userRole.getId());

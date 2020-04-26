@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.DateSerializer;
 import com.ibeetl.admin.core.conf.jackson.serializer.CustomJsonResultSerializer;
 import com.ibeetl.admin.core.conf.jackson.serializer.CustomLongSerializer;
 import com.ibeetl.admin.core.conf.jackson.serializer.DateToTimestampSerializer;
@@ -44,6 +43,11 @@ public class JacksonConfig {
     simpleModule.addSerializer(JsonResult.class, new CustomJsonResultSerializer());
     simpleModule.addSerializer(DictTypeEnum.class, new DictTypeEnumSerializer());
     simpleModule.addSerializer(Date.class, new DateToTimestampSerializer());
+    /**
+     * todo 关于jackson对于枚举的反序列化，只能通过注解完成了。。
+     * 这些序列化接口配置都是无用的。自有一个{@link com.fasterxml.jackson.databind.deser.std.EnumDeserializer}
+     * */
+    //    simpleModule.addDeserializer(DictTypeEnum.class, new DictTypeEnumDeserializer());
 
     CustomLongSerializer longSerializer = new CustomLongSerializer();
     simpleModule.addSerializer(Long.class, longSerializer);
@@ -53,4 +57,3 @@ public class JacksonConfig {
     return objectMapper;
   }
 }
-

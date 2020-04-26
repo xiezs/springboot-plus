@@ -195,11 +195,12 @@ public class BeetlConf {
      */
     @Override
     protected boolean isSimple(String sqlId) {
-      if (sqlId.indexOf("_gen_") != -1) {
-        return true;
-      } else {
-        return false;
-      }
+      //      if (sqlId.indexOf("_gen_") != -1) {
+      //        return true;
+      //      } else {
+      //        return false;
+      //      }
+      return super.isSimple(sqlId);
     }
   }
 }

@@ -3,6 +3,7 @@ package com.ibeetl.admin.core.conf.beetl.processor;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ibeetl.admin.core.conf.beetl.resultmap.DBColumnProperty;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridCell;
 import com.ibeetl.admin.core.conf.beetl.resultmap.GridHeader;
@@ -90,11 +91,15 @@ public class JsonBeanProcessor extends BeanProcessor {
     ResultSetMetaData rsmd = rs.getMetaData();
     int[] columnToProperty = this.mapColumnsToProperties(type, rsmd, props);
 
-    GridMapping mapping = (GridMapping) CacheUtil.get(sqlId);
-    if (null == mapping) {
+    GridMapping mapping = null;
+    if (StrUtil.isNotBlank(sqlId)) {
+      mapping = (GridMapping) CacheUtil.get(sqlId);
+    }
+    if (mapping == null) {
       /*无映射的情况下使用beetlsql默认自带的映射*/
       do {
-        super.createBean(sqlId, rs, type, props, columnToProperty);
+        T bean = super.createBean(sqlId, rs, type, props, columnToProperty);
+        results.add(bean);
       } while (rs.next());
     } else {
       /*复杂结果集映射，取消TailBean的便利性*/
@@ -131,7 +136,8 @@ public class JsonBeanProcessor extends BeanProcessor {
     if (null == mapping) {
       /*无映射的情况下使用beetlsql默认自带的映射*/
       do {
-        results.add(super.createBean(sqlId, rs, type, props, columnToProperty));
+        T bean = super.createBean(sqlId, rs, type, props, columnToProperty);
+        results.add(bean);
       } while (rs.next());
     } else {
       /*复杂结果集映射，取消TailBean的便利性*/

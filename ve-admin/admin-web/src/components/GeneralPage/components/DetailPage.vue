@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2020-03-23 14:24:32
+ * @LastEditTime: 2020-04-16 20:45:56
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -24,7 +24,7 @@
       <el-form
         ref="editFormGP"
         :rules="rules"
-        :model="dialogData"
+        :model="slots.dialogData"
         label-position="right"
         label-width="10vw"
         class="sp-form"
@@ -37,7 +37,7 @@
         >
           <el-input
             v-if="judgeType(val.type, 'string')"
-            v-model="dialogData[key]"
+            v-model="slots.dialogData[key]"
             :placeholder="val.name"
             :clearable="true"
             class="sp-form-item"
@@ -45,7 +45,7 @@
 
           <el-date-picker
             v-else-if="judgeType(val.type, 'date')"
-            v-model="dialogData[key]"
+            v-model="slots.dialogData[key]"
             type="datetime"
             value-format="timestamp"
             :placeholder="val.name + '时间'"
@@ -54,7 +54,7 @@
           </el-date-picker>
         </el-form-item>
         <!-- 用于面板中的自定义表单元素，例如级联选择器，并通过作用域插槽的方式将数据传递给自定义表单 -->
-        <slot :dialog-data="dialogData" name="dialog-form-item"></slot>
+        <slot :dialog-data="slots" name="dialog-form-item"></slot>
       </el-form>
     </div>
     <template v-slot:footer>
@@ -111,7 +111,11 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      slots: {
+        dialogData: {}
+      }
+    };
   },
   computed: {
     // 计算属性的 getter
@@ -127,6 +131,11 @@ export default {
       return _metadata;
     }
   },
+  watch: {
+    dialogData: function(newVal, oldVal) {
+      this.slots.dialogData = newVal;
+    }
+  },
   methods: {
     judgeType(str1, type) {
       return equalsIgnoreCase(str1, type);
@@ -134,8 +143,11 @@ export default {
     createData() {
       this.$refs['editFormGP'].validate(valid => {
         if (valid) {
-          this.$emit('create-data', this.dialogData);
+          this.$emit('create-data', this.slots.dialogData);
           this.$emit('update:dialogVisible', false);
+          this.$nextTick(() => {
+            this.slots.dialogData = {};
+          });
         } else {
           this.$notify({
             title: '失败',
@@ -149,8 +161,11 @@ export default {
     updateData() {
       this.$refs['editFormGP'].validate(valid => {
         if (valid) {
-          this.$emit('update-data', this.dialogData);
+          this.$emit('update-data', this.slots.dialogData);
           this.$emit('update:dialogVisible', false);
+          this.$nextTick(() => {
+            this.slots.dialogData = {};
+          });
         } else {
           this.$notify({
             title: '失败',
@@ -162,7 +177,7 @@ export default {
       });
     },
     openDialog() {
-      /* 参照vue中 .sync 修饰符章节，方便的刷新父组件的dialogVisible值*/
+      /** 参照vue中 .sync 修饰符章节，方便的刷新父组件的dialogVisible值 */
       this.$emit('update:dialogVisible', true);
     },
     closeDialog() {

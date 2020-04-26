@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-03-29 16:00:50
- * @LastEditTime: 2020-04-05 18:17:17
+ * @LastEditTime: 2020-04-23 14:06:39
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -93,14 +93,23 @@
       :limit.sync="queryParams.limit"
       @pagination="pagination"
     />
-    <add-user-role ref="editDialog" :title="dialogTitle"> </add-user-role>
+    <add-user-role
+      :key="Math.random()"
+      ref="editDialog"
+      :dialog-data="dialogData"
+      :title="dialogTitle"
+      :visible.sync="visible"
+      :org-id-cascader-props="orgIdCascaderProps"
+      :role-id-cascader-props="roleIdCascaderProps"
+    >
+    </add-user-role>
   </div>
 </template>
 <script>
 import Pagination from '@/components/Pagination';
 import { immaditeLoadRoles } from '@/api/role';
 import { immaditeLoadOrgs } from '@/api/org';
-import { getUserRoles } from '@/api/user';
+import { getUserRoles, getUserById } from '@/api/user';
 import AddUserRole from './add-user-role';
 
 export default {
@@ -124,7 +133,9 @@ export default {
         page: 1,
         limit: 10
       },
-      dialogTitle: ''
+      dialogTitle: '',
+      dialogData: {},
+      visible: false
     };
   },
   mounted() {
@@ -146,12 +157,17 @@ export default {
       const { code, data } = { ...result };
       this.tableData = data;
     });
+    getUserById({ id: this.id }).then(result => {
+      const { code, data } = { ...result };
+      this.dialogData = data;
+    });
   },
   methods: {
     filterSearch() {},
     pagination(pageParams) {},
     showDialog() {
-      this.$refs.editDialog.openDialog();
+      this.dialogTitle = '创建角色';
+      this.visible = true;
     },
     deleteUserRole() {
       const _table = this.$refs.dataTable;
@@ -165,7 +181,6 @@ export default {
       }
       const _selList = _table.selection;
       const ids = _selList.map(item => item.id);
-      debugger;
     }
   }
 };

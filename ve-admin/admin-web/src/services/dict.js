@@ -1,11 +1,12 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2020-01-13 23:12:07
- * @LastEditTime: 2020-03-09 19:32:36
+ * @LastEditTime: 2020-04-19 20:32:05
  * @LastEditors: 一日看尽长安花
  * @Description: 与业务有关的非纯api的js
  */
 import { layzyLoadDicts, immaditeLoadDicts } from '@/api/dict';
+import { assignIn, get, omit } from 'lodash';
 
 /**
  * @description: 异步载入级联器的数据
@@ -36,22 +37,22 @@ export function layzyLoadDictTree(node, resolve, type) {
 }
 
 /**
- * @description: 将json中一个key值为数组的每个值转成指定的key-value，主要用于el中的级联选择器
- * @param {obj} 包含选中值的对象
- * @param {arrayKey} 数组的key
- * @param {keyNames} 转换后的 key 名称级，必须按照数组中每个值的顺序对应
- * @returns {Object} 包含转换后的 key-value 值
+ * @description: 用sp-cascader组件，其所有的参数值挂在sp_cascader节点下。
+ * @param keyNames 级联属性key
+ * @returns {Object}
  */
-export function handleCascaderValue(obj, arrayKey, keyNames) {
-  let selValArray = obj[arrayKey] || [];
-  let resObj = {};
-  for (var i in selValArray) {
-    if (keyNames.length === 1) {
-      resObj[keyNames[0]] = selValArray[i];
-    } else {
-      resObj[keyNames[i]] = selValArray[i];
+export function handleCascaderValue(obj, keyNames = []) {
+  const sp_cascader = obj['sp_cascader'];
+  assignIn(obj, sp_cascader);
+  delete obj['sp_cascader'];
+  delete obj['spCascader'];
+  for (let i in keyNames) {
+    const path = keyNames[i];
+    const node = get(obj, path);
+    const node_type = Object.prototype.toString.call(node);
+    if (node_type !== '[object String]') {
+      obj = omit(obj, path);
     }
   }
-  delete obj[arrayKey];
-  return Object.assign({}, obj, resObj);
+  return obj;
 }

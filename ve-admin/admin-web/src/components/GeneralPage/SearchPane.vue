@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 16:14:37
- * @LastEditTime: 2020-03-31 16:31:49
+ * @LastEditTime: 2020-04-10 20:47:33
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -11,7 +11,7 @@
     <el-form
       ref="filterForm"
       :size="size"
-      :model="filterData"
+      :model="slots.filterData"
       @submit.native.prevent
     >
       <!-- 循环元数据构建搜索面板：除了下拉框 -->
@@ -23,7 +23,7 @@
         <el-form-item>
           <el-input
             v-if="judgeType(val.type, 'string')"
-            v-model="filterData[key]"
+            v-model="slots.filterData[key]"
             :placeholder="val.name"
             :clearable="true"
             style="width: 200px;"
@@ -34,7 +34,7 @@
             style="display: inline-block;position: relative;top: -0.3rem;"
           >
             <el-date-picker
-              v-model="filterData[key + '_start']"
+              v-model="slots.filterData[key + '_start']"
               type="datetime"
               value-format="timestamp"
               :placeholder="val.name + '开始时间'"
@@ -42,7 +42,7 @@
             </el-date-picker>
 
             <el-date-picker
-              v-model="filterData[key + '_end']"
+              v-model="slots.filterData[key + '_end']"
               type="datetime"
               value-format="timestamp"
               :placeholder="val.name + '结束时间'"
@@ -52,7 +52,7 @@
         </el-form-item>
       </div>
       <!-- 用于面板中的自定义表单，例如级联选择器，并通过作用域插槽的方式将数据传递给自定义表单 -->
-      <slot name="filter-condition" :filter-data="filterData"> </slot>
+      <slot name="filter-condition" :filter-data="slots"> </slot>
       <div class="sp-search-btn-container">
         <el-button
           ref="searchButton"
@@ -79,7 +79,7 @@
         添加
       </el-button>
       <!-- 用于面板中的自定义功能按钮，例如导入导出按钮等，并通过作用域插槽的方式将数据传递给自定义表单 -->
-      <slot name="operation-btn-group" :filter-data="filterData"> </slot>
+      <slot name="operation-btn-group" :filter-data="slots"> </slot>
     </div>
   </div>
 </template>
@@ -100,7 +100,9 @@ export default {
   data() {
     return {
       size: 'mini',
-      filterData: {}
+      slots: {
+        filterData: {}
+      }
     };
   },
   computed: {
@@ -122,10 +124,10 @@ export default {
     judgeType(str1, type) {
       return equalsIgnoreCase(str1, type);
     },
-    filterSearch(filterData) {
+    filterSearch(event) {
       this.$refs['filterForm'].validate(valid => {
         if (valid) {
-          this.$emit('filter-search', this.filterData);
+          this.$emit('filter-search', this.slots.filterData);
         } else {
           this.$notify({
             title: 'Faild',

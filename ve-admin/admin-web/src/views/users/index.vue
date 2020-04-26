@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-04-03 20:52:21
+ * @LastEditTime: 2020-04-26 18:31:56
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -19,39 +19,44 @@
       @update-data="updateData"
     >
       <!-- 往搜索栏中添加搜索条件 -->
-      <template #filter-condition="{filterData:filterData}">
+      <template #filter-condition="{filterData:slots}">
         <div class="filter-item-container">
           <el-form-item>
-            <el-cascader
-              v-model="filterData['orgId']"
+            <sp-cascader
+              :key="Math.random()"
+              v-model="slots.filterData"
+              :json-paths="['org.id']"
+              :labels="['org_id']"
               :props="orgIdCascaderProps"
               :options="orgIdCascaderProps.options"
-              :show-all-levels="false"
-              clearable
               placeholder="部门"
-            ></el-cascader>
+            ></sp-cascader>
           </el-form-item>
         </div>
         <div class="filter-item-container">
           <el-form-item>
-            <el-cascader
-              v-model="filterData['jobType']"
+            <sp-cascader
+              :key="Math.random()"
+              v-model="slots.filterData"
+              :json-paths="['job_type0.value', 'job_type1.value']"
+              :labels="['job_type0', 'job_type1']"
               :props="jobTypeCascaderProps"
               :options="jobTypeCascaderProps.options"
-              clearable
               placeholder="岗位/职务"
-            ></el-cascader>
+            ></sp-cascader>
           </el-form-item>
         </div>
         <div class="filter-item-container">
           <el-form-item>
-            <el-cascader
-              v-model="filterData['state']"
+            <sp-cascader
+              :key="Math.random()"
+              v-model="slots.filterData"
+              :json-paths="['state.value']"
+              :labels="['state']"
               :props="stateCascaderProps"
               :options="stateCascaderProps.options"
-              clearable
               placeholder="状态"
-            ></el-cascader>
+            ></sp-cascader>
           </el-form-item>
         </div>
       </template>
@@ -79,45 +84,49 @@
         </el-button>
       </template>
       <!-- 编辑弹窗的插槽 -->
-      <template #dialog-form-item="{dialogData:dialogData}">
+      <template #dialog-form-item="{dialogData:slots}">
         <el-form-item key="orgIdKey" label="所在机构" prop="org_id">
-          <el-cascader
-            v-model="dialogData['org_id_value']"
+          <sp-cascader
+            :key="Math.random()"
+            v-model="slots.dialogData"
+            :json-paths="['org.id']"
+            :labels="['org_id']"
             :props="orgIdCascaderProps"
             :options="orgIdCascaderProps.options"
-            :show-all-levels="false"
-            clearable
             placeholder="所在机构"
             class="sp-form-item"
-          ></el-cascader>
+          ></sp-cascader>
         </el-form-item>
         <el-form-item key="jobTypeKey" label="岗位职务" prop="job_type">
-          <el-cascader
-            v-model="dialogData['job_type_value']"
+          <sp-cascader
+            :key="Math.random()"
+            v-model="slots.dialogData"
+            :json-paths="['job_type0.value', 'job_type1.value']"
+            :labels="['job_type0', 'job_type1']"
             :props="jobTypeCascaderProps"
             :options="jobTypeCascaderProps.options"
-            :show-all-levels="false"
-            clearable
             placeholder="岗位职务"
             class="sp-form-item"
-          ></el-cascader>
+          ></sp-cascader>
         </el-form-item>
         <el-form-item key="stateKey" label="用户状态" prop="state">
-          <el-cascader
-            v-model="dialogData['state_value']"
+          <sp-cascader
+            :key="Math.random()"
+            v-model="slots.dialogData"
+            :json-paths="['state.value']"
+            :labels="['state']"
             :props="stateCascaderProps"
             :options="stateCascaderProps.options"
-            :show-all-levels="false"
-            clearable
             placeholder="用户状态"
             class="sp-form-item"
-          ></el-cascader>
+          ></sp-cascader>
         </el-form-item>
 
         <el-form-item key="fileKey" label="上传文档" prop="file">
           <file-upload
+            :key="Math.random()"
             ref="fileUpload"
-            :file-batch-id="dialogData.attachment_id"
+            :file-batch-id="slots.dialogData.attachment_id"
             :on-success="onUploadSuccess"
           >
             <el-button slot="trigger" size="small" type="primary">
@@ -132,7 +141,7 @@
               上传到服务器
             </el-button>
             <div slot="tip" class="el-upload__tip">
-              只能上传jpg/png文件，且不超过500kb
+              只能上传word/pdf文档，且不超过2MB
             </div>
           </file-upload>
         </el-form-item>
@@ -144,6 +153,7 @@
 <script>
 import GeneralPage from '@/components/GeneralPage';
 import FileUpload from '@/components/Upload/FileUpload';
+import SpCascader from '@/components/Wrapper/SpCascader';
 
 import {
   users,
@@ -161,7 +171,7 @@ import { layzyLoadOrgTree } from '@/services/org';
 
 export default {
   name: 'CoreUsersView',
-  components: { GeneralPage, FileUpload },
+  components: { GeneralPage, FileUpload, SpCascader },
   props: {},
   data() {
     return {
@@ -226,32 +236,16 @@ export default {
         });
     },
     obtainData(queryParams) {
-      this.loading = true;
-      queryParams = handleCascaderValue(queryParams, 'orgId', ['org_id']);
-      queryParams = handleCascaderValue(queryParams, 'jobType', [
+      queryParams = handleCascaderValue(queryParams, [
+        'state',
         'job_type0',
         'job_type1'
       ]);
-      queryParams = handleCascaderValue(queryParams, 'state', ['state']);
+      this.loading = true;
       const _lodash = this.$lodash;
       users(queryParams)
         .then(result => {
           const { code, data } = { ...result };
-          /**
-           * 这一步是因为编辑弹窗在创建时，v-model不能使用json多级获取，不然会报错；
-           * 所以将其处理为一级节点
-           */
-          for (let i in result.data) {
-            let item = result.data[i];
-            item['org_id_value'] = _lodash.get(item, 'org.id');
-            item['state_value'] = _lodash.get(item, 'state.value');
-            if (item['job_type0']) {
-              item['job_type_value'] = _lodash.get(item, 'job_type0.value');
-            }
-            if (item['job_type1']) {
-              item['job_type_value'] = _lodash.get(item, 'job_type1.value');
-            }
-          }
           this.tabledata = Object.assign({}, result);
         })
         .catch(err => {})
@@ -271,16 +265,11 @@ export default {
       this.obtainData(Object.assign({ page: 1, limit: 10 }, queryParams));
     },
     createData(dialogData) {
-      dialogData = this.handleEditorDataObject(dialogData, 'org_id_value', {
-        org_id: 'org.id'
-      });
-      dialogData = this.handleEditorDataObject(dialogData, 'state_value', {
-        state: 'state.value'
-      });
-      dialogData = this.handleEditorDataObject(dialogData, 'job_type_value', {
-        job_type0: 'job_type0.value',
-        job_type1: 'job_type1.value'
-      });
+      dialogData = handleCascaderValue(dialogData, [
+        'state',
+        'job_type0',
+        'job_type1'
+      ]);
       const Vue = this;
       saveUserData(dialogData)
         .then(result => {
@@ -306,16 +295,11 @@ export default {
         });
     },
     updateData(dialogData) {
-      dialogData = this.handleEditorDataObject(dialogData, 'org_id_value', {
-        org_id: 'org.id'
-      });
-      dialogData = this.handleEditorDataObject(dialogData, 'state_value', {
-        state: 'state.value'
-      });
-      dialogData = this.handleEditorDataObject(dialogData, 'job_type_value', {
-        job_type0: 'job_type0.value',
-        job_type1: 'job_type1.value'
-      });
+      dialogData = handleCascaderValue(dialogData, [
+        'state',
+        'job_type0',
+        'job_type1'
+      ]);
       const Vue = this;
       updateUserData(dialogData)
         .then(result => {
@@ -325,8 +309,8 @@ export default {
            *  将回调延迟到下次 DOM 更新循环之后执行。
            * 而数据更新就代表dom更新，所以如果创建成功，数据就会更新
            */
-          this.$nextTick(() => {
-            this.$notify({
+          thVueis.$nextTick(() => {
+            Vue.$notify({
               title: '成功',
               message: '修改成功1',
               type: 'success',
@@ -335,8 +319,8 @@ export default {
           });
         })
         .catch(err => {
-          this.$nextTick(() => {
-            this.$notify({
+          Vue.$nextTick(() => {
+            Vue.$notify({
               title: '失败',
               message: '修改用户失败',
               type: 'error',
@@ -405,12 +389,6 @@ export default {
       let queryParams = this.$lodash.mapValues(
         this.$children[0].$refs.searchPaneGP.$data.filterData
       );
-      queryParams = handleCascaderValue(queryParams, 'orgId', ['org_id']);
-      queryParams = handleCascaderValue(queryParams, 'jobType', [
-        'job_type0',
-        'job_type1'
-      ]);
-      queryParams = handleCascaderValue(queryParams, 'state', ['state']);
       /**
        * 导出Excel文件的两步：
        * 1、通过查询条件由后台生成Excel临时文件，返回临时文件path
@@ -423,8 +401,18 @@ export default {
       });
     },
     editUserRoles() {
+      const _table = this.$children[0].$refs.dataTableGP.$refs.dataTable;
+      const isSelection = _table.selection.length > 0 ? true : false;
+      if (!isSelection) {
+        this.$message({
+          type: 'warning',
+          message: '请选择一行数据'
+        });
+        return;
+      }
+      const _selected = _table.selection[0];
       const _router = this.$router;
-      _router.push({ name: 'ManagerUserRole', params: { id: 1 } });
+      _router.push({ name: 'ManagerUserRole', params: { id: _selected.id } });
     }
   }
 };
