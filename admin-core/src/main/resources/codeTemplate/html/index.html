@@ -3,9 +3,9 @@
 </layui:searchForm>
 
 <div class="layui-btn-group">
-    <layui:accessButton function="${entity.code}.add"  action="add">增加</layui:accessButton>
-    <layui:accessButton function="${entity.code}.edit"  action="edit">编辑</layui:accessButton>
-    <layui:accessButton function="${entity.code}.del"  action="del">删除</layui:accessButton>
+    <layui:accessButton function="${entity.system}.${entity.code}.add"  action="add">增加</layui:accessButton>
+    <layui:accessButton function="${entity.system}.${entity.code}.edit"  action="edit">编辑</layui:accessButton>
+    <layui:accessButton function="${entity.system}.${entity.code}.delelte"  action="del">删除</layui:accessButton>
     @if(entity.includeExcel){
      <layui:accessButton function="${entity.code}.exportDocument"  action="exportDocument">导出</layui:accessButton>
      <layui:accessButton function="${entity.code}.importDocument"  action="importDocument">导入</layui:accessButton>
