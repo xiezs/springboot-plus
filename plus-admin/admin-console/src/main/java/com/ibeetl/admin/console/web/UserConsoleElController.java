@@ -1,6 +1,5 @@
 package com.ibeetl.admin.console.web;
 
-import cn.hutool.core.convert.Convert;
 import com.ibeetl.admin.console.service.UserConsoleService;
 import com.ibeetl.admin.console.util.VOUtil;
 import com.ibeetl.admin.console.web.dto.UserExcelExportData;
@@ -20,12 +19,11 @@ import com.ibeetl.admin.core.web.JsonResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import org.beetl.sql.core.engine.PageQuery;
 import org.jxls.common.Context;
 import org.jxls.util.JxlsHelper;
@@ -134,14 +132,8 @@ public class UserConsoleElController {
   @DeleteMapping("/roles")
   @Function("user.role")
   @ResponseBody
-  public JsonResult delUserRole(String[] ids) {
-    List<Long> dels =
-        Arrays.stream(ids)
-            .map(id -> Convert.toLong(id, null))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
-
-    userConsoleService.deleteUserRoles(dels);
+  public JsonResult delUserRole(@RequestBodyPlus("ids") ArrayList<Long> ids) {
+    userConsoleService.deleteUserRoles(ids);
     this.platformService.clearFunctionCache();
     return JsonResult.success();
   }

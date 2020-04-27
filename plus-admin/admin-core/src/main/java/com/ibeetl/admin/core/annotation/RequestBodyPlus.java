@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 参见 {@link com.ibeetl.admin.core.conf.RequestBodyPlusProcessor} 解析
+ * 参见 {@link com.ibeetl.admin.core.conf.springmvc.resolve.RequestBodyPlusProcessor} 解析
  * @author 一日看尽长安花
  */
 @Target(ElementType.PARAMETER)

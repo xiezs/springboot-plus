@@ -29,7 +29,7 @@ import org.springframework.web.servlet.mvc.method.annotation.AbstractMessageConv
 /** 自定义SpringMVC的controller方法的参数注解 {@link RequestBodyPlus} 的注入解析， 用json path 的方式注入json请求的参数 */
 public class RequestBodyPlusProcessor extends AbstractMessageConverterMethodProcessor {
 
-  private static final ThreadLocal<String> bodyLocal = ThreadLocal.withInitial(() -> "{}");
+  private static final ThreadLocal<JSON> bodyLocal = ThreadLocal.withInitial(JSONUtil::createObj);
 
   public RequestBodyPlusProcessor(List<HttpMessageConverter<?>> converters) {
     super(converters);
@@ -61,23 +61,22 @@ public class RequestBodyPlusProcessor extends AbstractMessageConverterMethodProc
 
     StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
 
-    String jsonBody;
+    JSON json;
     try {
       String readBody = stringHttpMessageConverter.read(String.class, inputMessage);
       /*每一个参数的注入都会读取一次输入流，但是request的输入流不可重复读，所以需要保持下来*/
-      if (StrUtil.isBlank(readBody)) {
-        jsonBody = bodyLocal.get();
-      } else {
-        bodyLocal.set(readBody);
-        jsonBody = bodyLocal.get();
+      if (StrUtil.isNotBlank(readBody)) {
+        json = JSONUtil.parse(readBody);
+        bodyLocal.set(json);
       }
     } catch (IOException e) {
-      logger.error("Can't read request body by input stream : {}", e);
-      jsonBody = bodyLocal.get();
+      logger.error("Can't read request body by input stream : " + e);
+    } finally {
+      json = bodyLocal.get();
     }
 
     RequestBodyPlus requestBodyPlus = parameter.getParameterAnnotation(RequestBodyPlus.class);
-    JSON json = JSONUtil.parse(jsonBody);
+    assert requestBodyPlus != null;
     Object parseVal = json.getByPath(requestBodyPlus.value(), parameterClass);
     if (parseVal instanceof Map) {
       JSONObject jsonObject = JSONUtil.parseObj(parseVal);

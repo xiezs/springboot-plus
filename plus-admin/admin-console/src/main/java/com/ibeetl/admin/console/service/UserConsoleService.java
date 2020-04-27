@@ -21,6 +21,7 @@ import com.ibeetl.admin.core.util.enums.CoreDictType;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 import com.ibeetl.admin.core.util.enums.GeneralStateEnum;
 import com.ibeetl.admin.core.util.enums.JobTypeEnum;
+import com.ibeetl.admin.core.web.JsonResult;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -168,11 +169,13 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
         roleQuery.getUserId(), roleQuery.getOrgId(), roleQuery.getRoleId());
   }
 
-  public void deleteUserRoles(List<Long> ids) {
-    // 考虑到这个操作较少使用，就不做批处理优化了
-    for (Long id : ids) {
-      sqlManager.deleteById(id);
+  public JsonResult deleteUserRoles(List<Long> ids) {
+    int delete =
+        sqlManager.lambdaQuery(CoreUserRole.class).andIn(CoreUserRole::getId, ids).delete();
+    if (delete > 0) {
+      return JsonResult.success();
     }
+    return JsonResult.fail();
   }
 
   public void saveUserRole(CoreUserRole userRole) {

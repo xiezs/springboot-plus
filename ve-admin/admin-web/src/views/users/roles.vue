@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-03-29 16:00:50
- * @LastEditTime: 2020-04-23 14:06:39
+ * @LastEditTime: 2020-04-26 21:59:58
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -109,7 +109,7 @@
 import Pagination from '@/components/Pagination';
 import { immaditeLoadRoles } from '@/api/role';
 import { immaditeLoadOrgs } from '@/api/org';
-import { getUserRoles, getUserById } from '@/api/user';
+import { getUserRoles, getUserById, deleteUserRoles } from '@/api/user';
 import AddUserRole from './add-user-role';
 
 export default {
@@ -149,14 +149,7 @@ export default {
       const { code, data } = { ...result };
       this.orgIdCascaderProps.options = data;
     });
-    getUserRoles({
-      userId: this.id,
-      roleId: undefined,
-      orgId: undefined
-    }).then(result => {
-      const { code, data } = { ...result };
-      this.tableData = data;
-    });
+    this.loadTableData();
     getUserById({ id: this.id }).then(result => {
       const { code, data } = { ...result };
       this.dialogData = data;
@@ -168,6 +161,16 @@ export default {
     showDialog() {
       this.dialogTitle = '创建角色';
       this.visible = true;
+    },
+    loadTableData() {
+      getUserRoles({
+        userId: this.id,
+        roleId: undefined,
+        orgId: undefined
+      }).then(result => {
+        const { code, data } = { ...result };
+        this.tableData = data;
+      });
     },
     deleteUserRole() {
       const _table = this.$refs.dataTable;
@@ -181,6 +184,10 @@ export default {
       }
       const _selList = _table.selection;
       const ids = _selList.map(item => item.id);
+      deleteUserRoles({ ids: ids }).then(response => {
+        const { code, message, data } = { ...response };
+        this.loadTableData();
+      });
     }
   }
 };

@@ -113,7 +113,6 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
   /**
    * 更新角色对应的功能点所有,
    *
-   * @param roleId
    * @param data，必须包含id,和 dataAcerssType，采用模板更新
    */
   public void updateFunctionAccessByRole(List<RoleDataAccessFunction> data) {
@@ -141,7 +140,6 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
    * 给角色赋予功能同时，根据赋予的功能权限，更新能访问的菜单
    *
    * @param adds
-   * @param updates
    * @param dels
    * @return 返回增加的项的id，用于前端
    */

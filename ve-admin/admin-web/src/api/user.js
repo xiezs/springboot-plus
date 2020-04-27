@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-04 20:55:14
- * @LastEditTime: 2020-04-25 19:50:39
+ * @LastEditTime: 2020-04-26 20:49:26
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -115,6 +115,18 @@ export function addUserRoles(data) {
   return request({
     url: '/users/roles',
     method: 'post',
+    data
+  });
+}
+
+/**
+ * 删除用户授权角色数据
+ * @param {*} data 只包括ids一个数组
+ */
+export function deleteUserRoles(data) {
+  return request({
+    url: '/users/roles',
+    method: 'delete',
     data
   });
 }
