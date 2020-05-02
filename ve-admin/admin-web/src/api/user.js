@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-04 20:55:14
- * @LastEditTime: 2020-04-26 20:49:26
+ * @LastEditTime: 2020-04-27 14:58:13
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -127,6 +127,18 @@ export function deleteUserRoles(data) {
   return request({
     url: '/users/roles',
     method: 'delete',
+    data
+  });
+}
+
+/**
+ * 修改用户密码
+ * @param {Object} data {id,password}
+ */
+export function changePassword(data) {
+  return request({
+    url: '/users/changePassword',
+    method: 'post',
     data
   });
 }

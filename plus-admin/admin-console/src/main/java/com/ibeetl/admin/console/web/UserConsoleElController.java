@@ -138,6 +138,20 @@ public class UserConsoleElController {
     return JsonResult.success();
   }
 
+  /**
+   * 管理员重置用户密码
+   *
+   * @return
+   */
+  @PostMapping("/changePassword")
+  @Function("user.reset")
+  @ResponseBody
+  public JsonResult changePassword(
+      @RequestBodyPlus("id") Long id, @RequestBodyPlus("password") String password) {
+    userConsoleService.resetPassword(id, password);
+    return JsonResult.success();
+  }
+
   @PostMapping("/excel/export")
   @Function("user.export")
   public JsonResult<String> export(@RequestBody CoreUserParam coreUserParam) {

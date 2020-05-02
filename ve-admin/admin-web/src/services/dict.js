@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2020-01-13 23:12:07
- * @LastEditTime: 2020-04-19 20:32:05
+ * @LastEditTime: 2020-04-27 15:00:42
  * @LastEditors: 一日看尽长安花
  * @Description: 与业务有关的非纯api的js
  */
@@ -50,7 +50,7 @@ export function handleCascaderValue(obj, keyNames = []) {
     const path = keyNames[i];
     const node = get(obj, path);
     const node_type = Object.prototype.toString.call(node);
-    if (node_type !== '[object String]') {
+    if (node_type === '[object Object]') {
       obj = omit(obj, path);
     }
   }

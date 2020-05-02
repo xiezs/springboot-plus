@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2019-10-12 15:43:18
- * @LastEditTime: 2020-04-26 18:31:56
+ * @LastEditTime: 2020-04-27 15:02:24
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -71,6 +71,16 @@
           @click="editUserRoles"
         >
           操作角色
+        </el-button>
+        <el-button
+          class="filter-item"
+          style="margin-left: 10px;"
+          type="primary"
+          size="mini"
+          icon="el-icon-edit"
+          @click="showChangePswAlert"
+        >
+          修改密码
         </el-button>
         <el-button
           class="filter-item"
@@ -147,6 +157,14 @@
         </el-form-item>
       </template>
     </general-page>
+    <change-password
+      :key="Math.random()"
+      ref="editDialog"
+      :dialog-data="chgPwsDialogData"
+      title="修改密码"
+      :visible.sync="chgPwsVisible"
+    >
+    </change-password>
   </div>
 </template>
 
@@ -154,6 +172,7 @@
 import GeneralPage from '@/components/GeneralPage';
 import FileUpload from '@/components/Upload/FileUpload';
 import SpCascader from '@/components/Wrapper/SpCascader';
+import ChangePassword from './change-password';
 
 import {
   users,
@@ -171,7 +190,7 @@ import { layzyLoadOrgTree } from '@/services/org';
 
 export default {
   name: 'CoreUsersView',
-  components: { GeneralPage, FileUpload, SpCascader },
+  components: { GeneralPage, FileUpload, SpCascader, ChangePassword },
   props: {},
   data() {
     return {
@@ -193,7 +212,9 @@ export default {
       stateCascaderProps: {
         checkStrictly: true,
         options: []
-      }
+      },
+      chgPwsDialogData: {},
+      chgPwsVisible: false
     };
   },
   computed: {},
@@ -309,10 +330,10 @@ export default {
            *  将回调延迟到下次 DOM 更新循环之后执行。
            * 而数据更新就代表dom更新，所以如果创建成功，数据就会更新
            */
-          thVueis.$nextTick(() => {
+          Vue.$nextTick(() => {
             Vue.$notify({
               title: '成功',
-              message: '修改成功1',
+              message: '修改成功',
               type: 'success',
               duration: 2000
             });
@@ -413,6 +434,20 @@ export default {
       const _selected = _table.selection[0];
       const _router = this.$router;
       _router.push({ name: 'ManagerUserRole', params: { id: _selected.id } });
+    },
+    showChangePswAlert() {
+      const _table = this.$children[0].$refs.dataTableGP.$refs.dataTable;
+      const isSelection = _table.selection.length > 0 ? true : false;
+      if (!isSelection) {
+        this.$message({
+          type: 'warning',
+          message: '请选择一行数据'
+        });
+        return;
+      }
+      const _selected = _table.selection[0];
+      this.chgPwsVisible = true;
+      this.chgPwsDialogData = _selected;
     }
   }
 };
