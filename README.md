@@ -31,6 +31,7 @@
 8. log4j2 日志框架
 9. jose4j jwt库
 10. jxls2 模板化excel导入导出库
+11. MySQL 8
 
 #### 前端配置架构说明
 
