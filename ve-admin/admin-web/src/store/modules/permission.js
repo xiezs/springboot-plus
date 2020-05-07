@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime: 2019-10-30 20:32:19
+ * @LastEditTime: 2020-05-07 15:03:38
  * @LastEditors: 一日看尽长安花
  */
 import { constantRoutes } from '@/router';
@@ -10,6 +10,8 @@ import { getRoutes } from '@/api/role';
 import { default as asyncRoutesMap } from '@/router/maps/index';
 import { deepClone, objectMerge } from '@/utils/index';
 import { isExists, isNotExists } from '@/utils/object-util';
+
+import Layout from '@/layout';
 
 /**
  * Use meta.role to determine if the current user has permission
@@ -76,6 +78,29 @@ export function filterAsyncRoutes(routesMap, routes, roles) {
   return resRoutes;
 }
 
+export function handleComponent(routes) {
+  for (let i in routes) {
+    let _route = routes[i];
+    if (_route.component && _route.component.trim().length > 0) {
+      if (_route.component === 'layout') {
+        _route.component = Layout;
+      } else {
+        /** 这里的异步不能直接在import里用template string写法，babel-eslint有bug*/
+        /** 两种异步写法：
+         * component = resolve => require([`@/views/modules/${URL}`], resolve)；
+         * component = () => import(`@/${_route.component}`);这个也有问题
+         */
+        //这一步多余的赋值遍历必须存在，import的bug
+        const name = _route.component;
+        _route.component = () => import(`@/${name}`);
+      }
+    }
+    if (_route.children && _route.children.length > 0) {
+      handleComponent(_route.children);
+    }
+  }
+}
+
 const state = {
   routes: [],
   addRoutes: []
@@ -93,18 +118,11 @@ const actions = {
     return new Promise((resolve, reject) => {
       getRoutes()
         .then(response => {
-          let accessedRoutes,
-            asyncRoutes = response.data;
-
-          accessedRoutes = filterAsyncRoutes(
-            deepClone(asyncRoutesMap),
-            asyncRoutes,
-            roles
-          );
-          accessedRoutes.push({ path: '*', redirect: '/404', hidden: true });
-
-          commit('SET_ROUTES', accessedRoutes);
-          resolve(accessedRoutes);
+          let asyncRoutes = response.data;
+          handleComponent(asyncRoutes);
+          asyncRoutes.push({ path: '*', redirect: '/404', hidden: true });
+          commit('SET_ROUTES', asyncRoutes);
+          resolve(asyncRoutes);
         })
         .catch(error => {
           reject(error);

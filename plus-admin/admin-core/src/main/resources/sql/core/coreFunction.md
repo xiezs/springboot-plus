@@ -1,16 +1,16 @@
-
 getAllRoutes
 ===
 
 ```sql
 
 select menu.id,
-       menu.PARENT_MENU_ID      PARENT_ID,
+       menu.PARENT_MENU_ID      parent_id,
        menu.NAME                title,
        menu.CODE                name,
        menu.ICON,
        ifnull(menu.SEQ, 999999) seq,
        func.ACCESS_URL          path,
+       func.COMPONENT           component,
        role_menu.ROLE_ID
 from core_menu menu
        left join core_function func on func.ID = menu.FUNCTION_ID
@@ -28,6 +28,7 @@ RouteMapping
                           "resultType": "com.ibeetl.admin.core.entity.CoreRoute",
                           "path": "path",
                           "name": "name",
+                          "component": "component",
                           "id": "id",
                           "parentId": "parent_id",
                           "seq": "seq",

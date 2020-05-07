@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-04 20:55:14
- * @LastEditTime: 2019-10-29 23:17:53
+ * @LastEditTime: 2020-05-07 14:39:43
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -96,7 +96,18 @@ module.exports = {
     // 关闭检测函数名称和调用它的左括号之间的空格
     // 'func-call-spacing': 'off',
     // 缩进为2个空格
-    indent: ['error', 2],
+    indent: [
+      'error',
+      2,
+      {
+        ignoredNodes: [
+          'TemplateLiteral'
+        ]
+      }
+    ],
+    'template-curly-spacing': [
+      'off'
+    ],
     // 关闭检测未使用的变量
     'no-unused-vars': 'off',
     // 对象展开时总是要添加逗号，一行时行末不需要逗号

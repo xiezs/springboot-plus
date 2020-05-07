@@ -66,7 +66,7 @@ public class RoleRoutesElService {
    * */
   public List<CoreRoute> getRoutes() {
     List<CoreRoute> routesList = coreFunctionDao.getAllRoutes();
-    Map<Long, List<Long>> roleIdList =
+    /*Map<Long, List<Long>> roleIdList =
         routesList.stream()
             .collect(
                 Collectors.groupingBy(
@@ -80,7 +80,7 @@ public class RoleRoutesElService {
           .getMeta()
           .getRoles()
           .addAll(CollUtil.<Long>removeNull(roleIdList.get(coreRoute.getId())));
-    }
+    }*/
     CoreRoute root = new CoreRoute();
     root.setId(0L);
     buildRoutesTree(root, routesList);
@@ -95,7 +95,9 @@ public class RoleRoutesElService {
    * @return
    */
   private void buildRoutesTree(CoreRoute root, @NotNull List<CoreRoute> allRoutes) {
-    if (CollUtil.isEmpty(allRoutes)) return;
+    if (CollUtil.isEmpty(allRoutes)) {
+      return;
+    }
     List<CoreRoute> childRoutes =
         allRoutes.stream()
             .filter(route -> route.getParentId().equals(root.getId()))
