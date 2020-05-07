@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-09-09 12:16:28
- * @LastEditTime: 2020-05-07 15:03:38
+ * @LastEditTime: 2020-05-07 15:14:43
  * @LastEditors: 一日看尽长安花
  */
 import { constantRoutes } from '@/router';
@@ -88,7 +88,7 @@ export function handleComponent(routes) {
         /** 这里的异步不能直接在import里用template string写法，babel-eslint有bug*/
         /** 两种异步写法：
          * component = resolve => require([`@/views/modules/${URL}`], resolve)；
-         * component = () => import(`@/${_route.component}`);这个也有问题
+         * component = () => import(`@/${_route.component}`);
          */
         //这一步多余的赋值遍历必须存在，import的bug
         const name = _route.component;
