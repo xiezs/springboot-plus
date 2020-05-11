@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-03-29 16:00:50
- * @LastEditTime: 2020-04-26 21:59:58
+ * @LastEditTime: 2020-05-10 14:51:34
  * @LastEditors: 一日看尽长安花
  * @Description:
  -->
@@ -37,6 +37,15 @@
               clearable
               placeholder="部门"
             ></el-cascader>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="测试">
+            <sp-tree-select
+              width="170px"
+              :data="treeData"
+              size="mini"
+            ></sp-tree-select>
           </el-form-item>
         </el-col>
       </el-row>
@@ -111,10 +120,11 @@ import { immaditeLoadRoles } from '@/api/role';
 import { immaditeLoadOrgs } from '@/api/org';
 import { getUserRoles, getUserById, deleteUserRoles } from '@/api/user';
 import AddUserRole from './add-user-role';
+import SpTreeSelect from '@/components/Wrapper/SpTreeSelect';
 
 export default {
   name: 'ManagerUserRole',
-  components: { Pagination, AddUserRole },
+  components: { Pagination, AddUserRole, SpTreeSelect },
   data() {
     return {
       id: this.$route.params.id,
@@ -135,7 +145,43 @@ export default {
       },
       dialogTitle: '',
       dialogData: {},
-      visible: false
+      visible: false,
+      treeData: [
+        {
+          id: 'love',
+          label: '所有和你走过的风光',
+          value: 1,
+          children: [
+            {
+              id: 1,
+              label: '海边',
+              value: 11,
+              children: [
+                {
+                  id: 5,
+                  label: '蓬莱',
+                  value: 111
+                }
+              ]
+            },
+            {
+              id: 2,
+              label: '森林',
+              value: 2
+            },
+            {
+              id: 3,
+              label: '草原',
+              value: 3
+            },
+            {
+              id: 4,
+              label: '古城',
+              value: 4
+            }
+          ]
+        }
+      ]
     };
   },
   mounted() {
