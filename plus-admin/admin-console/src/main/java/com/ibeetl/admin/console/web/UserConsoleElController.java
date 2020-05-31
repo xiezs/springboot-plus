@@ -3,7 +3,7 @@ package com.ibeetl.admin.console.web;
 import com.ibeetl.admin.console.service.UserConsoleService;
 import com.ibeetl.admin.console.util.VOUtil;
 import com.ibeetl.admin.console.web.dto.UserExcelExportData;
-import com.ibeetl.admin.console.web.query.CoreUserElQuery;
+import com.ibeetl.admin.console.web.mo.CoreUserElMetadata;
 import com.ibeetl.admin.console.web.query.UserRoleQuery;
 import com.ibeetl.admin.core.annotation.Function;
 import com.ibeetl.admin.core.annotation.RequestBodyPlus;
@@ -53,7 +53,7 @@ public class UserConsoleElController {
   @Function("user.query")
   @GetMapping("/metadata")
   public JsonResult<Map> usersMetedata() {
-    return JsonResult.success(VOUtil.resolveElColumn(CoreUserElQuery.class));
+    return JsonResult.success(VOUtil.resolveElColumn(CoreUserElMetadata.class));
   }
 
   @Function("user.query")

@@ -91,6 +91,7 @@ export function handleComponent(routes) {
          * component = () => import(`@/${_route.component}`);
          */
         //这一步多余的赋值遍历必须存在，import的bug
+        //无法直接使用模板字符
         const name = _route.component;
         _route.component = () => import(`@/${name}`);
       }

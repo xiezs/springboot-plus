@@ -138,7 +138,7 @@ public class FunctionController {
     }
     // 删除功能和所有子功能
     functionConsoleService.deleteFunction(id);
-    return new JsonResult().success();
+    return JsonResult.success();
   }
 
   /**

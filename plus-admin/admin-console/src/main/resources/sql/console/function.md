@@ -3,7 +3,7 @@ queryByCondtion
 
     select 
     @pageTag(){
-    f.*
+        f.*
     @}
     from core_function f where 1=1 
     @if(!isEmpty(functionIds)){
@@ -22,6 +22,6 @@ queryByCondtion
         and  f.parent_id = #parentFunctionId#
     @}
     @pageIgnoreTag(){
-		   order by id
-		@}
+       order by id
+    @}
 	

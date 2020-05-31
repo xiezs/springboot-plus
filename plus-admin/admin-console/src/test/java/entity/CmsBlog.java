@@ -10,6 +10,6 @@ public class CmsBlog {
   private String title;
   private String content;
   private Long createUserId;
-  private CmsBlogTypeEnum type;
+  private FunctionTypeEnum type;
   private Long createTime;
 }

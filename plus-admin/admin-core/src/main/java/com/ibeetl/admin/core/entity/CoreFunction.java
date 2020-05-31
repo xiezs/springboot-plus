@@ -2,9 +2,11 @@ package com.ibeetl.admin.core.entity;
 
 import java.util.Date;
 
+import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import lombok.Data;
 import org.beetl.sql.core.annotatoin.AutoID;
 import org.beetl.sql.core.annotatoin.SeqID;
 import org.beetl.sql.core.annotatoin.UpdateIgnore;
@@ -13,6 +15,7 @@ import com.ibeetl.admin.core.annotation.Dict;
 import com.ibeetl.admin.core.util.ValidateConfig;
 import com.ibeetl.admin.core.util.enums.CoreDictType;
 
+@Data
 public class CoreFunction extends BaseEntity {
 
   @NotNull(message = "ID不能为空", groups = ValidateConfig.UPDATE.class)
@@ -20,74 +23,33 @@ public class CoreFunction extends BaseEntity {
   @AutoID
   protected Long id;
 
-  // 创建时间
-  @UpdateIgnore protected Date createTime;
+  @NotBlank
+  private String code;
+
+  @NotBlank
+  private String name;
+
   private String accessUrl;
-  @NotBlank private String code;
-  @NotBlank private String name;
-  @NotBlank private Long parentId;
+
+  private String component;
+
+  @NotBlank
+  private Long parentId;
+
+  @UpdateIgnore
+  private Date createTime;
+
+  private short delFlag;
 
   @Dict(type = CoreDictType.FUNCTION_TYPE)
   @NotBlank
-  private String type = null; // "FN0" ;
+  private String type;
 
-  public String getAccessUrl() {
-    return accessUrl;
-  }
-
-  public void setAccessUrl(String accessUrl) {
-    this.accessUrl = accessUrl;
-  }
-
-  public String getCode() {
-    return code;
-  }
-
-  public void setCode(String code) {
-    this.code = code;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Date getCreateTime() {
-    return createTime;
-  }
-
-  public void setCreateTime(Date createTime) {
-    this.createTime = createTime;
-  }
-
-  public Long getParentId() {
-    return parentId;
-  }
-
-  public void setParentId(Long parentId) {
-    this.parentId = parentId;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
+  private List<CoreFunction> children;
 
   public boolean hasParent() {
+
     return this.parentId != null && this.parentId > 0;
   }
+
 }

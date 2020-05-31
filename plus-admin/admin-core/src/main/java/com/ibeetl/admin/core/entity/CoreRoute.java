@@ -20,77 +20,84 @@ import java.util.Objects;
 @Data
 public class CoreRoute extends BaseEntity implements Comparable<CoreRoute> {
 
-    private Long id;
+  private Long id;
 
-    private Long parentId;
+  private Long parentId;
 
-    /**
-     * 路由路径，完全参照vue router规范
-     */
-    private String path;
+  /**
+   * 路由路径，完全参照vue router规范
+   */
+  private String path;
 
-    /**
-     * 路由名称，请确保唯一性
-     */
-    private String name;
+  /**
+   * 路由名称，请确保唯一性
+   */
+  private String name;
 
-    /**
-     * 路由组件component
-     */
-    private String component;
+  /**
+   * 路由组件component
+   */
+  private String component;
 
-    /**
-     * 路由顺序
-     */
-    private Long seq = -999L;
+  /**
+   * 路由顺序
+   */
+  private Long seq = -999L;
 
-    /**
-     * 路由元数据信息
-     */
-    private CoreRouteMeta meta;
+  /**
+   * 路由元数据信息
+   */
+  private CoreRouteMeta meta;
 
-    /**
-     * 子路由项
-     */
-    private List<CoreRoute> children = CollUtil.newArrayList();
+  /**
+   * 子路由项
+   */
+  private List<CoreRoute> children = CollUtil.newArrayList();
 
-    public CoreRouteMeta getMeta() {
-        if (ObjectUtil.isNotEmpty(this.meta)) {
-            return this.meta;
-        }
-        Map<String, Object> metaMap = MapUtil.builder(getTails()).build();
-        this.meta = BeanUtil.mapToBean(metaMap, CoreRouteMeta.class, true);
-        return this.meta;
+  public CoreRouteMeta getMeta() {
+
+    if (ObjectUtil.isNotEmpty(this.meta)) {
+      return this.meta;
     }
+    Map<String, Object> metaMap = MapUtil.builder(getTails()).build();
+    this.meta = BeanUtil.mapToBean(metaMap, CoreRouteMeta.class, true);
+    return this.meta;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o != null && o instanceof CoreRoute) {
-            CoreRoute othRoute = (CoreRoute) o;
-            if (this.getId().equals(othRoute.getId())) {
-                return true;
-            }
-            if (this.getParentId().equals(othRoute.getParentId())) {
-                return StrUtil.equals(this.getPath(), othRoute.getPath())
-                        && StrUtil.equals(this.getName(), othRoute.getName());
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
+  @Override
+  public boolean equals(Object o) {
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, parentId, path, name);
+    if (o != null && o instanceof CoreRoute) {
+      CoreRoute othRoute = (CoreRoute) o;
+      if (this.getId().equals(othRoute.getId())) {
+        return true;
+      }
+      if (this.getParentId().equals(othRoute.getParentId())) {
+        return StrUtil.equals(this.getPath(), othRoute.getPath())
+            && StrUtil.equals(this.getName(), othRoute.getName());
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
+  }
 
-    @Override
-    public int compareTo(CoreRoute o) {
-        if (null == o) return -1;
-        Long seq1 = this.getSeq() == null ? -999L : this.getSeq();
-        Long seq2 = o.getSeq() == null ? -999L : o.getSeq();
-        return seq1.compareTo(seq2);
+  @Override
+  public int hashCode() {
+
+    return Objects.hash(id, parentId, path, name);
+  }
+
+  @Override
+  public int compareTo(CoreRoute o) {
+
+    if (null == o) {
+      return -1;
     }
+    Long seq1 = this.getSeq() == null ? -999L : this.getSeq();
+    Long seq2 = o.getSeq() == null ? -999L : o.getSeq();
+    return seq1.compareTo(seq2);
+  }
+
 }

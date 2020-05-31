@@ -1,4 +1,4 @@
-package com.ibeetl.admin.console.web.query;
+package com.ibeetl.admin.console.web.mo;
 
 import static com.ibeetl.admin.core.util.enums.ElColumnType.DATE;
 import static com.ibeetl.admin.core.util.enums.ElColumnType.DICT;
@@ -9,13 +9,13 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * Class CoreUserElQuery : <br>
+ * Class CoreUserElMetadata : <br>
  * 描述：用户管理页面的metadata元数据
  *
  * @author 一日看尽长安花 Created on 2019/12/29
  */
 @Data
-public class CoreUserElQuery {
+public class CoreUserElMetadata {
 
   @ElColumn(
       name = "ID",
