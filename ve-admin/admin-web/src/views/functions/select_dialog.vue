@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-05-31 21:28:18
+ * @LastEditTime: 2020-06-01 22:49:52
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -18,8 +18,10 @@
       ref="tree"
       :data="treeData"
       node-key="id"
+      :label="label"
       :show-checkbox="true"
       default-expand-all
+      :check-strictly="true"
       :expand-on-click-node="false"
       :filter-node-method="filterNode"
     >
@@ -30,11 +32,7 @@
       </template>
     </el-tree>
     <div slot="footer" class="dialog-footer">
-      <el-button
-        type="primary"
-        @click="dialogFormVisible = false"
-      >确 定</el-button
-      >
+      <el-button type="primary" @click="saveSelect">确 定</el-button>
     </div>
   </el-dialog>
 </template>
@@ -45,6 +43,10 @@ import { funcs } from '@/api/func';
 export default {
   name: 'SelFuncDialog',
   components: {},
+  model: {
+    prop: 'value',
+    event: 'updateValue'
+  },
   props: {
     visible: {
       type: Boolean,
@@ -55,6 +57,18 @@ export default {
       default: function() {
         return [];
       }
+    },
+    label: {
+      type: String,
+      default: 'name'
+    },
+    perLevelLabel: {
+      type: Array,
+      required: true
+    },
+    value: {
+      type: Object,
+      required: true
     }
   },
   data() {
@@ -71,6 +85,31 @@ export default {
     filterNode(value, data) {
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
+    },
+    saveSelect() {
+      // 包括半选节点
+      const selNodes = this.$refs.tree.getCheckedNodes(false, true);
+      if (selNodes && selNodes.length === 0) {
+        this.$emit('update:visible', false);
+      }
+      if (selNodes && selNodes.length !== 1) {
+        this.$message({
+          message: '只能选择一个节点',
+          type: 'warning'
+        });
+        return;
+      }
+      let _node = this.$refs.tree.getNode(selNodes[0]);
+      let resObj = {};
+      for (let i = this.perLevelLabel.length - 1; i >= 0; i--) {
+        const _label = this.perLevelLabel[i];
+        this.$lodash.set(resObj, _label, _node.data);
+        _node = _node.parent;
+      }
+      debugger;
+      const updateValue = this.$lodash.assignIn({}, this.value, resObj);
+      this.$emit('updateValue', updateValue);
+      this.$emit('update:visible', false);
     }
   }
 };

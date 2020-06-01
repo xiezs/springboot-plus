@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-05-31 21:13:33
+ * @LastEditTime: 2020-06-01 22:02:17
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -93,7 +93,12 @@
         </el-form-item>
       </el-form>
     </div>
-    <sel-func-dialog :visible.sync="dialogVisible" :tree-data="treeData">
+    <sel-func-dialog
+      v-model="formModel"
+      :per-level-label="['parent']"
+      :visible.sync="dialogVisible"
+      :tree-data="treeData"
+    >
     </sel-func-dialog>
   </div>
 </template>
