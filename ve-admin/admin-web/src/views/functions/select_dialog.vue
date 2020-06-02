@@ -1,13 +1,14 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-06-01 22:49:52
+ * @LastEditTime: 2020-06-02 21:01:15
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
 <template>
   <el-dialog
     id="sel-func-dialog"
+    :key="Math.random()"
     title="功能点选择"
     :visible="visible"
     @update:visible="$emit('update:visible', $event)"
@@ -78,11 +79,13 @@ export default {
   },
   watch: {
     filterText(val) {
+      debugger;
       this.$refs.tree.filter(val);
     }
   },
   methods: {
     filterNode(value, data) {
+      debugger;
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
     },
@@ -140,6 +143,12 @@ export default {
 }
 </style>
 <style lang="scss">
+.el-dialog {
+  height: 90%;
+  overflow-y: scroll;
+  top: -10vh;
+  margin-bottom: -5vh;
+}
 .el-tree-node {
   margin-top: 5px;
 }

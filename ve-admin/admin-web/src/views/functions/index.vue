@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-06-01 22:02:17
+ * @LastEditTime: 2020-06-02 20:58:23
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -17,7 +17,7 @@
         :data="treeData"
         node-key="id"
         default-expand-all
-        :expand-on-click-node="false"
+        :expand-on-click-node="true"
         :filter-node-method="filterNode"
       >
         <template v-slot="{ node: node, data: data }">
@@ -162,7 +162,6 @@ export default {
     createNode() {},
     updateNode() {},
     openSelectParentNodeLayer() {
-      console.log(Math.random());
       this.dialogVisible = true;
     }
   }
