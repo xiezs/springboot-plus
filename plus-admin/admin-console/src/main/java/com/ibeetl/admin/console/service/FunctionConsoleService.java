@@ -13,11 +13,13 @@ import com.ibeetl.admin.core.entity.CoreRoleMenu;
 import com.ibeetl.admin.core.rbac.tree.FunctionItem;
 import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.service.CorePlatformService;
+import com.ibeetl.admin.core.util.FormFieldException;
 import com.ibeetl.admin.core.util.PlatformException;
 import com.ibeetl.admin.core.util.enums.DelFlagEnum;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import org.beetl.sql.core.engine.PageQuery;
@@ -47,6 +49,9 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
   @Autowired
   CorePlatformService corePlatformService;
 
+  /**
+   * @return 返回功能点构成的树结构
+   */
   public List<CoreFunction> getFuncTree() {
 
     List<CoreFunction> coreFunctionList = functionConsoleDao.getSQLManager()
@@ -63,12 +68,9 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
 
   /**
    * 深度优先算法递归构建功能点树
-   *
-   * @param root
-   * @param allNodes
-   * @return
    */
   private void buildTree(CoreFunction root, @NotNull List<CoreFunction> allNodes) {
+
     if (CollUtil.isEmpty(allNodes)) {
       return;
     }
@@ -104,9 +106,29 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
 
   public Long saveFunction(CoreFunction function) {
 
+    String code = function.getCode();
+    CoreFunction dbFunction = this.getFunction(code);
+    if (dbFunction != null) {
+      throw new FormFieldException(CoreFunction.class.getName(), "code", "已经存在");
+    }
+    Long parentId = Optional.ofNullable(function.getParent()).map(CoreFunction::getId).orElse(-1L);
+    function.setParentId(parentId);
+    function.setCreateTime(new Date());
     functionConsoleDao.insert(function, true);
     corePlatformService.clearFunctionCache();
     return function.getId();
+  }
+
+  public void updateFunction(CoreFunction function) {
+
+    CoreFunction dbFunction = this.getFunction(function.getCode());
+    if (dbFunction != null && !dbFunction.getId().equals(function.getId())) {
+      throw new FormFieldException(CoreFunction.class.getName(), "code", "不存在此功能点");
+    }
+    Long parentId = Optional.ofNullable(function.getParent()).map(CoreFunction::getId).orElse(-1L);
+    function.setParentId(parentId);
+    functionConsoleDao.updateById(function);
+    corePlatformService.clearFunctionCache();
   }
 
   /**
@@ -126,11 +148,6 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
     corePlatformService.clearFunctionCache();
   }
 
-  public void updateFunction(CoreFunction function) {
-
-    functionConsoleDao.updateById(function);
-    corePlatformService.clearFunctionCache();
-  }
 
   public CoreFunction getFunction(Long functionId) {
 

@@ -36,6 +36,8 @@ public class CoreFunction extends BaseEntity {
   @NotBlank
   private Long parentId;
 
+  private CoreFunction parent;
+
   @UpdateIgnore
   private Date createTime;
 

@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-06-02 20:58:23
+ * @LastEditTime: 2020-06-07 19:37:11
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -17,7 +17,7 @@
         :data="treeData"
         node-key="id"
         default-expand-all
-        :expand-on-click-node="true"
+        :expand-on-click-node="false"
         :filter-node-method="filterNode"
       >
         <template v-slot="{ node: node, data: data }">
@@ -56,27 +56,48 @@
       </el-tree>
     </div>
     <div class="sp-side_panel--right">
-      <el-form key="formKey" ref="form" :model="formModel" label-width="80px">
-        <el-form-item label="功能名">
-          <el-input v-model="formModel.name"></el-input>
-        </el-form-item>
-        <el-form-item label="功能代码">
-          <el-input v-model="formModel.code"></el-input>
-        </el-form-item>
-        <el-form-item label="功能地址">
+      <el-form
+        key="formKey"
+        ref="nodeForm"
+        :rules="rules"
+        :model="formModel"
+        label-width="80px"
+      >
+        <el-form-item label="功能名" prop="name">
           <el-input
-            v-model="formModel.access_url"
-            :disabled="actType === 'editor'"
+            v-model="formModel.name"
+            placeholder="请输入功能点名称"
           ></el-input>
         </el-form-item>
-        <el-form-item label="父功能">
+        <el-form-item label="功能代码" prop="code">
+          <el-input
+            v-model="formModel.code"
+            placeholder="请输入系统唯一功能点代码"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="路由地址" prop="access_url">
+          <el-input
+            v-model="formModel.access_url"
+            placeholder="请输入路由地址，可以输入动态路由"
+          ></el-input>
+          <!-- todo :disabled="actType === 'editor'"  理论上应该在创建后就禁止修改，但是开发时方便一下-->
+        </el-form-item>
+        <el-form-item label="组件位置">
+          <el-input
+            v-model="formModel.component"
+            placeholder="请输入在前端中的组件地址，非页面可不填"
+          ></el-input>
+          <!-- todo :disabled="actType === 'editor'"  理论上应该在创建后就禁止修改，但是开发时方便一下-->
+        </el-form-item>
+        <el-form-item label="父功能" prop="parent">
           <el-input
             v-model="formModel.parent.name"
+            placeholder="点击选择上一级功能点"
             readonly
             @focus="openSelectParentNodeLayer"
           ></el-input>
         </el-form-item>
-        <el-form-item label="功能类型">
+        <el-form-item label="功能类型" prop="type">
           <el-select v-model="formModel.type" placeholder="请选择功能类型">
             <el-option label="导航访问" value="FN0"></el-option>
             <el-option label="功能点访问" value="FN1"></el-option>
@@ -84,11 +105,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            @click="actType === 'create' ? createNode : updateNode"
-          >保存</el-button
-          >
+          <el-button type="primary" @click="saveNode">保存</el-button>
           <el-button>取消</el-button>
         </el-form-item>
       </el-form>
@@ -104,7 +121,12 @@
 </template>
 <script>
 /** 功能点管理 */
-import { funcs } from '@/api/func';
+import {
+  funcs,
+  createFuncNode,
+  updateFuncNode,
+  delFuncNodesByParent
+} from '@/api/func';
 import SelFuncDialog from './select_dialog';
 
 export default {
@@ -122,7 +144,29 @@ export default {
         }
       },
       actType: 'create',
-      dialogVisible: false
+      dialogVisible: false,
+      rules: {
+        name: { required: true, message: '请输入名称', trigger: 'blur' },
+        code: { required: true, message: '请输入代码点', trigger: 'blur' },
+        access_url: {
+          required: true,
+          message: '请输入访问路由，可使用动态路由',
+          trigger: 'blur'
+        },
+        parent: {
+          type: 'object',
+          required: true,
+          fields: {
+            name: { type: 'string', message: '请选择父功能', required: true }
+          }
+        },
+        type: {
+          type: 'string',
+          required: true,
+          message: '请选择访问类型',
+          trigger: 'change'
+        }
+      }
     };
   },
   watch: {
@@ -158,9 +202,98 @@ export default {
       this.formModel.parent = node.parent.data;
       this.actType = 'editor';
     },
-    removeNode(node, data) {},
-    createNode() {},
-    updateNode() {},
+    removeNode(node, data) {
+      const ids = this.getTreeBranchIds(node);
+      this.$confirm('此操作将永久删除该功能点及其子功能点, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          delFuncNodesByParent({ ids: ids }).then(response => {
+            const { code, message, data } = { ...response };
+            const loading = this.$loading({
+              lock: true,
+              text: 'Loading',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            });
+            const _that = this;
+            this.$message({
+              message: '删除成功',
+              type: 'success',
+              onClose: function(_instance) {
+                _that.$router.replace('/refresh');
+                loading.close();
+              }
+            });
+          });
+        })
+        .catch(() => {});
+    },
+    getTreeBranchIds(node) {
+      let ids = [];
+      ids.push(node.data.id);
+      const _children = node.childNodes;
+      for (let i = 0; i < _children.length; i++) {
+        const child = _children[i];
+        let _child_ids = this.getTreeBranchIds(child);
+        ids = ids.concat(_child_ids);
+      }
+      return ids;
+    },
+    saveNode() {
+      const _that = this;
+      _that.$refs.nodeForm.validate(valid => {
+        if (!valid) {
+          _that.$message.error('数据请填写完成');
+          return false;
+        }
+        // 解除循环引用
+        delete _that.formModel.parent.children;
+        if (_that.actType === 'create') {
+          createFuncNode(_that.formModel).then(response => {
+            const { code, message, data } = { ...response };
+            const _that = this;
+            const loading = this.$loading({
+              lock: true,
+              text: 'Loading',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            });
+            this.$message({
+              message: '创建功能点成功',
+              type: 'success',
+              onClose: function(_instance) {
+                // todo 可以用组件Mixin改写，或者直接挂载到Router原型上
+                _that.$router.replace('/refresh');
+                loading.close();
+              }
+            });
+          });
+        } else {
+          updateFuncNode(_that.formModel).then(response => {
+            const { code, message, data } = { ...response };
+            const _that = this;
+            const loading = this.$loading({
+              lock: true,
+              text: 'Loading',
+              spinner: 'el-icon-loading',
+              background: 'rgba(0, 0, 0, 0.7)'
+            });
+            this.$message({
+              message: '更新功能点成功',
+              type: 'success',
+              onClose: function(_instance) {
+                // todo 可以用组件Mixin改写，或者直接挂载到Router原型上
+                _that.$router.replace('/refresh');
+                loading.close();
+              }
+            });
+          });
+        }
+      });
+    },
     openSelectParentNodeLayer() {
       this.dialogVisible = true;
     }

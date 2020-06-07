@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-06-02 21:01:15
+ * @LastEditTime: 2020-06-06 18:44:44
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -13,7 +13,12 @@
     :visible="visible"
     @update:visible="$emit('update:visible', $event)"
   >
-    <el-input v-model="filterText" placeholder="输入关键字进行过滤"> </el-input>
+    <el-input
+      v-model="filterText"
+      placeholder="输入关键字进行过滤"
+      @input="filterInput"
+    >
+    </el-input>
     <el-tree
       :key="Math.random()"
       ref="tree"
@@ -77,15 +82,11 @@ export default {
       filterText: ''
     };
   },
-  watch: {
-    filterText(val) {
-      debugger;
-      this.$refs.tree.filter(val);
-    }
-  },
   methods: {
+    filterInput(value) {
+      this.$refs.tree.filter(value);
+    },
     filterNode(value, data) {
-      debugger;
       if (!value) return true;
       return data.name.indexOf(value) !== -1;
     },
@@ -109,7 +110,6 @@ export default {
         this.$lodash.set(resObj, _label, _node.data);
         _node = _node.parent;
       }
-      debugger;
       const updateValue = this.$lodash.assignIn({}, this.value, resObj);
       this.$emit('updateValue', updateValue);
       this.$emit('update:visible', false);

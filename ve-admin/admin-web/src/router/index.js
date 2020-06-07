@@ -1,19 +1,29 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from 'vue';
+import Router from 'vue-router';
 
-Vue.use(Router)
+Vue.use(Router);
 
 /* Layout */
-import Layout from '@/layout'
+import Layout from '@/layout';
 
 /**
  * constantRoutes
  * a base page that does not have permission requirements
  * all roles can be accessed
- * 这个常驻的路由不能拆分至route_map 中，也许是因为import是异步的？
- * 所以导致了第一时间内路由中没有component
  */
+// refresh 是为了需要刷新当前路由创建的
 export const constantRoutes = [
+  {
+    path: '/refresh',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/refresh',
+        component: () => import('@/components/Refresh/index')
+      }
+    ]
+  },
   {
     path: '/redirect',
     component: Layout,
@@ -97,21 +107,21 @@ export const constantRoutes = [
       }
     ]
   }
-]
+];
 
 const createRouter = () =>
   new Router({
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
-  })
+  });
 
-const router = createRouter()
+const router = createRouter();
 
 // Detail see: https://github.com/vuejs/vue-router/issues/1234#issuecomment-357941465
 export function resetRouter() {
-  const newRouter = createRouter()
-  router.matcher = newRouter.matcher // reset router
+  const newRouter = createRouter();
+  router.matcher = newRouter.matcher; // reset router
 }
 
-export default router
+export default router;
