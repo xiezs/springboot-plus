@@ -1,5 +1,6 @@
 package com.ibeetl.admin.console.dao;
 
+import java.util.List;
 import org.beetl.sql.core.annotatoin.SqlResource;
 import org.beetl.sql.core.engine.PageQuery;
 import org.beetl.sql.core.mapper.BaseMapper;
@@ -15,4 +16,6 @@ public interface MenuConsoleDao extends BaseMapper<CoreMenu> {
    * @param query 查询条件
    */
   void queryByCondtion(PageQuery query);
+
+  List<CoreMenu> selectMenuAndRelationFunction();
 }

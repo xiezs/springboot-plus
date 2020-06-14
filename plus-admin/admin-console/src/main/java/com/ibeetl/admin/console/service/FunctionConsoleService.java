@@ -1,5 +1,7 @@
 package com.ibeetl.admin.console.service;
 
+import static com.ibeetl.admin.core.service.CorePlatformService.FUNCTION_TREE_CACHE;
+
 import cn.hutool.core.collection.CollUtil;
 import com.ibeetl.admin.console.dao.FunctionConsoleDao;
 import com.ibeetl.admin.console.dao.RoleFunctionConsoleDao;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,13 +55,13 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
   /**
    * @return 返回功能点构成的树结构
    */
+  @Cacheable(FUNCTION_TREE_CACHE)
   public List<CoreFunction> getFuncTree() {
 
     List<CoreFunction> coreFunctionList = functionConsoleDao.getSQLManager()
         .lambdaQuery(CoreFunction.class)
         .andEq(CoreFunction::getDelFlag,
             DelFlagEnum.NORMAL).select();
-    System.out.println(coreFunctionList);
 
     CoreFunction root = new CoreFunction();
     root.setId(-1L);

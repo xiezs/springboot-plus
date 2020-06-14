@@ -1,14 +1,14 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-05-30 12:53:38
- * @LastEditTime: 2020-06-14 15:23:59
+ * @LastEditTime: 2020-06-14 15:24:13
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
 <template>
   <el-dialog
-    id="sel-func-dialog"
-    title="功能点选择"
+    id="sel-menu-dialog"
+    title="菜单选择"
     :visible="visible"
     @update:visible="$emit('update:visible', $event)"
   >
@@ -36,11 +36,8 @@
   </el-dialog>
 </template>
 <script>
-/** 功能点管理 */
-import { funcs } from '@/api/func';
-
 export default {
-  name: 'SelFuncDialog',
+  name: 'SelMenuDialog',
   components: {},
   model: {
     prop: 'value',
@@ -76,7 +73,7 @@ export default {
     };
   },
   watch: {
-    filterText(nv, ov) {
+    filterText(nv) {
       this.$refs.tree.filter(nv);
     }
   },
@@ -124,15 +121,15 @@ export default {
 %sp-tree_node_type {
   box-shadow: 1px 1px 1px 1px #e8f4ff;
 }
-.sp-tree_node_type--FN0 {
+.sp-tree_node_type--MENU_S {
   @extend %sp-tree_node_type;
   background: linear-gradient(to right, #ff03035e, transparent);
 }
-.sp-tree_node_type--FN1 {
+.sp-tree_node_type--MENU_N {
   @extend %sp-tree_node_type;
   background: linear-gradient(to right, #fff5035e, transparent);
 }
-.sp-tree_node_type--FN2 {
+.sp-tree_node_type--MENU_M {
   @extend %sp-tree_node_type;
   background: linear-gradient(to right, #033cff5e, transparent);
 }

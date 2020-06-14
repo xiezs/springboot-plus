@@ -10,7 +10,7 @@ user:
   orgId: 1
 # 文件操作的根目录配置 请根据各自计算机配置
 localFile:
-  root: E:\code_workspace\temp_space\
+  root: /home/pi/java_dir/temp_space/
 # --------beetl配置
 beetl:
   suffix: html
@@ -60,7 +60,7 @@ spring:
     baseDataSource:
       driver-class-name: com.mysql.cj.jdbc.Driver
       password: 123456
-      url: jdbc:mysql://127.0.0.1:3306/starter_vue?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&useInformationSchema=true
+      url: jdbc:mysql://localhost:3306/starter_vue?useUnicode=true&characterEncoding=UTF-8&serverTimezone=GMT%2B8&useSSL=false&useInformationSchema=true
       username: root
   session:
     store-type: none

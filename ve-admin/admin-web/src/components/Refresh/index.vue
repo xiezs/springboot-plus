@@ -1,10 +1,11 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-06-07 14:41:55
- * @LastEditTime: 2020-06-07 14:45:23
+ * @LastEditTime: 2020-06-14 18:55:44
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
+<template><span></span></template>
 <script>
 export default {
   name: 'Refresh',
