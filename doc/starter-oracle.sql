@@ -833,7 +833,7 @@ values (22, '角色数据授权', '角色数据授权', null, 11, 'MENU_M', 18, 
 insert into CORE_MENU (id, code, name, create_time, function_id, type, parent_menu_id, seq, icon)
 values (23, '博客测试', '博客测试1', null, 182, 'MENU_M', 19, 9, null);
 insert into CORE_MENU (id, code, name, create_time, function_id, type, parent_menu_id, seq, icon)
-values (1002, '代码生成管理', '代码生成管理', to_date('12-03-2018 11:52:53', 'dd-mm-yyyy hh24:mi:ss'), null, 'MENU_N', 8, 2, null);
+values (1002, '代码生成导航', '代码生成导航', to_date('12-03-2018 11:52:53', 'dd-mm-yyyy hh24:mi:ss'), null, 'MENU_N', 8, 2, null);
 insert into CORE_MENU (id, code, name, create_time, function_id, type, parent_menu_id, seq, icon)
 values (1003, '子系统生成', '子系统生成', to_date('12-03-2018 13:21:54', 'dd-mm-yyyy hh24:mi:ss'), 1001, 'MENU_M', 1002, 1, null);
 commit;
