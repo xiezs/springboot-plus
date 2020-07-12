@@ -64,7 +64,7 @@
 	</div>
 	
 	<div class="layui-row">
-		<layui:attachment name="attachmentId" batchFileUUID="${user.attachmentId}" isNew="false" bizId="${user.id}" bizType="User"/>
+		<layui:attachment name="attachmentId" batchFileUUID="${user.attachmentId!uuid()}" isNew="false" bizId="${user.id}" bizType="User"/>
 	</div>
 	
 	<layui:submitButtons id="saveUser" />

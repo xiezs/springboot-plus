@@ -504,7 +504,8 @@ create table CORE_USER
   job_type1   VARCHAR2(16),
   del_flag    NUMBER(4),
   update_time DATE,
-  job_type0   VARCHAR2(16)
+  job_type0   VARCHAR2(16),
+  attachment_id VARCHAR2(128)
 )
 tablespace USERS
   pctfree 10
