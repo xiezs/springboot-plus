@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping("/functions")
+@RequestMapping("functions")
 public class FunctionElController {
 
   @Autowired

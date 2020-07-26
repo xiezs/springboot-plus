@@ -57,11 +57,9 @@ public class ServiceValidationAop {
         target.getClass().getDeclaredMethod(signature.getName(), targetMethod.getParameterTypes());
     Object[] args = point.getArgs();
     /*获取验证组*/
-    Class[] groups;
-    groups =
-        Optional.ofNullable(realMethod.getAnnotation(Validated.class))
-            .map(Validated::value)
-            .orElse(new Class[0]);
+    Class[] groups = Optional.ofNullable(realMethod.getAnnotation(Validated.class))
+        .map(Validated::value)
+        .orElse(new Class[0]);
     /*使用hibernate-validator验证*/
     Set<ConstraintViolation<Object>> constraintViolations =
         ValidateUtils.validateMethod(target, realMethod, args, groups);

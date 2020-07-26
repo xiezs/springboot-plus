@@ -33,5 +33,5 @@ batchDelCoreDictByIds
 
 * 批量逻辑删除
 
-    update core_dict set del_flag = 1 where id in( #join(ids)#)
+    update core_dict set del_flag = 1 where id in ( #join(ids)#)
     

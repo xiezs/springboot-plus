@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotEmpty;
 import org.apache.poi.ss.util.CellReference;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.service.CoreBaseService;
 import com.ibeetl.admin.core.util.ExcelError;
 import com.ibeetl.admin.core.util.PlatformException;
+import org.springframework.validation.annotation.Validated;
 
 /** CoreDict Service */
 @Service
@@ -32,9 +34,10 @@ public class DictConsoleService extends CoreBaseService<CoreDict> {
     return ret;
   }
 
-  public void batchDelCoreDict(List<Long> ids) {
+  @Validated
+  public void batchDelCoreDict(@NotEmpty List<Long> ids) {
     try {
-      // TODO,找到数据字典所有子类，设置删除标记
+      // TODO,找到数据字典所有子类，设置删除标记、可以从缓存中遍历字典树得到id
       dictDao.batchDelCoreDictByIds(ids);
     } catch (Exception e) {
       throw new PlatformException("批量删除CoreDict失败", e);

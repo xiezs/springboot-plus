@@ -1,6 +1,9 @@
 # --------自定义应用属性
 app:
   name: SpringBoot-Plus
+  arrs:
+    - 1
+    - 2
 #打开审计功能，开发模式应该关闭
 audit:
   enable: false

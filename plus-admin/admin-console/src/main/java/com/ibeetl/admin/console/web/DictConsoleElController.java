@@ -1,5 +1,18 @@
 package com.ibeetl.admin.console.web;
 
+import com.ibeetl.admin.console.service.DictConsoleService;
+import com.ibeetl.admin.console.web.dto.DictExcelImportData;
+import com.ibeetl.admin.console.web.query.CoreDictQuery;
+import com.ibeetl.admin.core.annotation.Function;
+import com.ibeetl.admin.core.annotation.RequestBodyPlus;
+import com.ibeetl.admin.core.entity.CoreDict;
+import com.ibeetl.admin.core.entity.CoreUser;
+import com.ibeetl.admin.core.file.FileItem;
+import com.ibeetl.admin.core.file.FileService;
+import com.ibeetl.admin.core.service.CorePlatformService;
+import com.ibeetl.admin.core.util.PlatformException;
+import com.ibeetl.admin.core.util.ValidateConfig;
+import com.ibeetl.admin.core.web.JsonResult;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,11 +21,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.beetl.sql.core.engine.PageQuery;
 import org.jxls.common.Context;
 import org.jxls.reader.ReaderBuilder;
@@ -22,91 +34,59 @@ import org.jxls.reader.XLSReadStatus;
 import org.jxls.reader.XLSReader;
 import org.jxls.util.JxlsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
-import com.ibeetl.admin.console.service.DictConsoleService;
-import com.ibeetl.admin.console.web.dto.DictExcelImportData;
-import com.ibeetl.admin.console.web.query.CoreDictQuery;
-import com.ibeetl.admin.core.annotation.Function;
-import com.ibeetl.admin.core.entity.CoreDict;
-import com.ibeetl.admin.core.entity.CoreUser;
-import com.ibeetl.admin.core.file.FileItem;
-import com.ibeetl.admin.core.file.FileService;
-import com.ibeetl.admin.core.service.CorePlatformService;
-import com.ibeetl.admin.core.util.ConvertUtil;
-import com.ibeetl.admin.core.util.PlatformException;
-import com.ibeetl.admin.core.util.ValidateConfig;
-import com.ibeetl.admin.core.web.JsonResult;
+/**
+ * 字典数据管理接口
+ */
+@Slf4j
+@RequestMapping("dicts")
+@RestController
+public class DictConsoleElController {
 
-/** CoreDict 接口 */
-@Controller
-public class DictConsoleController {
+  @Autowired
+  private DictConsoleService dictService;
 
-  private final Log log = LogFactory.getLog(this.getClass());
-  private static final String MODEL = "/admin/dict";
+  @Autowired
+  FileService fileService;
 
-  @Autowired private DictConsoleService dictService;
-  @Autowired FileService fileService;
+  @Autowired
+  CorePlatformService platformService = null;
 
-  @Autowired CorePlatformService platformService = null;
-  /* 页面 */
-
-  @GetMapping(MODEL + "/index.do")
+  @GetMapping("/list")
   @Function("dict.query")
-  public ModelAndView index() {
-    ModelAndView view = new ModelAndView("/admin/dict/index.html");
-    view.addObject("search", CoreDictQuery.class.getName());
-    return view;
-  }
-
-  @GetMapping(MODEL + "/edit.do")
-  @Function("dict.edit")
-  public ModelAndView edit(Long id) {
-    ModelAndView view = new ModelAndView("/admin/dict/edit.html");
-    CoreDict dict = dictService.queryById(id);
-    view.addObject("dict", dict);
-    return view;
-  }
-
-  @GetMapping(MODEL + "/add.do")
-  @Function("dict.add")
-  public ModelAndView add() {
-    ModelAndView view = new ModelAndView("/admin/dict/add.html");
-    return view;
-  }
-
-  /* ajax json */
-
-  @PostMapping(MODEL + "/list.json")
-  @Function("dict.query")
-  @ResponseBody
   public JsonResult<PageQuery> list(CoreDictQuery condtion) {
+
     PageQuery page = condtion.getPageQuery();
     dictService.queryByCondition(page);
     return JsonResult.success(page);
   }
 
-  @PostMapping(MODEL + "/add.json")
+  @PostMapping("/add")
   @Function("dict.add")
-  @ResponseBody
-  public JsonResult add(@Validated(ValidateConfig.ADD.class) CoreDict dict) {
+  public JsonResult add(@RequestBody @Validated(ValidateConfig.ADD.class) CoreDict dict) {
+
     dict.setCreateTime(new Date());
     dictService.save(dict);
     platformService.clearDictCache();
     return JsonResult.success();
   }
 
-  @PostMapping(MODEL + "/update.json")
+  @PutMapping("/update")
   @Function("dict.update")
-  @ResponseBody
-  public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class) CoreDict dict) {
+  public JsonResult<String> update(
+      @RequestBody @Validated(ValidateConfig.UPDATE.class) CoreDict dict) {
+
     boolean success = dictService.update(dict);
     if (success) {
       platformService.clearDictCache();
@@ -116,28 +96,28 @@ public class DictConsoleController {
     }
   }
 
-  @GetMapping(MODEL + "/view.json")
+  @GetMapping("/view/{id}")
   @Function("dict.query")
-  @ResponseBody
-  public JsonResult<CoreDict> queryInfo(Long id) {
+  public JsonResult<CoreDict> queryInfo(@PathVariable("id") @NotNull Long id) {
+
     CoreDict dict = dictService.queryById(id);
     return JsonResult.success(dict);
   }
 
-  @PostMapping(MODEL + "/delete.json")
+  @DeleteMapping("/delete")
   @Function("dict.delete")
-  @ResponseBody
-  public JsonResult delete(String ids) {
-    List<Long> dels = ConvertUtil.str2longs(ids);
-    dictService.batchDelCoreDict(dels);
+  public JsonResult delete(@NotEmpty @RequestBodyPlus("ids") List<Long> ids) {
+
+    dictService.batchDelCoreDict(ids);
     platformService.clearDictCache();
     return JsonResult.success();
   }
 
-  @PostMapping(MODEL + "/excel/export.json")
+  @GetMapping("/excel/export")
   @Function("dict.export")
-  @ResponseBody
-  public JsonResult<String> export(HttpServletResponse response, CoreDictQuery condtion) {
+  public JsonResult<String> export(CoreDictQuery condtion,
+      HttpServletResponse response) {
+
     String excelTemplate = "excelTemplates/admin/dict/dict_collection_template.xls";
     PageQuery<CoreUser> page = condtion.getPageQuery();
     // 取出全部符合条件的
@@ -163,10 +143,10 @@ public class DictConsoleController {
     }
   }
 
-  @PostMapping(MODEL + "/excel/import.do")
+  @PostMapping("/excel/import")
   @Function("dict.import")
-  @ResponseBody
   public JsonResult importExcel(@RequestParam("file") MultipartFile file) throws Exception {
+
     if (file.isEmpty()) {
       return JsonResult.fail();
     }
@@ -212,4 +192,5 @@ public class DictConsoleController {
     int end = str.indexOf("on");
     return str.substring(start, end);
   }
+
 }
