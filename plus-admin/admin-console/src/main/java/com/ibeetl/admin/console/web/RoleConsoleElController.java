@@ -8,6 +8,7 @@ import com.ibeetl.admin.console.web.query.RoleQuery;
 import com.ibeetl.admin.console.web.query.RoleUserQuery;
 import com.ibeetl.admin.core.annotation.Function;
 import com.ibeetl.admin.core.annotation.Query;
+import com.ibeetl.admin.core.annotation.RequestBodyPlus;
 import com.ibeetl.admin.core.entity.CoreRole;
 import com.ibeetl.admin.core.entity.CoreUser;
 import com.ibeetl.admin.core.entity.ElCascaderData;
@@ -27,8 +28,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -51,7 +55,7 @@ public class RoleConsoleElController {
    * @param condtion
    * @return
    */
-  @PostMapping("/list.json")
+  @GetMapping("/list")
   @Function("role.query")
   public JsonResult<PageQuery> list(RoleQuery condtion) {
     PageQuery page = condtion.getPageQuery();
@@ -59,7 +63,7 @@ public class RoleConsoleElController {
     return JsonResult.success(page);
   }
 
-  @GetMapping("/all.json")
+  @GetMapping("/all")
   @Function("role.query")
   public JsonResult<List<CoreRole>> all() {
     List<CoreRole> list = roleConsoleService.queryAllPermissionList();
@@ -71,7 +75,7 @@ public class RoleConsoleElController {
    *
    * @return
    */
-  @PostMapping("/list/condition.json")
+  @PostMapping("/list/condition")
   @Function("role.query")
   public JsonResult<List<Map<String, Object>>> listCondtion() {
     List<Map<String, Object>> list =
@@ -84,9 +88,9 @@ public class RoleConsoleElController {
    *
    * @return
    */
-  @PostMapping("/add.json")
+  @PostMapping("/add")
   @Function("role.add")
-  public JsonResult addRole(@Validated(ValidateConfig.ADD.class) CoreRole role) {
+  public JsonResult addRole(@Validated(ValidateConfig.ADD.class) @RequestBody CoreRole role) {
     CoreRole role1 = roleConsoleService.queryByCode(role.getCode());
     if (role1 != null) {
       return JsonResult.failMessage("用户编号已存在");
@@ -95,7 +99,7 @@ public class RoleConsoleElController {
     role.setCreateTime(new Date());
     roleConsoleService.save(role);
     platformService.clearFunctionCache();
-    return result.success();
+    return JsonResult.success();
   }
 
   /**
@@ -104,15 +108,15 @@ public class RoleConsoleElController {
    * @param role
    * @return
    */
-  @PostMapping("/update.json")
+  @PutMapping("/update")
   @Function("role.edit")
-  public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class) CoreRole role) {
+  public JsonResult<String> update(@Validated(ValidateConfig.UPDATE.class) @RequestBody CoreRole role) {
 
     boolean success = roleConsoleService.update(role);
 
     if (success) {
       platformService.clearFunctionCache();
-      return new JsonResult().success();
+      return JsonResult.success();
     } else {
       return JsonResult.failMessage("保存失败");
     }
@@ -124,7 +128,7 @@ public class RoleConsoleElController {
    * @param id
    * @return
    */
-  @GetMapping("/view.json")
+  @GetMapping("/view")
   @Function("role.query")
   public JsonResult<CoreRole> queryInfo(Long id) {
     CoreRole role = roleConsoleService.queryById(id);
@@ -137,20 +141,15 @@ public class RoleConsoleElController {
    * @param ids 角色id
    * @return
    */
-  @PostMapping("/delete.json")
+  @DeleteMapping("/delete")
   @Function("role.delete")
-  public JsonResult delete(String ids) {
-    if (ids.endsWith(",")) {
-      ids = StringUtils.substringBeforeLast(ids, ",");
-    }
-
-    List<Long> idList = ConvertUtil.str2longs(ids);
-    roleConsoleService.deleteById(idList);
-    return new JsonResult().success();
+  public JsonResult delete(@RequestBodyPlus("ids") List<Long> ids) {
+    roleConsoleService.deleteById(ids);
+    return JsonResult.success();
   }
 
   /** 查询角色下授权用户列表 */
-  @PostMapping("/user/list.json")
+  @PostMapping("/user/list")
   @Function("role.user.query")
   public JsonResult<PageQuery<CoreUser>> userList(RoleUserQuery query) {
     PageQuery page = query.getPageQuery();
@@ -158,21 +157,21 @@ public class RoleConsoleElController {
     return JsonResult.success(page);
   }
 
-  @PostMapping("/function/ids.json")
+  @PostMapping("/function/ids")
   @Function("role.function.query")
   public JsonResult<List<Long>> getFunctionIdByRole(Long roleId) {
     List<Long> list = functionConsoleService.getFunctionByRole(roleId);
     return JsonResult.success(list);
   }
 
-  @GetMapping("/function/queryFunction.json")
+  @GetMapping("/function/queryFunction")
   @Function("role.function.query")
   public JsonResult<List<RoleDataAccessFunction>> getQueryFunctionByRole(Long roleId) {
     List<RoleDataAccessFunction> list = functionConsoleService.getQueryFunctionByRole(roleId);
     return JsonResult.success(list);
   }
 
-  @PostMapping("/function/update.json")
+  @PostMapping("/function/update")
   @Function("role.function.edit")
   public JsonResult updateFunction(Long roleId, String ids) {
     List<Long> all = ConvertUtil.str2longs(ids);
@@ -195,7 +194,7 @@ public class RoleConsoleElController {
     return JsonResult.success();
   }
 
-  @PostMapping("/function/updateDataAccess.json")
+  @PostMapping("/function/updateDataAccess")
   @Function("role.function.updateDataAccess")
   public JsonResult updateFunctionDataAccess(Long roleId, Long fnId, Integer accessType) {
     RoleDataAccessFunction data = new RoleDataAccessFunction();

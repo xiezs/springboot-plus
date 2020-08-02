@@ -48,7 +48,7 @@ public class DataAccessFunction implements Function {
     // 项目初期，总是返回1==1，避免数据权限带来的麻烦
     CoreUser user = platFormService.getCurrentUser();
     // {"org":"org_id","user","user_id"}
-    Map targets = this.defaultTargets;
+    Map targets = defaultTargets;
     // 用户调用conroller 结果"user.view"
     String functionCode = FunctionLocal.get();
 
