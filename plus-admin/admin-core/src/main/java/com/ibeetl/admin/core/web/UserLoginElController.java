@@ -18,8 +18,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequestMapping("core/user")
 @RestController
 public class UserLoginElController {
 
@@ -32,7 +34,7 @@ public class UserLoginElController {
     return JsonResult.success(roleRoutesService.getRoutes());
   }
 
-  @GetMapping("/user/info")
+  @GetMapping("/info")
   public JsonResult info() {
     CoreOrg currentOrg = HttpRequestLocal.getAccessCurrentOrg();
     CoreUser currentUser = HttpRequestLocal.getAccessCurrentUser();
@@ -45,7 +47,7 @@ public class UserLoginElController {
     return JsonResult.success(userRoleInfo);
   }
 
-  @PostMapping("/user/login")
+  @PostMapping("/login")
   public JsonResult loginEle(
       @RequestBodyPlus("username") String username, @RequestBodyPlus("password") String password) {
     UserLoginInfo info = coreUserService.login(username, password);
@@ -73,7 +75,7 @@ public class UserLoginElController {
     return JsonResult.success(resultMap);
   }
 
-  @PostMapping("/user/logout")
+  @PostMapping("/logout")
   public JsonResult logout() {
     HttpRequestLocal.clearAllSession();
     return JsonResult.success();

@@ -62,7 +62,7 @@
   </div>
 </template>
 <script>
-import { saveRoleData, updateRoleData } from '@/api/roles';
+import { saveRoleData, updateRoleData } from '@/api/admin_roles';
 
 export default {
   name: 'DictEditPopup',

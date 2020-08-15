@@ -126,8 +126,8 @@ import {
   deleteDictData,
   exportDictExcel,
   importExcel
-} from '@/api/dicts';
-import { download } from '@/api/file';
+} from '@/api/admin_dicts';
+import { download } from '@/api/core_file';
 
 export default {
   name: 'DictManager',

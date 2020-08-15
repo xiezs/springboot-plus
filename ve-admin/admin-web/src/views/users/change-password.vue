@@ -61,7 +61,7 @@
   </div>
 </template>
 <script>
-import { changePassword } from '@/api/user';
+import { changePassword } from '@/api/admin_users';
 export default {
   name: 'ChangePassword',
   components: {},

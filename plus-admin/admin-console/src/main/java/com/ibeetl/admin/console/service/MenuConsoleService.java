@@ -38,7 +38,7 @@ public class MenuConsoleService extends CoreBaseService<CoreMenu> {
   public void queryByCondtion(PageQuery<CoreMenu> query) {
 
     menuDao.queryByCondtion(query);
-    queryListAfter(query.getList());
+    handleStrDictValueFields(query.getList());
   }
 
   public Long saveMenu(CoreMenu menu) {

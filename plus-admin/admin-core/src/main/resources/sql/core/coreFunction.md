@@ -13,9 +13,9 @@ select menu.id,
        func.COMPONENT           component,
        role_menu.ROLE_ID
 from core_menu menu
-       left join core_function func on func.ID = menu.FUNCTION_ID and menu.DEL_FLAG=0
+       left join core_function func on func.ID = menu.FUNCTION_ID 
        left join core_role_menu role_menu on role_menu.MENU_ID = menu.id
-       
+       where menu.DEL_FLAG = 0
 ```
 @ mapping("RouteMapping");
 

@@ -1,7 +1,9 @@
 package com.ibeetl.admin.console.web.dto;
 
 import com.ibeetl.admin.core.entity.CoreFunction;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode
 public class RoleDataAccessFunction extends CoreFunction {
   private Integer dataAccessType;
   private Long roleId;

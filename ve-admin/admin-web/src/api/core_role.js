@@ -1,8 +1,15 @@
+/*
+ * @Author: 一日看尽长安花
+ * @since: 2019-12-01 11:03:53
+ * @LastEditTime: 2020-08-02 14:08:43
+ * @LastEditors: 一日看尽长安花
+ * @Description:
+ */
 import request from '@/utils/request';
 
 export function getRoutes() {
   return request({
-    url: '/routes',
+    url: '/core/user/routes',
     method: 'get'
   });
 }

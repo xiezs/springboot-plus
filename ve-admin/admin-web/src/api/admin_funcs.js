@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2020-05-31 14:38:23
- * @LastEditTime: 2020-06-13 12:42:08
+ * @LastEditTime: 2020-08-02 14:15:21
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -11,9 +11,9 @@ import request from '@/utils/request';
  * 功能点管理的数据
  * @param {*} params
  */
-export function menus(params) {
+export function funcs(params) {
   return request({
-    url: '/menus',
+    url: '/admin/functions',
     method: 'get',
     params
   });
@@ -23,9 +23,9 @@ export function menus(params) {
  * 功能点管理的数据
  * @param {*} params
  */
-export function createMenuItem(params) {
+export function createFuncNode(params) {
   return request({
-    url: '/menus',
+    url: '/admin/functions',
     method: 'post',
     params
   });
@@ -34,9 +34,9 @@ export function createMenuItem(params) {
  * 功能点管理的数据
  * @param {*} params
  */
-export function updateMenuItem(params) {
+export function updateFuncNode(params) {
   return request({
-    url: '/menus',
+    url: '/admin/functions',
     method: 'put',
     params
   });
@@ -45,9 +45,9 @@ export function updateMenuItem(params) {
  * 功能点管理的数据
  * @param {*} params
  */
-export function delMenuItemsByParent(params) {
+export function delFuncNodesByParent(params) {
   return request({
-    url: '/menus',
+    url: '/admin/functions',
     method: 'delete',
     params
   });

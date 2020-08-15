@@ -5,7 +5,7 @@
  * @LastEditors: 一日看尽长安花
  * @Description: 与业务有关的非纯api的js
  */
-import { getOrgsByParent } from '@/api/org';
+import { getOrgsByParent } from '@/api/core_org';
 
 /**
  * @description: 异步载入级联器的数据

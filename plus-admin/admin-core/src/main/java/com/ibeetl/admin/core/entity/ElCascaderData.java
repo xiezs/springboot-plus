@@ -12,4 +12,5 @@ public class ElCascaderData {
   private String label;
   private Object value;
   private List<ElCascaderData> children;
+  private Object tail;
 }

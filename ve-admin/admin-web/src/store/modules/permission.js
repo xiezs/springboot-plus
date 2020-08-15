@@ -6,7 +6,7 @@
  * @LastEditors: 一日看尽长安花
  */
 import { constantRoutes } from '@/router';
-import { getRoutes } from '@/api/role';
+import { getRoutes } from '@/api/core_role';
 import { default as asyncRoutesMap } from '@/router/maps/index';
 import { deepClone, objectMerge } from '@/utils/index';
 import { isExists, isNotExists } from '@/utils/object-util';

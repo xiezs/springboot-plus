@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-07-19 16:33:05
- * @LastEditTime: 2020-07-26 14:43:29
+ * @LastEditTime: 2020-08-02 13:40:08
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -25,50 +25,28 @@
           :rules="rules"
           label-width="120px"
         >
-          <el-form-item label="字典名称" required prop="name">
+          <el-form-item label="角色名称" required prop="name">
             <el-input
               v-model="data_.name"
-              placeholder="请输入字典名称"
+              placeholder="请输入角色名称"
             ></el-input>
           </el-form-item>
-          <el-form-item label="字典值" required prop="value">
+          <el-form-item label="角色代码" required prop="code">
             <el-input
-              v-model="data_.value"
-              placeholder="请输入字典值"
+              v-model="data_.code"
+              placeholder="请输入角色代码"
             ></el-input>
           </el-form-item>
-          <el-form-item label="字典类型名称" required prop="type_name">
-            <el-input
-              v-model="data_.type_name"
-              placeholder="请输入字典类型名称"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="字典类型" required prop="type">
-            <el-input
-              v-model="data_.type"
-              placeholder="请输入字典类型"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="上级字典" prop="parent">
-            <el-input
-              v-model.number="data_.parent"
-              placeholder="请输入上级字典id"
-              type="number"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item label="序号" prop="sort">
-            <el-input
-              v-model.number="data_.sort"
-              placeholder="请输入序号"
-              type="number"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input
-              v-model="data_.remark"
-              placeholder="请输入备注"
-            ></el-input>
+          <el-form-item label="角色类型" required prop="type">
+            <el-select v-model="data_.type" placeholder="请选择角色类型">
+              <el-option
+                v-for="item in roleOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
@@ -84,7 +62,7 @@
   </div>
 </template>
 <script>
-import { saveDictData, updateDictData } from '@/api/admin_dicts';
+import { saveOrgData, updateOrgData } from '@/api/admin_orgs';
 
 export default {
   name: 'DictEditPopup',
@@ -108,12 +86,20 @@ export default {
   data() {
     return {
       data_: {},
+      roleOptions: [
+        {
+          value: 'R0',
+          label: '操作角色'
+        },
+        {
+          value: 'R1',
+          label: '工作流角色'
+        }
+      ],
       rules: {
-        name: [{ required: true, message: '请输入字典名称' }],
-        value: [{ required: true, message: '请输入字典值' }],
-        type: [{ required: true, message: '请输入字典类型名称' }],
-        type_name: [{ required: true, message: '请输入字典类型' }],
-        sort: [{ type: 'number', message: '序号必须是数字' }]
+        name: [{ required: true, message: '请输入角色名称' }],
+        code: [{ required: true, message: '请输入角色代码' }],
+        type: [{ required: true, message: '请选择角色类型' }]
       }
     };
   },
@@ -141,7 +127,7 @@ export default {
     },
     addData() {
       const _that = this;
-      saveDictData(this.data_).then(res => {
+      saveOrgData(this.data_).then(res => {
         const { code, message, data } = { ...res };
         // 通过中间路由刷新当前路由
         _that.$nextTick(() => {
@@ -159,7 +145,7 @@ export default {
     },
     updateData() {
       const _that = this;
-      updateDictData(this.data_).then(res => {
+      updateOrgData(this.data_).then(res => {
         const { code, message, data } = { ...res };
         // 通过中间路由刷新当前路由
         _that.$nextTick(() => {

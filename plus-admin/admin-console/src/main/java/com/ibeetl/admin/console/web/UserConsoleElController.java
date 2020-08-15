@@ -40,7 +40,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
-@RequestMapping("users")
+@RequestMapping("admin/users")
 @RestController
 public class UserConsoleElController {
 

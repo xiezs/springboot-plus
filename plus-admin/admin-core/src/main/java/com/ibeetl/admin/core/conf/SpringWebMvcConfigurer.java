@@ -80,7 +80,7 @@ public class SpringWebMvcConfigurer implements WebMvcConfigurer, InitializingBea
     registry.addInterceptor(new HttpRequestInterceptor()).addPathPatterns("/**");
     registry
         .addInterceptor(new SessionInterceptor(userService))
-        .excludePathPatterns("/user/login", "/error", "/user/logout")
+        .excludePathPatterns("/**/login", "/**/error", "/**/logout")
         .addPathPatterns("/**");
   }
 

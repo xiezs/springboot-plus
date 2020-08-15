@@ -52,7 +52,7 @@ public class UserConsoleService extends CoreBaseService<CoreUser> {
    */
   public void queryByCondtion(PageQuery<CoreUser> query) {
     PageQuery<CoreUser> ret = userConsoleDao.queryByCondtion(query);
-    queryListAfter(ret.getList());
+    handleStrDictValueFields(ret.getList());
   }
 
   /**

@@ -28,7 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class CoreBaseService<T> {
 
-  @Autowired protected CoreDictService dictUtil;
+  @Autowired
+  protected CoreDictService coreDictService;
 
   protected SQLManagerBaseDao sqlManagerBaseDao;
 
@@ -36,57 +37,58 @@ public class CoreBaseService<T> {
 
   @Autowired
   public void setSqlManagerBaseDao(SQLManagerBaseDao sqlManagerBaseDao) {
+
     this.sqlManagerBaseDao = sqlManagerBaseDao;
     this.sqlManager = this.sqlManagerBaseDao.getSQLManager();
   }
 
   /**
    * 根据id查询对象，如果主键ID不存在
-   *
-   * @param id
-   * @return
    */
   public T queryById(Object id) {
+
     T t = sqlManager.single(getCurrentEntityClassz(), id);
-    queryEntityAfter((Object) t);
+    handleStrDictValueField((Object) t);
     return t;
   }
 
   /**
    * 根据id查询
    *
-   * @param classz 返回的对象类型
-   * @param id 主键id
-   * @return
+   * @param classz
+   *     返回的对象类型
+   * @param id
+   *     主键id
    */
   public T queryById(Class<T> classz, Object id) {
+
     T t = sqlManager.unique(classz, id);
-    queryEntityAfter((Object) t);
+    handleStrDictValueField((Object) t);
     return t;
   }
 
   /**
    * 新增一条数据
    *
-   * @param model 实体类
-   * @return
+   * @param model
+   *     实体类
    */
   public boolean save(T model) {
+
     return sqlManager.insert(model, true) > 0;
   }
 
   /**
    * 删除数据（一般为逻辑删除，更新del_flag字段为1）
-   *
-   * @param ids
-   * @return
    */
   public boolean deleteById(List<Long> ids) {
+
     if (ids == null || ids.isEmpty()) {
       throw new PlatformException("删除数据ID不能为空");
     }
 
-    for (Long id : ids) {}
+    for (Long id : ids) {
+    }
 
     List<Object> list = new ArrayList<>();
     for (Long id : ids) {
@@ -114,43 +116,42 @@ public class CoreBaseService<T> {
     int ret = sqlManager.updateTemplateById(getCurrentEntityClassz(), map);
     return ret == 1;
   }
+
   /**
    * 根据id删除数据
    *
-   * @param id 主键值
-   * @return
+   * @param id
+   *     主键值
    */
   public int forceDelete(Long id) {
+
     return sqlManager.deleteById(getCurrentEntityClassz(), id);
   }
 
   /**
    * 根据id删除数据
    *
-   * @param id 主键值
-   * @return
+   * @param id
+   *     主键值
    */
   public int forceDelete(Class<T> classz, Long id) {
+
     return sqlManager.deleteById(classz, id);
   }
 
   /**
    * 更新，只更新不为空的字段
-   *
-   * @param model
-   * @return
    */
   public boolean updateTemplate(T model) {
+
     return sqlManager.updateTemplateById(model) > 0;
   }
 
   /**
    * 更新所有字段
-   *
-   * @param model
-   * @return
    */
   public boolean update(T model) {
+
     return sqlManager.updateById(model) > 0;
   }
 
@@ -161,17 +162,24 @@ public class CoreBaseService<T> {
    */
   @SuppressWarnings("unchecked")
   private Class<T> getCurrentEntityClassz() {
+
     return (Class<T>)
         ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
   }
 
-  public void queryListAfter(List list) {
-    for (Object bean : list) {
-      queryEntityAfter(bean);
+  public void handleStrDictValueFields(Collection<?> collection) {
+
+    for (Object bean : collection) {
+      handleStrDictValueField(bean);
     }
   }
 
-  public void queryEntityAfter(Object bean) {
+  /**
+   * 处理字典字符值，将字典名存放在{@link TailBean}中。字典需要{@link Dict}注解
+   * @param bean
+   */
+  public void handleStrDictValueField(Object bean) {
+
     if (bean == null) {
       return;
     }
@@ -193,7 +201,7 @@ public class CoreBaseService<T> {
             String display = "";
             Object fieldValue = field.get(ext);
             if (fieldValue != null) {
-              CoreDict dbDict = dictUtil.findCoreDict(dict.type(), fieldValue.toString());
+              CoreDict dbDict = coreDictService.findCoreDict(dict.type(), fieldValue.toString());
               display = dbDict != null ? dbDict.getName() : null;
             }
             ext.set(field.getName() + dict.suffix(), display);
@@ -206,17 +214,24 @@ public class CoreBaseService<T> {
     } while (c != TailBean.class);
   }
 
-  public void processObjectsDictField(PageQuery pageQuery) {
-    this.processObjectsDictField(pageQuery.getList());
+  public void handleDictTypeFields(PageQuery pageQuery) {
+
+    this.handleDictTypeFields(pageQuery.getList());
   }
 
-  public void processObjectsDictField(Collection collection) {
+  public void handleDictTypeFields(Collection<?> collection) {
+
     for (Object o : collection) {
-      this.processDictField(o);
+      this.handleDictTypeField(o);
     }
   }
 
-  public void processDictField(Object object) {
+  /**
+   * 处理{@link DictType} 类型字段，将字典的name ,value,type存放在{@link TailBean}。字典需要{@link Dict}注解
+   * @param object
+   */
+  public void handleDictTypeField(Object object) {
+
     Field[] fields = ReflectUtil.getFields(object.getClass());
     for (Field field : fields) {
       Class<?> fieldDeclaringClass = field.getType();
@@ -234,4 +249,5 @@ public class CoreBaseService<T> {
       ReflectUtil.setFieldValue(object, field, dictType);
     }
   }
+
 }

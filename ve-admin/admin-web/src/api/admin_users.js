@@ -1,7 +1,7 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-04 20:55:14
- * @LastEditTime: 2020-04-27 14:58:13
+ * @LastEditTime: 2020-08-02 14:10:48
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
@@ -9,7 +9,7 @@ import request from '@/utils/request';
 
 export function login(data) {
   return request({
-    url: '/user/login',
+    url: '/core/user/login',
     method: 'post',
     data
   });
@@ -17,7 +17,7 @@ export function login(data) {
 /*用于vue-store中使用，获取当前用户的信息*/
 export function getInfo(token) {
   return request({
-    url: '/user/info',
+    url: '/core/user/info',
     method: 'get'
     // params: { token }
   });
@@ -25,7 +25,7 @@ export function getInfo(token) {
 
 export function logout() {
   return request({
-    url: '/user/logout',
+    url: '/core/user/logout',
     method: 'post'
   });
 }
@@ -36,7 +36,7 @@ export function logout() {
  */
 export function users(params) {
   return request({
-    url: '/users',
+    url: '/admin/users',
     method: 'get',
     params
   });
@@ -47,21 +47,21 @@ export function users(params) {
  */
 export function getUserById(params) {
   return request({
-    url: `/users/${params.id}`,
+    url: `/admin/users/${params.id}`,
     method: 'get'
   });
 }
 
 export function usersMetadata() {
   return request({
-    url: '/users/metadata',
+    url: '/admin/users/metadata',
     method: 'get'
   });
 }
 
 export function saveUserData(data) {
   return request({
-    url: '/users',
+    url: '/admin/users',
     method: 'post',
     data
   });
@@ -69,7 +69,7 @@ export function saveUserData(data) {
 
 export function updateUserData(data) {
   return request({
-    url: '/users',
+    url: '/admin/users',
     method: 'put',
     data
   });
@@ -80,7 +80,7 @@ export function updateUserData(data) {
  */
 export function deleteUserData(data) {
   return request({
-    url: '/users',
+    url: '/admin/users',
     method: 'delete',
     data
   });
@@ -91,7 +91,7 @@ export function deleteUserData(data) {
  */
 export function exportExcelUserData(data) {
   return request({
-    url: '/users/excel/export',
+    url: '/admin/users/excel/export',
     method: 'post',
     data
   });
@@ -102,7 +102,7 @@ export function exportExcelUserData(data) {
  */
 export function getUserRoles(params) {
   return request({
-    url: '/users/roles',
+    url: '/admin/users/roles',
     method: 'get',
     params
   });
@@ -113,7 +113,7 @@ export function getUserRoles(params) {
  */
 export function addUserRoles(data) {
   return request({
-    url: '/users/roles',
+    url: '/admin/users/roles',
     method: 'post',
     data
   });
@@ -125,7 +125,7 @@ export function addUserRoles(data) {
  */
 export function deleteUserRoles(data) {
   return request({
-    url: '/users/roles',
+    url: '/admin/users/roles',
     method: 'delete',
     data
   });
@@ -137,7 +137,7 @@ export function deleteUserRoles(data) {
  */
 export function changePassword(data) {
   return request({
-    url: '/users/changePassword',
+    url: '/admin/users/changePassword',
     method: 'post',
     data
   });

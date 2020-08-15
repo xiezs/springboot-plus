@@ -1,44 +1,44 @@
 /*
  * @Author: 一日看尽长安花
  * @since: 2019-09-04 20:55:14
- * @LastEditTime: 2020-08-02 12:57:52
+ * @LastEditTime: 2020-08-02 14:12:55
  * @LastEditors: 一日看尽长安花
  * @Description:
  */
 import request from '@/utils/request';
 
-export function getRoles(params) {
+export function getOrgs(params) {
   return request({
-    url: '/admin/roles/list',
+    url: '/admin/orgs/list',
     method: 'get',
     params
   });
 }
-export function getRoleById(params) {
+export function getOrgById(params) {
   return request({
-    url: `/admin/roles/${params.id}`,
+    url: `/admin/orgs/${params.id}`,
     method: 'get'
   });
 }
 
-export function saveRoleData(data) {
+export function saveOrgData(data) {
   return request({
-    url: '/admin/roles/add',
+    url: '/admin/orgs/add',
     method: 'post',
     data
   });
 }
 
-export function updateRoleData(data) {
+export function updateOrgData(data) {
   return request({
-    url: '/admin/roles/update',
+    url: '/admin/orgs/update',
     method: 'put',
     data
   });
 }
-export function deleteRoleData(data) {
+export function deleteOrgData(data) {
   return request({
-    url: '/admin/roles/delete',
+    url: '/admin/orgs/delete',
     method: 'delete',
     data
   });

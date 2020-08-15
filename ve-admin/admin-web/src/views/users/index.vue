@@ -181,10 +181,10 @@ import {
   updateUserData,
   deleteUserData,
   exportExcelUserData
-} from '@/api/user';
-import { download } from '@/api/file';
-import { immaditeLoadDicts } from '@/api/dict';
-import { immaditeLoadOrgs } from '@/api/org';
+} from '@/api/admin_users';
+import { download } from '@/api/core_file';
+import { immaditeLoadDicts } from '@/api/core_dict';
+import { immaditeLoadOrgs } from '@/api/core_org';
 import { layzyLoadDictTree, handleCascaderValue } from '@/services/dict';
 import { layzyLoadOrgTree } from '@/services/org';
 

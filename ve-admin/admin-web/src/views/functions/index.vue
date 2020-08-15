@@ -126,7 +126,7 @@ import {
   createFuncNode,
   updateFuncNode,
   delFuncNodesByParent
-} from '@/api/func';
+} from '@/api/admin_funcs';
 import SelFuncDialog from './select_dialog';
 
 export default {

@@ -8,14 +8,17 @@ import org.beetl.sql.core.mapping.type.TypeParameter;
 
 /**
  * 字典字段的映射处理器
- * */
+ */
 public class DictTypeHandler extends JavaSqlTypeHandler {
+
   @Override
   public Object getValue(TypeParameter typePara) throws SQLException {
+
     if (ObjectUtil.isNull(typePara.getRs().getObject(typePara.getIndex()))) {
       return null;
     }
     String val = typePara.getRs().getString(typePara.getIndex());
     return new DictType(val);
   }
+
 }

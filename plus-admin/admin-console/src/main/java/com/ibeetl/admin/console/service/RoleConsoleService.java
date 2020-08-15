@@ -1,9 +1,7 @@
 package com.ibeetl.admin.console.service;
 
-import com.ibeetl.admin.core.entity.CoreOrg;
 import java.util.List;
 
-import java.util.Optional;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.engine.PageQuery;
 import org.slf4j.Logger;
@@ -46,7 +44,6 @@ public class RoleConsoleService extends CoreBaseService<CoreRole> {
   /**
    * 根据删标记获取全部角色集合
    *
-   * @param delFlagEnum 删除标记
    * @return
    */
   public List<CoreRole> queryAllList() {
@@ -60,7 +57,7 @@ public class RoleConsoleService extends CoreBaseService<CoreRole> {
    */
   public void queryByCondtion(PageQuery query) {
     roleDao.queryByCondtion(query);
-    super.queryListAfter(query.getList());
+    super.handleStrDictValueFields(query.getList());
   }
 
   public PageQuery<CoreUser> queryRoleUser(PageQuery query) {
@@ -75,7 +72,7 @@ public class RoleConsoleService extends CoreBaseService<CoreRole> {
       user.set("orgId1Text", root.findChild((long) orgId1).getName());
     }
     // 再次处理数据字典
-    this.queryListAfter(list);
+    this.handleStrDictValueFields(list);
     return ret;
   }
 
@@ -92,6 +89,7 @@ public class RoleConsoleService extends CoreBaseService<CoreRole> {
     return role;
   }
 
+  @Override
   public boolean deleteById(List<Long> ids) {
     if (ids == null || ids.isEmpty()) {
       throw new PlatformException("删除数据ID不能为空");

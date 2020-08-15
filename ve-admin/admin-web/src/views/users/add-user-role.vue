@@ -70,7 +70,7 @@
 </template>
 <script>
 import SpCascader from '@/components/Wrapper/SpCascader';
-import { addUserRoles } from '@/api/user';
+import { addUserRoles } from '@/api/admin_users';
 import { handleCascaderValue } from '@/services/dict';
 export default {
   name: 'AddUserRole',

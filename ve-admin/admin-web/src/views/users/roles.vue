@@ -116,9 +116,9 @@
 </template>
 <script>
 import Pagination from '@/components/Pagination';
-import { immaditeLoadRoles } from '@/api/role';
-import { immaditeLoadOrgs } from '@/api/org';
-import { getUserRoles, getUserById, deleteUserRoles } from '@/api/user';
+import { immaditeLoadRoles } from '@/api/core_role';
+import { immaditeLoadOrgs } from '@/api/core_org';
+import { getUserRoles, getUserById, deleteUserRoles } from '@/api/admin_users';
 import AddUserRole from './add-user-role';
 import SpTreeSelect from '@/components/Wrapper/SpTreeSelect';
 

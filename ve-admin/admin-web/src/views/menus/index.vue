@@ -139,8 +139,8 @@ import {
   createMenuItem,
   updateMenuItem,
   delMenuItemsByParent
-} from '@/api/menu';
-import { funcs } from '@/api/func';
+} from '@/api/admin_menus';
+import { funcs } from '@/api/admin_funcs';
 
 import SelFuncDialog from '@/views/functions/select_dialog';
 import SelMenuDialog from './select_dialog';

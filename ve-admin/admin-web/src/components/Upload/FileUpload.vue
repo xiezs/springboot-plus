@@ -47,7 +47,7 @@
 <script>
 import { v4 as uuidv4 } from 'uuid';
 import request from '@/utils/request';
-import { getFileList } from '@/api/file';
+import { getFileList } from '@/api/core_file';
 
 export default {
   name: 'FileUpload',

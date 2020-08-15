@@ -33,7 +33,7 @@ public class OrgConsoleService extends CoreBaseService<CoreOrg> {
   public void queryByCondtion(PageQuery<CoreOrg> query) {
     orgDao.queryByCondtion(query);
     List<CoreOrg> list = query.getList();
-    queryListAfter(list);
+    handleStrDictValueFields(list);
     OrgItem root = platformService.buildOrg();
     // 处理父机构名称显示，没有用sql查询是考虑到跨数据库
     for (CoreOrg org : list) {
@@ -46,7 +46,7 @@ public class OrgConsoleService extends CoreBaseService<CoreOrg> {
 
   public void queryUserByCondition(PageQuery<CoreUser> query) {
     orgDao.queryUserByCondtion(query);
-    queryListAfter(query.getList());
+    handleStrDictValueFields(query.getList());
   }
 
   /**

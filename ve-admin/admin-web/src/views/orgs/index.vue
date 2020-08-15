@@ -1,7 +1,7 @@
 <!--
  * @Author: 一日看尽长安花
  * @since: 2020-07-12 16:32:51
- * @LastEditTime: 2020-08-02 13:26:52
+ * @LastEditTime: 2020-08-02 13:47:08
  * @LastEditors: 一日看尽长安花
  * @Description:
 -->
@@ -62,9 +62,11 @@
     >
       <el-table-column label="#" type="selection"> </el-table-column>
       <el-table-column prop="id" label="id"> </el-table-column>
-      <el-table-column prop="code" label="角色代码"> </el-table-column>
-      <el-table-column prop="name" label="角色名称"> </el-table-column>
-      <el-table-column prop="type_text" label="角色类型"> </el-table-column>
+      <el-table-column prop="code" label="机构代码"> </el-table-column>
+      <el-table-column prop="name" label="机构名称"> </el-table-column>
+      <el-table-column prop="parent_org_text" label="上一级机构">
+      </el-table-column>
+      <el-table-column prop="type_text" label="机构类型"> </el-table-column>
       <el-table-column prop="create_time" label="创建时间">
         <template slot-scope="scope">
           <span>
@@ -102,11 +104,11 @@
 import Pagination from '@/components/Pagination'; // secondary package based on el-pagination
 import EditPopup from './edit_popup';
 
-import { getRoles, getRoleById, deleteRoleData } from '@/api/admin_roles';
+import { getOrgs, getOrgById, deleteOrgData } from '@/api/admin_orgs';
 import { download } from '@/api/core_file';
 
 export default {
-  name: 'RoleManager',
+  name: 'OrgManager',
   components: { Pagination, EditPopup },
   props: {},
   data() {
@@ -125,7 +127,7 @@ export default {
   methods: {
     getList() {
       const queryParam = Object.assign({}, this.searchData, this.pageQuery);
-      getRoles(queryParam).then(res => {
+      getOrgs(queryParam).then(res => {
         const { code, message, data, count, total } = { ...res };
         this.pageQuery.total = total;
         this.tableData = data;
@@ -148,7 +150,7 @@ export default {
         type: 'warning '
       })
         .then(() => {
-          deleteRoleData({ ids: [row.id] })
+          deleteOrgData({ ids: [row.id] })
             .then(result => {
               this.$nextTick(() => {
                 this.$notify({
@@ -190,7 +192,7 @@ export default {
       }).then(() => {
         const _selList = _table.selection;
         const ids = _selList.map(item => item.id);
-        deleteRoleData({ ids: ids }).then(response => {
+        deleteOrgData({ ids: ids }).then(response => {
           const { code, message, data } = { ...response };
           this.onSearch();
         });

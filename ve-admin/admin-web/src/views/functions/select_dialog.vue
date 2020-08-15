@@ -37,7 +37,7 @@
 </template>
 <script>
 /** 功能点管理 */
-import { funcs } from '@/api/func';
+import { funcs } from '@/api/admin_funcs';
 
 export default {
   name: 'SelFuncDialog',

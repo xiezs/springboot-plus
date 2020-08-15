@@ -93,7 +93,7 @@ public class FunctionConsoleService extends CoreBaseService<CoreFunction> {
 
     functionConsoleDao.queryByCondtion(query);
     List<CoreFunction> list = query.getList();
-    this.queryListAfter(list);
+    this.handleStrDictValueFields(list);
     // 处理父功能名称显示
     FunctionItem root = corePlatformService.buildFunction();
     for (CoreFunction function : list) {

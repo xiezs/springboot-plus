@@ -5,7 +5,7 @@
  * @LastEditors: 一日看尽长安花
  * @Description: 与业务有关的非纯api的js
  */
-import { layzyLoadDicts, immaditeLoadDicts } from '@/api/dict';
+import { layzyLoadDicts, immaditeLoadDicts } from '@/api/core_dict';
 import { assignIn, get, omit } from 'lodash';
 
 /**
